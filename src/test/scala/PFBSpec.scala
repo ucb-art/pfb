@@ -11,8 +11,6 @@ import chisel3.iotesters.PeekPokeTester
 import dsptools.numbers.{DspReal, SIntOrder, SIntRing}
 import dsptools.{DspContext, DspTester, Grow}
 import org.scalatest.{FlatSpec, Matchers}
-import dsptools.examples._
-//import spire.algebra.{Field, Order, Ring}
 import dsptools.numbers.implicits._
 
 class PFBTester[T<:Data](c: PFB[T]) extends DspTester(c) {
