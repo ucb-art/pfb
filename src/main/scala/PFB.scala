@@ -6,7 +6,7 @@
 package pfb
 
 import chisel3.util.{Counter, ShiftRegister, log2Up}
-import chisel3.{Bool, Bundle, Data, Module, Reg, UInt, Vec, Wire, when}
+import chisel3._
 import dsptools.numbers.Real
 import dsptools.numbers.implicits._
 import spire.algebra.Ring
@@ -15,10 +15,10 @@ import spire.math.{ConvertableFrom, ConvertableTo}
 // polyphase filter bank io
 class PFBIO[T<:Data](genIn: => T, genOut: => Option[T] = None,
                      windowSize: Int, parallelism: Int) extends Bundle {
-  val data_in = Vec(parallelism, genIn.asInput)
-  val data_out = Vec(parallelism, genOut.getOrElse(genIn).asOutput)
-  val sync_in = UInt(log2Up(windowSize/parallelism))
-  val overflow = Bool()
+  val data_in = Input(Vec(parallelism, genIn))
+  val data_out = Output(Vec(parallelism, genOut.getOrElse(genIn)))
+  val sync_in = Input(UInt(log2Up(windowSize/parallelism)))
+  val overflow = Output(Bool())
 }
 
 object sincHamming {
@@ -38,11 +38,11 @@ class PFBFilter[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
                  val taps: Seq[Seq[V]]
                  //conv: V=>T
                ) extends Module {
-  val io = new Bundle {
-    val data_in = genIn.asInput
-    val data_out = genOut.getOrElse(genIn).asOutput
-    val overflow = Bool()
-  }
+  val io = IO(new Bundle {
+    val data_in = Input(genIn)
+    val data_out = Output(genOut.getOrElse(genIn))
+    val overflow = Output(Bool())
+  })
 
   val delay = taps.length
   val count = Counter(taps.length)
@@ -95,7 +95,7 @@ class PFB[T<:Data:Real](
                             genTap: => Option[T] = None,
                             val config: PFBConfig = PFBConfig()
                           ) extends Module {
-  val io = new PFBIO(genIn, genOut, config.windowSize, config.parallelism)
+  val io = IO(new PFBIO(genIn, genOut, config.windowSize, config.parallelism))
 
   val groupedWindow = (0 until config.parallelism).map( lane => {
     (0 until config.outputWindowSize / config.parallelism).map( group => {

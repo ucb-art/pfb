@@ -6,7 +6,7 @@ package pfb
 
 import breeze.linalg.{linspace, max}
 import breeze.numerics.abs
-import chisel3.{Data, Driver, FixedPoint, SInt}
+import chisel3._
 import chisel3.iotesters.PeekPokeTester
 import dsptools.numbers.{DspReal, SIntOrder, SIntRing}
 import dsptools.{DspContext, DspTester, Grow}
@@ -23,19 +23,24 @@ class PFBTester[T<:Data](c: PFB[T]) extends DspTester(c) {
   }
 }
 
-class PFBConstantInput[T<:Data](c: PFB[T]) extends DspTester(c) {
+class PFBConstantInput[T<:Data](c: PFB[T], verbose: Boolean = true) extends DspTester(c, verbose=verbose) {
   val windowSize = c.config.windowSize
+  val numTaps    = c.config.numTaps
+  val parallelism = c.config.parallelism
 
-  val result = (0 to windowSize / c.config.parallelism * 4).foldLeft(Seq[Double]()) ( (sum:Seq[Double], next: Int) => {
-    c.io.data_in.foreach { port => dspPoke(port, 1.0)}
+  val result = (0 until windowSize / parallelism * 2).foldLeft(Seq[Double]()) ( (sum:Seq[Double], next: Int) => {
+    val toPoke = if(next < windowSize / (numTaps * parallelism)) 1.0 else 0.0
+    c.io.data_in.foreach { port => dspPoke(port, toPoke)}
+    val retval = c.io.data_out.map { port => dspPeek(port).left.get }
     step(1)
-    c.io.data_in.foreach { port => dspPoke(port, 1.0)}
-    sum ++ c.io.data_out.map { port => dspPeek(port).left.get }
+    sum ++ retval
   })
 
   println()
   result.foreach { x => print(x.toString + ", ")}
   println()
+
+  result.zip(c.config.window).map({case(x,y) => assert(x == y)})
 }
 
 class PFBFilterTester[T<:Data](c: PFBFilter[T,Double],
@@ -65,7 +70,7 @@ class PFBFilterTester[T<:Data](c: PFBFilter[T,Double],
   }
 }
 
-class PFBLeakageTester[T<:Data](c: PFB[T], numBins: Int = 5, os: Int = 10) extends DspTester(c, verbose=false) {
+class PFBLeakageTester[T<:Data](c: PFB[T], numBins: Int = 5, os: Int = 10, verbose: Boolean = true) extends DspTester(c, verbose=verbose) {
   import co.theasi.plotly._
   val windowSize = c.config.windowSize
   val parallelism = c.config.parallelism
@@ -133,10 +138,10 @@ class PFBSpec extends FlatSpec with Matchers {
   behavior of "Vecs"
   ignore should "have some sort of justice" in {
     class VecTest extends Module {
-      val io = new Bundle {
-        val in = Bool().flip
-        val out = UInt(width=16)
-      }
+      val io = Input(new Bundle {
+        val in = Input(Bool())
+        val out = Output(UInt(width=16))
+      })
       val c = Mux(io.in,
 //        Vec(UInt(1), UInt(2), UInt(3)), // Fail
         Vec(UInt(1, width=5), UInt(2), UInt(3)), // Pass
@@ -171,27 +176,34 @@ class PFBSpec extends FlatSpec with Matchers {
   }
 
 
-  ignore should "build with DspReal" in {
-    chisel3.iotesters.Driver(() => new PFB(DspReal(0.0),
-//  chisel3.iotesters.Driver(() => new PFBnew(FixedPoint(width=32,binaryPoint=16),
+  it should "have the correct step response" in {
+    chisel3.iotesters.Driver(() => new PFB(SInt(10),
     config=PFBConfig(
-      windowFunc = w => Seq(1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0),
+      windowFunc = w => Seq(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0),
         numTaps = 2,
       outputWindowSize = 4,
       parallelism=2
     ))) {
       c => new PFBConstantInput(c)
     } should be (true)
-  }
-
-  ignore should "reduce leakage" in {
-    chisel3.iotesters.Driver(() => new PFB(DspReal(0.0),
+    chisel3.iotesters.Driver(() => new PFB(DspReal(1.0),
       config=PFBConfig(
         numTaps = 8,
         outputWindowSize = 128,
         parallelism=2
       ))) {
-      c => new PFBLeakageTester[DspReal](c, numBins=3, os=100)
+      c => new PFBConstantInput(c, verbose=true)
+    } should be (true)
+  }
+
+  ignore should "reduce leakage" in {
+    chisel3.iotesters.Driver(() => new PFB(DspReal(0.0),
+      config=PFBConfig(
+        numTaps = 4,
+        outputWindowSize = 128,
+        parallelism=2
+      ))) {
+      c => new PFBLeakageTester[DspReal](c, numBins=3, os=10)
     } should be (true)
   }
 
