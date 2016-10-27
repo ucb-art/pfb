@@ -1,3 +1,5 @@
+// See LICENSE for license details.
+
 name := "dsp-template"
 
 version := "1.0"

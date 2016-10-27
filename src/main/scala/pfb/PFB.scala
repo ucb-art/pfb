@@ -5,8 +5,8 @@
 
 package pfb
 
-import chisel3.util.{Counter, ShiftRegister, log2Up}
 import chisel3._
+import chisel3.util.{Counter, ShiftRegister, log2Up}
 import dsptools.numbers.Real
 import dsptools.numbers.implicits._
 import spire.algebra.Ring
@@ -17,16 +17,30 @@ class PFBIO[T<:Data](genIn: => T, genOut: => Option[T] = None,
                      windowSize: Int, parallelism: Int) extends Bundle {
   val data_in = Input(Vec(parallelism, genIn))
   val data_out = Output(Vec(parallelism, genOut.getOrElse(genIn)))
-  val sync_in = Input(UInt(log2Up(windowSize/parallelism)))
+  //val sync_in = Input(UInt(log2Up(windowSize/parallelism)))
+  val sync = Output(Bool())
   val overflow = Output(Bool())
+}
+
+object blackmanHarris {
+  private val a0 = 0.35875
+  private val a1 = 0.48829
+  private val a2 = 0.14128
+  private val a3 = 0.01168
+  def apply(N: Int): Seq[Double] = Seq.tabulate(N) (i => {
+    a0 -
+      a1 * math.cos(2 * math.Pi * i.toDouble / (N - 1)) +
+      a2 * math.cos(4 * math.Pi * i.toDouble / (N - 1)) -
+      a3 * math.cos(6 * math.Pi * i.toDouble / (N - 1))
+  })
+  def apply(w: WindowConfig): Seq[Double] = blackmanHarris(w.outputWindowSize * w.numTaps)
 }
 
 object sincHamming {
   def apply(size: Int, nfft: Int): Seq[Double] = Seq.tabulate(size) (i=>{
     val term1 = 0.54 - 0.46 * breeze.numerics.cos(2 * scala.math.Pi * i.toDouble / size)
     val term2 = breeze.numerics.sinc(size.toDouble / nfft - 0.5 * (size.toDouble / nfft) )
-    println(term1 * term2 * 1024)
-    term1 * term2 * 2*512
+    term1 * term2
   })
   def apply(w: WindowConfig): Seq[Double] = sincHamming(w.outputWindowSize * w.numTaps, w.outputWindowSize)
 }
@@ -57,10 +71,9 @@ class PFBFilter[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
 
   val products = tapsTransposed.map(tap => tap(count.value) * io.data_in)
 
-  val result = products.reduceLeft { (prev:T, prod:T) => ShiftRegister(prev, delay) + prod }
+  val result = products.reduceLeft { (prev:T, prod:T) => prod + ShiftRegisterMem(delay, prev, init = Some(Ring[T].zero)) }
 
   io.data_out := result
-
 }
 
 case class WindowConfig(
@@ -102,6 +115,12 @@ class PFB[T<:Data:Real](
       (group * config.parallelism + lane until config.windowSize by config.outputWindowSize).map(config.window(_))
     })
   })
+
+  val cycleTime = config.outputWindowSize / config.parallelism
+  val counter = Counter(cycleTime)
+  counter.inc()
+
+  io.sync := counter.value === UInt(cycleTime - 1)
 
   val filters = groupedWindow.map( taps => Module(new PFBFilter(genIn, genOut, genTap, taps)))
   filters.zip(io.data_in).foreach( { case (filt, port) => filt.io.data_in := port } )

@@ -4,17 +4,18 @@ package pfb
 
 //scalastyle:off magic.number
 
-import breeze.linalg.{linspace, max}
-import breeze.numerics.abs
+import breeze.linalg._
+import breeze.signal.fourierTr
 import chisel3._
 import chisel3.iotesters.PeekPokeTester
-import dsptools.numbers.{DspReal, SIntOrder, SIntRing}
-import dsptools.{DspContext, DspTester, Grow}
-import org.scalatest.{FlatSpec, Matchers}
+import co.theasi.plotly._
+import dsptools.DspTester
+import dsptools.numbers.DspReal
 import dsptools.numbers.implicits._
+import org.scalatest.{FlatSpec, Matchers}
 
 class PFBTester[T<:Data](c: PFB[T]) extends DspTester(c) {
-  poke(c.io.sync_in, 0)
+  //poke(c.io.sync_in, 0)
 
   for(num <- -50 to 50) {
     c.io.data_in.foreach { port => dspPoke(port, num.toDouble) }
@@ -46,14 +47,15 @@ class PFBConstantInput[T<:Data](c: PFB[T], verbose: Boolean = true) extends DspT
 class PFBFilterTester[T<:Data](c: PFBFilter[T,Double],
                                val start: Int = -50,
                                val stop: Int  = 50,
-                               val step: Int  = 1
-                              ) extends DspTester(c) {
+                               val step: Int  = 1,
+                               verbose: Boolean = true
+                              ) extends DspTester(c, verbose=verbose) {
   def computedResult(n: Int): Double = {
     val delay = c.taps.length
     val nTaps = c.taps(0).length
     val counterValue = (n - start) / step
     val taps  = c.taps(counterValue % c.taps.length)
-    println(s"Using taps ${taps}")
+    if (verbose) println(s"Using taps ${taps}")
     val samples = Seq.tabulate(nTaps){x => {
       val samp = n - x * delay
       if (samp >= start) samp
@@ -63,129 +65,107 @@ class PFBFilterTester[T<:Data](c: PFBFilter[T,Double],
   }
   for (num <- start to stop by step) {
     dspPoke(c.io.data_in, num.toDouble)
-    println(dspPeek(c.io.data_out).toString)
-    println(s"Should be ${computedResult(num)} at time ${num}")
+    if (verbose) {
+      println(dspPeek(c.io.data_out).toString)
+      println(s"Should be ${computedResult(num)} at num ${num}, is actually ${dspPeek(c.io.data_out).left.get}")
+    }
     assert(math.abs(dspPeek(c.io.data_out).left.get - computedResult(num)) < 0.1 )
     step(1)
   }
 }
 
-object testSignal {
-  def apply[T<:Data](c: () => PFB[T], signal: Seq[Double], verbose: Boolean = true): Seq[Double] = {
+object leakageTester {
+  def testSignal[T<:Data](c: () => PFB[T], signal: Seq[Double], verbose: Boolean = true): Seq[Double] = {
     var getOutput: () => Seq[Double] = null
     chisel3.iotesters.Driver(c) {
       c => {
         val tester = new PFBSignalTester(c, signal)
+        // this is *so* shady
         getOutput = () => tester.output
         tester
       }
     }
     getOutput()
   }
-}
 
-object leakageTester {
-  def getEnergyAtBin(x_t: Seq[Double], bin: Int, fftSize: Int) : Double = {
-    val sinToCorr = (0 until x_t.length).map( idx => math.sin(2*math.Pi*bin*idx/(fftSize.toDouble)))
-    val cosToCorr = (0 until x_t.length).map( idx => math.cos(2*math.Pi*bin*idx/(fftSize.toDouble)))
-    val sinCorr = x_t zip sinToCorr map ( {case (x,y) => x * y} ) reduceLeft(_+_)
-    val cosCorr = x_t zip cosToCorr map ( {case (x,y) => x * y} ) reduceLeft(_+_)
-    sinCorr * sinCorr + cosCorr * cosCorr
+  def getEnergyAtBin(x_t: Seq[Double], bin: Int) : Double = {
+    val fftSize = x_t.length
+    //println(s"fftSize = $fftSize, bin = $bin")
+    val tform = fourierTr(DenseVector(x_t.toArray)).toArray.toSeq
+    //println(s"fft = ${tform.map(_.abs ** 2)}")
+    tform.map(_.abs ** 2).apply(bin)
+    //tform(bin).abs ** 2
+  }
+
+  def getTone(numSamples: Int, f: Double): Seq[Double] = {
+    (0 until numSamples).map(i => math.sin(2 * math.Pi * f * i))
+  }
+
+  def simWindow(signal: Seq[Double], config: PFBConfig): Seq[Double] = {
+    assert(signal.length == config.windowSize)
+    val signalByWindow = signal.zip(config.window).map({case(x,y)=>x*y})
+    (0 until config.outputWindowSize).map(i => {
+      (0 until config.numTaps).foldLeft(0.0) { case(sum, j) => {
+        sum + signalByWindow(i + j * config.outputWindowSize)
+      }}
+    })
   }
 
   def apply[T<:Data](c: () => PFB[T], config: PFBConfig, numBins: Int = 3, os: Int = 10): Unit = {
     val windowSize = config.windowSize
     val fftSize    = config.outputWindowSize
     val testBin    = fftSize / 6
-    val chiselResults = (-numBins.toDouble to numBins.toDouble by (1.0 / os)).toParArray.map {delta_f => {
-      println(s"delta_f = $delta_f")
-      val tone = (0 until 2*windowSize).map(i => math.sin(2*math.Pi/fftSize*(testBin + delta_f)*i ))
-      val testResult = testSignal(c, tone, verbose=true)//false)
-      //println(s"Test result for $delta_f = $testResult")
-      getEnergyAtBin(testResult.drop(testResult.length - windowSize), testBin, fftSize)
+    val delta_fs = (-numBins.toDouble to numBins.toDouble by (1.0 / os)).toSeq
+    val rawResults = delta_fs map {delta_f => {
+      getEnergyAtBin(getTone(fftSize, (testBin + delta_f) / fftSize), testBin)
     }}
-    println(s"Energy: $chiselResults")
+    val simResults = delta_fs map {delta_f => {
+      val tone = getTone(windowSize, (testBin + delta_f) / fftSize)
+      val simPfb = simWindow(tone, config)
+      getEnergyAtBin(simPfb, testBin)
+    }}
+    val chiselResults = delta_fs map {delta_f => {
+      println(s"delta_f = $delta_f")
+      val tone = getTone(1 * windowSize + fftSize, (testBin + delta_f) / fftSize)
+      val testResult = testSignal(c, tone, verbose=false)
+      println(s"Sim test result = ${simWindow(getTone(windowSize, (testBin + delta_f)/ fftSize), config)}")
+      println(s"Test result = $testResult")
+//      val fftResult = fourierTr(DenseVector(testResult.drop(testResult.length - fftSize).toArray)).toArray.map(_.abs**2)
+//      val p = Plot().withScatter((0 until fftSize), fftResult)
+//      draw(p, s"FFT for delta_f = $delta_f", writer.FileOptions(overwrite=true))
+      getEnergyAtBin(testResult.drop(testResult.length - fftSize), testBin)
+    }}
+    println(s"Chisel: $chiselResults")
+    println(s"Simulated: $simResults")
+    println(s"No window: $rawResults")
+    val p = Plot()
+      .withScatter(delta_fs, chiselResults,    ScatterOptions().name("Chisel"))
+      .withScatter(delta_fs, rawResults, ScatterOptions().name("No window"))
+//      .withScatter(x, simresults_normalized, ScatterOptions().name("Sim window"))
+    draw(p, "leakage", writer.FileOptions(overwrite=true))
   }
 }
 
 
 class PFBSignalTester[T<:Data](c: PFB[T], signal: Seq[Double], verbose: Boolean = true) extends DspTester(c, verbose=verbose) {
   val grouped_signal = signal.grouped(c.config.parallelism).toList
-  val output: Seq[Double] = grouped_signal.map(sig=> {
-    sig.zip(c.io.data_in).foreach({case(value, port) => dspPoke(port, value)})
+  val output: Seq[Double] = grouped_signal.flatMap(sig=> {
+    sig.zip(c.io.data_in).foreach({case(value, port) => {
+      dspPoke(port, value)
+    } })
     val toret = c.io.data_out.map(port=>dspPeek(port).left.get)
+    if(peek(c.io.sync) != 0) {
+      println(s"Sync at ${grouped_signal.indexOf(sig)}")
+    }
     step(1)
     toret
-  }).flatten.toSeq
-}
-
-class PFBLeakageTester[T<:Data](c: PFB[T], numBins: Int = 5, os: Int = 10, verbose: Boolean = true) extends DspTester(c, verbose=verbose) {
-  import co.theasi.plotly._
-  val windowSize = c.config.windowSize
-  val parallelism = c.config.parallelism
-  val fftSize    = c.config.outputWindowSize
-
-  // multiply by two to be sure to flush old state before measuring
-  val numSteps = windowSize * 2 / parallelism
-
-  val testBin=fftSize / 6
-
-  def testTone(freq: Double): Seq[Double] = (0 until numSteps).flatMap(i => {
-    (0 until parallelism).map(j => {
-      val idx = i * parallelism + j
-      val x_t = scala.math.sin(2*math.Pi * freq * idx.toDouble / fftSize)
-      dspPoke(c.io.data_in(j), x_t)
-    })
-    val toret = c.io.data_out.map { port => dspPeek(port).left.get }
-    step(1)
-    toret
-    }).drop(numSteps * parallelism - fftSize) // keep only the last fftSize elements
-
-  def getEnergyAtBin(x_t: Seq[Double], bin: Int) : Double = {
-    val sinToCorr = (0 until x_t.length).map( idx => math.sin(2*math.Pi*bin*idx/(fftSize.toDouble)))
-    val cosToCorr = (0 until x_t.length).map( idx => math.cos(2*math.Pi*bin*idx/(fftSize.toDouble)))
-    val sinCorr = x_t zip sinToCorr map ( {case (x,y) => x * y} ) reduceLeft(_+_)
-    val cosCorr = x_t zip cosToCorr map ( {case (x,y) => x * y} ) reduceLeft(_+_)
-    sinCorr * sinCorr + cosCorr * cosCorr
-  }
-
-  val results = (-numBins.toDouble to numBins.toDouble by (1.0 / os)) map (delta_f => {
-    println(s"delta_f=${delta_f}, max=${numBins}")
-    val f = testBin.toDouble
-    val test = testTone(f + delta_f)
-    getEnergyAtBin(test, testBin)
   })
-  val rawresults = (-numBins.toDouble to numBins.toDouble by (1.0 / os)) map (delta_f => {
-    val f = testBin.toDouble
-    getEnergyAtBin((0 until fftSize).map({idx => math.sin(2*math.Pi * (f + delta_f) * idx / fftSize.toDouble)}), testBin)
-  })
-  val simresults = (-numBins.toDouble to numBins.toDouble by (1.0 / os)) map (delta_f => {
-    val f = testBin.toDouble
-    val raw = (0 until c.config.windowSize).map({idx => math.sin(2*math.Pi * (f + delta_f) * idx / fftSize.toDouble)})
-    getEnergyAtBin(raw.zip(c.config.window).map({case(x,y)=>x*y}), testBin)
-  })
-
-  def normalized(x: Seq[Double]): Seq[Double] = x.map(_ / max(x.map(abs(_))))
-  val results_normalized = normalized(results)
-  val rawresults_normalized = normalized(rawresults)
-  val simresults_normalized = normalized(simresults)
-
-  println(s"Results: ${results_normalized}")
-  println(s"Rawresults: ${rawresults_normalized}")
-  println(s"Simresults: ${simresults_normalized}")
-
-  val x = linspace(-numBins, numBins, results.length).toArray
-  val p = Plot()
-    .withScatter(x, results_normalized,    ScatterOptions().name("Chisel"))
-    .withScatter(x, rawresults_normalized, ScatterOptions().name("No window"))
-    .withScatter(x, simresults_normalized, ScatterOptions().name("Sim window"))
-  draw(p, "leakage", writer.FileOptions(overwrite=true))
 }
 
 class PFBSpec extends FlatSpec with Matchers {
   import chisel3.{Bool, Bundle, Module, Mux, UInt, Vec}
   behavior of "Vecs"
-  ignore should "have some sort of justice" in {
+  ignore should "don't work nicely with underlying things that have different widths" in {
     class VecTest extends Module {
       val io = Input(new Bundle {
         val in = Input(Bool())
@@ -210,33 +190,19 @@ class PFBSpec extends FlatSpec with Matchers {
       new VecTest) { c => new VecTestTester(c) } should be (true)
   }
   behavior of "PFB"
-  ignore should "sort of do something" in {
+  ignore should "build with SInt" in {
     chisel3.iotesters.Driver(() => new PFB(SInt(width = 10), Some(SInt(width = 16)),
-      config=PFBConfig(
-        outputWindowSize=4, numTaps = 4, parallelism = 2
+      config = PFBConfig(
+        outputWindowSize = 4, numTaps = 4, parallelism = 2
       ))) {
       c => new PFBTester(c)
-    } should be (true)
- /*   chisel3.iotesters.Driver(() => new PFB(
-      FixedPoint(width = 10, binaryPoint = 2),
-      Some(FixedPoint(width = 16, binaryPoint = 4))) ) {
-        c => new PFBTester(c)
-     } should be (true)*/
+    } should be(true)
   }
 
-
   ignore should "have the correct step response" in {
-    chisel3.iotesters.Driver(() => new PFB(SInt.width(10),
-    config=PFBConfig(
-      windowFunc = w => Seq(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0),
-        numTaps = 2,
-      outputWindowSize = 4,
-      parallelism=2
-    ))) {
-      c => new PFBConstantInput(c)
-    } should be (true)
     chisel3.iotesters.Driver(() => new PFB(DspReal(1.0),
       config=PFBConfig(
+        windowFunc = blackmanHarris.apply,
         numTaps = 8,
         outputWindowSize = 128,
         parallelism=2
@@ -246,15 +212,8 @@ class PFBSpec extends FlatSpec with Matchers {
   }
 
   it should "reduce leakage" in {
-    /*chisel3.iotesters.Driver(() => new PFB(DspReal(0.0),
-      config=PFBConfig(
-        numTaps = 4,
-        outputWindowSize = 128,
-        parallelism=2
-      ))) {
-      c => new PFBLeakageTester[DspReal](c, numBins=3, os=100)
-    } should be (true)*/
     val config = PFBConfig(
+      windowFunc = blackmanHarris.apply,
       numTaps = 4,
       outputWindowSize = 128,
       parallelism=2
@@ -268,7 +227,7 @@ class PFBSpec extends FlatSpec with Matchers {
       SInt(width=8), Some(SInt(width=10)), Some(SInt(width=10)),
         Seq(Seq(1.0,2.0), Seq(3.0,4.0), Seq(5.0,6.0), Seq(7.0,8.0)))
     ) {
-      c => new PFBFilterTester(c)
+      c => new PFBFilterTester(c, verbose=false)
     } should be (true)
   }
 }
