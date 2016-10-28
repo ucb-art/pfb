@@ -17,7 +17,6 @@ class PFBIO[T<:Data](genIn: => T, genOut: => Option[T] = None,
                      windowSize: Int, parallelism: Int) extends Bundle {
   val data_in = Input(Vec(parallelism, genIn))
   val data_out = Output(Vec(parallelism, genOut.getOrElse(genIn)))
-  //val sync_in = Input(UInt(log2Up(windowSize/parallelism)))
   val sync = Output(Bool())
   val overflow = Output(Bool())
 }
@@ -45,7 +44,7 @@ object sincHamming {
   def apply(w: WindowConfig): Seq[Double] = sincHamming(w.outputWindowSize * w.numTaps, w.outputWindowSize)
 }
 
-class PFBFilter[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
+class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
                  genIn: => T,
                  genOut: => Option[T] = None,
                  genTap: => Option[T] = None,
@@ -63,15 +62,19 @@ class PFBFilter[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
   count.inc()
   val countDelayed = Reg(next=count.value)
 
-  val tapsTransposed = taps.map(_.reverse).reverse.transpose.map( tap => {
-    val tapsWire = Wire(Vec(tap.length, genTap.getOrElse(genIn)))
-    tapsWire.zip(tap.reverse).foreach({case (t,d) => t := ConvertableTo[T].fromType(d)})
+  val tapsReversed = taps.reverse.map(_.reverse)
+
+  val tapsTransposed = tapsReversed.transpose.map( tapGroup => {
+    val tapsWire = Wire(Vec(tapGroup.length, genTap.getOrElse(genIn)))
+    tapsWire.zip(tapGroup.reverse).foreach({case (t,d) => t := ConvertableTo[T].fromType(d)})
     tapsWire
   })
 
   val products = tapsTransposed.map(tap => tap(count.value) * io.data_in)
 
-  val result = products.reduceLeft { (prev:T, prod:T) => prod + ShiftRegisterMem(delay, prev, init = Some(Ring[T].zero)) }
+  val result = products.reduceLeft { (prev:T, prod:T) =>
+    prod + ShiftRegisterMem(delay, prev, init = Some(Ring[T].zero))
+  }
 
   io.data_out := result
 }
@@ -122,7 +125,7 @@ class PFB[T<:Data:Real](
 
   io.sync := counter.value === UInt(cycleTime - 1)
 
-  val filters = groupedWindow.map( taps => Module(new PFBFilter(genIn, genOut, genTap, taps)))
+  val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps)))
   filters.zip(io.data_in).foreach( { case (filt, port) => filt.io.data_in := port } )
   filters.zip(io.data_out).foreach( { case (filt, port) => port := filt.io.data_out } )
 }

@@ -14,9 +14,12 @@ import dsptools.numbers.DspReal
 import dsptools.numbers.implicits._
 import org.scalatest.{FlatSpec, Matchers}
 
+/**
+  * Basic tester to test if a PFB configuration will elaborate and run in tester
+  * @param c
+  * @tparam T
+  */
 class PFBTester[T<:Data](c: PFB[T]) extends DspTester(c) {
-  //poke(c.io.sync_in, 0)
-
   for(num <- -50 to 50) {
     c.io.data_in.foreach { port => dspPoke(port, num.toDouble) }
     step(1)
@@ -24,27 +27,28 @@ class PFBTester[T<:Data](c: PFB[T]) extends DspTester(c) {
   }
 }
 
-class PFBConstantInput[T<:Data](c: PFB[T], verbose: Boolean = true) extends DspTester(c, verbose=verbose) {
+class PFBStepTester[T<:Data](c: PFB[T], stepSize: Int, expectedOutput: Seq[Double]) extends DspTester(c) {
   val windowSize = c.config.windowSize
   val numTaps    = c.config.numTaps
   val parallelism = c.config.parallelism
+  val threshold = 1.0e-9
 
   val result = (0 until windowSize / parallelism * 2).foldLeft(Seq[Double]()) ( (sum:Seq[Double], next: Int) => {
-    val toPoke = if(next < windowSize / (numTaps * parallelism)) 1.0 else 0.0
-    c.io.data_in.foreach { port => dspPoke(port, toPoke)}
+    val toPoke = if(next < stepSize) 1.0 else 0.0
+    c.io.data_in.foreach { port => dspPoke(port, toPoke) }
     val retval = c.io.data_out.map { port => dspPeek(port).left.get }
+    for (i <- 0 until parallelism) {
+      val idx = next * parallelism + i
+      if (idx < expectedOutput.size) {
+        assert((retval(i) - expectedOutput(idx)) / expectedOutput(idx) < threshold, "Output did not match expected value")
+      }
+    }
     step(1)
     sum ++ retval
   })
-
-  println()
-  result.foreach { x => print(x.toString + ", ")}
-  println()
-
-  result.zip(c.config.window).map({case(x,y) => assert(x == y)})
 }
 
-class PFBFilterTester[T<:Data](c: PFBFilter[T,Double],
+class PFBFilterTester[T<:Data](c: PFBLane[T,Double],
                                val start: Int = -50,
                                val stop: Int  = 50,
                                val step: Int  = 1,
@@ -93,8 +97,8 @@ object leakageTester {
     //println(s"fftSize = $fftSize, bin = $bin")
     val tform = fourierTr(DenseVector(x_t.toArray)).toArray.toSeq
     //println(s"fft = ${tform.map(_.abs ** 2)}")
-    tform.map(_.abs ** 2).apply(bin)
-    //tform(bin).abs ** 2
+    //tform.map(_.abs ** 2).apply(bin)
+    tform(bin).abs ** 2
   }
 
   def getTone(numSamples: Int, f: Double): Seq[Double] = {
@@ -126,14 +130,17 @@ object leakageTester {
     }}
     val chiselResults = delta_fs map {delta_f => {
       println(s"delta_f = $delta_f")
-      val tone = getTone(1 * windowSize + fftSize, (testBin + delta_f) / fftSize)
+      val tone = getTone(windowSize, (testBin + delta_f) / fftSize)
       val testResult = testSignal(c, tone, verbose=false)
-      println(s"Sim test result = ${simWindow(getTone(windowSize, (testBin + delta_f)/ fftSize), config)}")
-      println(s"Test result = $testResult")
+      //println(s"Sim test result = ${simWindow(getTone(windowSize, (testBin + delta_f)/ fftSize), config)}")
+      //println(s"Test result = $testResult")
 //      val fftResult = fourierTr(DenseVector(testResult.drop(testResult.length - fftSize).toArray)).toArray.map(_.abs**2)
 //      val p = Plot().withScatter((0 until fftSize), fftResult)
 //      draw(p, s"FFT for delta_f = $delta_f", writer.FileOptions(overwrite=true))
-      getEnergyAtBin(testResult.drop(testResult.length - fftSize), testBin)
+      val lastWindow = testResult.drop(testResult.length - fftSize)
+      println(s"Sim test result = ${simWindow(getTone(windowSize, (testBin + delta_f)/ fftSize), config)}")
+      println(s"Test result = $lastWindow")
+      getEnergyAtBin(lastWindow, testBin)
     }}
     println(s"Chisel: $chiselResults")
     println(s"Simulated: $simResults")
@@ -141,7 +148,7 @@ object leakageTester {
     val p = Plot()
       .withScatter(delta_fs, chiselResults,    ScatterOptions().name("Chisel"))
       .withScatter(delta_fs, rawResults, ScatterOptions().name("No window"))
-//      .withScatter(x, simresults_normalized, ScatterOptions().name("Sim window"))
+      .withScatter(delta_fs, simResults, ScatterOptions().name("Sim window"))
     draw(p, "leakage", writer.FileOptions(overwrite=true))
   }
 }
@@ -199,19 +206,51 @@ class PFBSpec extends FlatSpec with Matchers {
     } should be(true)
   }
 
-  ignore should "have the correct step response" in {
-    chisel3.iotesters.Driver(() => new PFB(DspReal(1.0),
-      config=PFBConfig(
+  it should "have the correct step response" in {
+    {
+
+      val config = PFBConfig(
         windowFunc = blackmanHarris.apply,
         numTaps = 8,
         outputWindowSize = 128,
-        parallelism=2
-      ))) {
-      c => new PFBConstantInput(c, verbose=true)
-    } should be (true)
+        parallelism = 2
+      )
+      val stepSize = config.windowSize / (config.numTaps * config.parallelism)
+      chisel3.iotesters.Driver(() => new PFB(DspReal(1.0), config = config)) {
+        c => new PFBStepTester(c, stepSize, config.window)
+      } should be(true)
+    }
+    {
+      val config = PFBConfig(
+        windowFunc = blackmanHarris.apply,
+        numTaps = 8,
+        outputWindowSize = 128,
+        parallelism = 1
+      )
+      val stepSize = config.windowSize / (config.numTaps * config.parallelism)
+      chisel3.iotesters.Driver(() => new PFB(DspReal(1.0), config = config)) {
+        c => new PFBStepTester(c, stepSize, config.window)
+      } should be(true)
+    }
+    {
+      val config = PFBConfig(
+        windowFunc = blackmanHarris.apply,
+        numTaps = 8,
+        outputWindowSize = 128,
+        parallelism = 2
+      )
+      val stepSize = config.windowSize / config.parallelism
+      val outputSize = config.windowSize // / config.numTaps * (2 * config.numTaps + 1)
+      val expected = Seq.tabulate(outputSize) (i=> {
+        (0 to i/config.outputWindowSize).map(x => config.window(i - x * config.outputWindowSize)).reduce(_+_)
+      })
+      chisel3.iotesters.Driver(() => new PFB(DspReal(1.0), config = config)) {
+        c => new PFBStepTester(c, stepSize, expected)
+      } should be(true)
+    }
   }
 
-  it should "reduce leakage" in {
+  ignore should "reduce leakage" in {
     val config = PFBConfig(
       windowFunc = blackmanHarris.apply,
       numTaps = 4,
@@ -221,13 +260,13 @@ class PFBSpec extends FlatSpec with Matchers {
     leakageTester( () => new PFB(DspReal(0.0), config=config), config )
   }
 
-  behavior of "PFBFilter"
-  ignore should "build and run" in {
-    chisel3.iotesters.Driver(() => new PFBFilter[SInt,Double](
+  behavior of "PFBLane"
+  ignore should "build and run correctly" in {
+    chisel3.iotesters.Driver(() => new PFBLane[SInt,Double](
       SInt(width=8), Some(SInt(width=10)), Some(SInt(width=10)),
         Seq(Seq(1.0,2.0), Seq(3.0,4.0), Seq(5.0,6.0), Seq(7.0,8.0)))
     ) {
-      c => new PFBFilterTester(c, verbose=false)
+      c => new PFBFilterTester(c)//, verbose=false)
     } should be (true)
   }
 }
