@@ -7,7 +7,7 @@ package pfb
 import breeze.linalg._
 import breeze.signal.fourierTr
 import chisel3._
-import chisel3.iotesters.PeekPokeTester
+import chisel3.iotesters.{PeekPokeTester, TesterOptionsManager}
 import co.theasi.plotly._
 import dsptools.DspTester
 import dsptools.numbers.DspReal
@@ -19,12 +19,17 @@ import org.scalatest.{FlatSpec, Matchers}
   * @param c
   * @tparam T
   */
-class PFBTester[T<:Data](c: PFB[T]) extends DspTester(c) {
+class PFBTester[T<:Data](val c: PFB[T]) extends DspTester(c) {
   for(num <- -50 to 50) {
     c.io.data_in.foreach { port => dspPoke(port, num.toDouble) }
     step(1)
     c.io.data_out.foreach { port => println(dspPeek(port).toString)}
   }
+
+  // this is a hack to use PFBTester outside of the normal driver methods
+  override def finish = true
+
+  def actualFinish = super.finish
 }
 
 class PFBStepTester[T<:Data](c: PFB[T], stepSize: Int, expectedOutput: Seq[Double]) extends DspTester(c) {
@@ -54,7 +59,7 @@ class PFBFilterTester[T<:Data](c: PFBLane[T,Double],
                                val step: Int  = 1,
                                verbose: Boolean = true
                               ) extends DspTester(c, verbose=verbose) {
-  def computedResult(n: Int): Double = {
+  /*def computedResult(n: Int): Double = {
     val delay = c.taps.length
     val nTaps = c.taps(0).length
     val counterValue = (n - start) / step
@@ -75,21 +80,22 @@ class PFBFilterTester[T<:Data](c: PFBLane[T,Double],
     }
     assert(math.abs(dspPeek(c.io.data_out).left.get - computedResult(num)) < 0.1 )
     step(1)
-  }
+  }*/
 }
 
 object leakageTester {
-  def testSignal[T<:Data](c: () => PFB[T], signal: Seq[Double], verbose: Boolean = true): Seq[Double] = {
-    var getOutput: () => Seq[Double] = null
-    chisel3.iotesters.Driver(c) {
-      c => {
-        val tester = new PFBSignalTester(c, signal)
-        // this is *so* shady
-        getOutput = () => tester.output
-        tester
-      }
-    }
-    getOutput()
+  def testSignal[T<:Data](dut: PFBTester[T], signal: Seq[Double]): Seq[Double] = {
+    dut.reset(5)
+    val config = dut.c.config
+    val io = dut.c.io
+    val groupedSignal: Seq[Seq[Double]] = signal.grouped(config.parallelism).toSeq
+
+    groupedSignal.flatMap(sigGroup => {
+      sigGroup.zip(io.data_in).foreach { case(sig, port) => dut.dspPoke(port, sig) }
+      val retval = io.data_out.map (x => dut.dspPeek(x).left.get)
+      dut.step(1)
+      retval
+    })
   }
 
   def getEnergyAtBin(x_t: Seq[Double], bin: Int) : Double = {
@@ -115,10 +121,26 @@ object leakageTester {
     })
   }
 
+  def setupTester[T <: Data](c: () => PFB[T]): PFBTester[T] = {
+    var tester: PFBTester[T] = null
+    chisel3.iotesters.Driver.execute(Array("-fmed", "2000"), c) (c => {
+      val t = new PFBTester(c)
+      tester = t
+      t
+    })
+
+    tester
+  }
+
+  def teardownTester[T <: Data](tester: PFBTester[T]): Unit = {
+    tester.actualFinish
+  }
+
   def apply[T<:Data](c: () => PFB[T], config: PFBConfig, numBins: Int = 3, os: Int = 10): Unit = {
+    val tester = setupTester(c)
     val windowSize = config.windowSize
     val fftSize    = config.outputWindowSize
-    val testBin    = fftSize / 6
+    val testBin    =  fftSize / 6
     val delta_fs = (-numBins.toDouble to numBins.toDouble by (1.0 / os)).toSeq
     val rawResults = delta_fs map {delta_f => {
       getEnergyAtBin(getTone(fftSize, (testBin + delta_f) / fftSize), testBin)
@@ -131,7 +153,7 @@ object leakageTester {
     val chiselResults = delta_fs map {delta_f => {
       println(s"delta_f = $delta_f")
       val tone = getTone(windowSize, (testBin + delta_f) / fftSize)
-      val testResult = testSignal(c, tone, verbose=false)
+      val testResult = testSignal(tester, tone)
       //println(s"Sim test result = ${simWindow(getTone(windowSize, (testBin + delta_f)/ fftSize), config)}")
       //println(s"Test result = $testResult")
 //      val fftResult = fourierTr(DenseVector(testResult.drop(testResult.length - fftSize).toArray)).toArray.map(_.abs**2)
@@ -142,31 +164,17 @@ object leakageTester {
       println(s"Test result = $lastWindow")
       getEnergyAtBin(lastWindow, testBin)
     }}
-    println(s"Chisel: $chiselResults")
-    println(s"Simulated: $simResults")
-    println(s"No window: $rawResults")
+    teardownTester(tester)
+    println(s"chisel = [ ${chiselResults.map(_.toString + ", ").reduce(_+_)} nan ];")
+    println(s"simulated = [ ${simResults.map(_.toString + ", ").reduce(_+_)} nan ];")
+    println(s"nowindow = [ ${rawResults.map(_.toString + ", ").reduce(_+_)} nan ];")
+    println(s"t=[linspace(-$numBins, $numBins, length(chisel) - 1) nan];")
     val p = Plot()
       .withScatter(delta_fs, chiselResults,    ScatterOptions().name("Chisel"))
       .withScatter(delta_fs, rawResults, ScatterOptions().name("No window"))
       .withScatter(delta_fs, simResults, ScatterOptions().name("Sim window"))
     draw(p, "leakage", writer.FileOptions(overwrite=true))
   }
-}
-
-
-class PFBSignalTester[T<:Data](c: PFB[T], signal: Seq[Double], verbose: Boolean = true) extends DspTester(c, verbose=verbose) {
-  val grouped_signal = signal.grouped(c.config.parallelism).toList
-  val output: Seq[Double] = grouped_signal.flatMap(sig=> {
-    sig.zip(c.io.data_in).foreach({case(value, port) => {
-      dspPoke(port, value)
-    } })
-    val toret = c.io.data_out.map(port=>dspPeek(port).left.get)
-    if(peek(c.io.sync) != 0) {
-      println(s"Sync at ${grouped_signal.indexOf(sig)}")
-    }
-    step(1)
-    toret
-  })
 }
 
 class PFBSpec extends FlatSpec with Matchers {
@@ -206,7 +214,7 @@ class PFBSpec extends FlatSpec with Matchers {
     } should be(true)
   }
 
-  it should "have the correct step response" in {
+  ignore should "have the correct step response" in {
     {
 
       val config = PFBConfig(
@@ -216,7 +224,7 @@ class PFBSpec extends FlatSpec with Matchers {
         parallelism = 2
       )
       val stepSize = config.windowSize / (config.numTaps * config.parallelism)
-      chisel3.iotesters.Driver(() => new PFB(DspReal(1.0), config = config)) {
+      chisel3.iotesters.Driver(() => new PFB(SInt.width(10), config = config)) {
         c => new PFBStepTester(c, stepSize, config.window)
       } should be(true)
     }
@@ -237,7 +245,7 @@ class PFBSpec extends FlatSpec with Matchers {
         windowFunc = blackmanHarris.apply,
         numTaps = 8,
         outputWindowSize = 128,
-        parallelism = 2
+        parallelism = 1
       )
       val stepSize = config.windowSize / config.parallelism
       val outputSize = config.windowSize // / config.numTaps * (2 * config.numTaps + 1)
@@ -250,21 +258,21 @@ class PFBSpec extends FlatSpec with Matchers {
     }
   }
 
-  ignore should "reduce leakage" in {
+  it should "reduce leakage" in {
     val config = PFBConfig(
       windowFunc = blackmanHarris.apply,
-      numTaps = 4,
-      outputWindowSize = 128,
-      parallelism=2
+      numTaps = 8,
+      outputWindowSize = 256,
+      parallelism=1
     )
-    leakageTester( () => new PFB(DspReal(0.0), config=config), config )
+    leakageTester( () => new PFB(DspReal(0.0), config=config), config, numBins = 5, os= 25 )
   }
 
   behavior of "PFBLane"
   ignore should "build and run correctly" in {
     chisel3.iotesters.Driver(() => new PFBLane[SInt,Double](
       SInt(width=8), Some(SInt(width=10)), Some(SInt(width=10)),
-        Seq(Seq(1.0,2.0), Seq(3.0,4.0), Seq(5.0,6.0), Seq(7.0,8.0)))
+        Seq(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0), 4)
     ) {
       c => new PFBFilterTester(c)//, verbose=false)
     } should be (true)

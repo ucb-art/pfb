@@ -48,8 +48,8 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
                  genIn: => T,
                  genOut: => Option[T] = None,
                  genTap: => Option[T] = None,
-                 val taps: Seq[Seq[V]]
-                 //conv: V=>T
+                 val taps: Seq[V],
+                 delay: Int
                ) extends Module {
   val io = IO(new Bundle {
     val data_in = Input(genIn)
@@ -57,20 +57,22 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
     val overflow = Output(Bool())
   })
 
-  val delay = taps.length
-  val count = Counter(taps.length)
+  require(taps.length % delay == 0)
+
+  val count = Counter(delay)
   count.inc()
   val countDelayed = Reg(next=count.value)
 
-  val tapsReversed = taps.reverse.map(_.reverse)
-
-  val tapsTransposed = tapsReversed.transpose.map( tapGroup => {
-    val tapsWire = Wire(Vec(tapGroup.length, genTap.getOrElse(genIn)))
-    tapsWire.zip(tapGroup.reverse).foreach({case (t,d) => t := ConvertableTo[T].fromType(d)})
-    tapsWire
+  val tapsGrouped  = taps.grouped(delay).toSeq
+  val tapsReversed = tapsGrouped.reverse.map(_.reverse)
+  val tapsWire     = tapsReversed.map( tapGroup => {
+    val tapWire = Wire(Vec(tapGroup.length, genTap.getOrElse(genIn)))
+    tapWire.zip(tapGroup).foreach({case (t,d) => t := ConvertableTo[T].fromType(d)})
+    tapWire
   })
 
-  val products = tapsTransposed.map(tap => tap(count.value) * io.data_in)
+
+  val products = tapsWire.map(tap => tap(count.value) * io.data_in)
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
     prod + ShiftRegisterMem(delay, prev, init = Some(Ring[T].zero))
@@ -113,19 +115,18 @@ class PFB[T<:Data:Real](
                           ) extends Module {
   val io = IO(new PFBIO(genIn, genOut, config.windowSize, config.parallelism))
 
-  val groupedWindow = (0 until config.parallelism).map( lane => {
-    (0 until config.outputWindowSize / config.parallelism).map( group => {
-      (group * config.parallelism + lane until config.windowSize by config.outputWindowSize).map(config.window(_))
-    })
-  })
+  // split window up into config.parallelism different sub-windows
+  val groupedWindow = (0 until config.parallelism).map(
+    config.window.drop(_).grouped(config.parallelism).map(_.head).toSeq
+  )
 
   val cycleTime = config.outputWindowSize / config.parallelism
   val counter = Counter(cycleTime)
   counter.inc()
 
-  io.sync := counter.value === UInt(cycleTime - 1)
+  io.sync := counter.value === UInt(0)
 
-  val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps)))
+  val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime)))
   filters.zip(io.data_in).foreach( { case (filt, port) => filt.io.data_in := port } )
   filters.zip(io.data_out).foreach( { case (filt, port) => port := filt.io.data_out } )
 }
