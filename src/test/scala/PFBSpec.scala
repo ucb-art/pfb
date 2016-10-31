@@ -100,10 +100,7 @@ object leakageTester {
 
   def getEnergyAtBin(x_t: Seq[Double], bin: Int) : Double = {
     val fftSize = x_t.length
-    //println(s"fftSize = $fftSize, bin = $bin")
     val tform = fourierTr(DenseVector(x_t.toArray)).toArray.toSeq
-    //println(s"fft = ${tform.map(_.abs ** 2)}")
-    //tform.map(_.abs ** 2).apply(bin)
     tform(bin).abs ** 2
   }
 
@@ -123,7 +120,7 @@ object leakageTester {
 
   def setupTester[T <: Data](c: () => PFB[T]): PFBTester[T] = {
     var tester: PFBTester[T] = null
-    chisel3.iotesters.Driver.execute(Array("-fmed", "2000"), c) (c => {
+    chisel3.iotesters.Driver.execute(Array("-fimed", "2000"), c) (c => {
       val t = new PFBTester(c)
       tester = t
       t
@@ -154,21 +151,16 @@ object leakageTester {
       println(s"delta_f = $delta_f")
       val tone = getTone(windowSize, (testBin + delta_f) / fftSize)
       val testResult = testSignal(tester, tone)
-      //println(s"Sim test result = ${simWindow(getTone(windowSize, (testBin + delta_f)/ fftSize), config)}")
-      //println(s"Test result = $testResult")
-//      val fftResult = fourierTr(DenseVector(testResult.drop(testResult.length - fftSize).toArray)).toArray.map(_.abs**2)
-//      val p = Plot().withScatter((0 until fftSize), fftResult)
-//      draw(p, s"FFT for delta_f = $delta_f", writer.FileOptions(overwrite=true))
       val lastWindow = testResult.drop(testResult.length - fftSize)
-      println(s"Sim test result = ${simWindow(getTone(windowSize, (testBin + delta_f)/ fftSize), config)}")
-      println(s"Test result = $lastWindow")
+      //println(s"Sim test result = ${simWindow(getTone(windowSize, (testBin + delta_f)/ fftSize), config)}")
+      //println(s"Test result = $lastWindow")
       getEnergyAtBin(lastWindow, testBin)
     }}
     teardownTester(tester)
-    println(s"chisel = [ ${chiselResults.map(_.toString + ", ").reduce(_+_)} nan ];")
-    println(s"simulated = [ ${simResults.map(_.toString + ", ").reduce(_+_)} nan ];")
-    println(s"nowindow = [ ${rawResults.map(_.toString + ", ").reduce(_+_)} nan ];")
-    println(s"t=[linspace(-$numBins, $numBins, length(chisel) - 1) nan];")
+    //println(s"chisel = [ ${chiselResults.map(_.toString + ", ").reduce(_+_)} nan ];")
+    //println(s"simulated = [ ${simResults.map(_.toString + ", ").reduce(_+_)} nan ];")
+    //println(s"nowindow = [ ${rawResults.map(_.toString + ", ").reduce(_+_)} nan ];")
+    //println(s"t=[linspace(-$numBins, $numBins, length(chisel) - 1) nan];")
     val p = Plot()
       .withScatter(delta_fs, chiselResults,    ScatterOptions().name("Chisel"))
       .withScatter(delta_fs, rawResults, ScatterOptions().name("No window"))
@@ -180,9 +172,9 @@ object leakageTester {
 class PFBSpec extends FlatSpec with Matchers {
   import chisel3.{Bool, Bundle, Module, Mux, UInt, Vec}
   behavior of "Vecs"
-  ignore should "don't work nicely with underlying things that have different widths" in {
+  it should "don't work nicely with underlying things that have different widths" in {
     class VecTest extends Module {
-      val io = Input(new Bundle {
+      val io = IO(new Bundle {
         val in = Input(Bool())
         val out = Output(UInt(width=16))
       })
@@ -200,12 +192,12 @@ class PFBSpec extends FlatSpec with Matchers {
       step(1)
       expect(c.io.out, 1)
     }
-    println(Driver.emit( () => new VecTest()) )
+    //println(Driver.emit( () => new VecTest()) )
     chisel3.iotesters.Driver(() =>
       new VecTest) { c => new VecTestTester(c) } should be (true)
   }
   behavior of "PFB"
-  ignore should "build with SInt" in {
+  it should "build with SInt" in {
     chisel3.iotesters.Driver(() => new PFB(SInt(width = 10), Some(SInt(width = 16)),
       config = PFBConfig(
         outputWindowSize = 4, numTaps = 4, parallelism = 2
@@ -223,9 +215,10 @@ class PFBSpec extends FlatSpec with Matchers {
         outputWindowSize = 128,
         parallelism = 2
       )
+      val expected = config.window.grouped(config.parallelism).toSeq.reverse.flatten
       val stepSize = config.windowSize / (config.numTaps * config.parallelism)
       chisel3.iotesters.Driver(() => new PFB(SInt.width(10), config = config)) {
-        c => new PFBStepTester(c, stepSize, config.window)
+        c => new PFBStepTester(c, stepSize, expected)
       } should be(true)
     }
     {
@@ -235,9 +228,10 @@ class PFBSpec extends FlatSpec with Matchers {
         outputWindowSize = 128,
         parallelism = 1
       )
+      val expected = config.window.grouped(config.parallelism).toSeq.reverse.flatten
       val stepSize = config.windowSize / (config.numTaps * config.parallelism)
       chisel3.iotesters.Driver(() => new PFB(DspReal(1.0), config = config)) {
-        c => new PFBStepTester(c, stepSize, config.window)
+        c => new PFBStepTester(c, stepSize, expected)
       } should be(true)
     }
     {
@@ -248,7 +242,7 @@ class PFBSpec extends FlatSpec with Matchers {
         parallelism = 1
       )
       val stepSize = config.windowSize / config.parallelism
-      val outputSize = config.windowSize // / config.numTaps * (2 * config.numTaps + 1)
+      val outputSize = config.windowSize
       val expected = Seq.tabulate(outputSize) (i=> {
         (0 to i/config.outputWindowSize).map(x => config.window(i - x * config.outputWindowSize)).reduce(_+_)
       })
@@ -258,7 +252,7 @@ class PFBSpec extends FlatSpec with Matchers {
     }
   }
 
-  it should "reduce leakage" in {
+  ignore should "reduce leakage" in {
     val config = PFBConfig(
       windowFunc = blackmanHarris.apply,
       numTaps = 8,
@@ -269,12 +263,12 @@ class PFBSpec extends FlatSpec with Matchers {
   }
 
   behavior of "PFBLane"
-  ignore should "build and run correctly" in {
+  it should "build and run correctly" in {
     chisel3.iotesters.Driver(() => new PFBLane[SInt,Double](
       SInt(width=8), Some(SInt(width=10)), Some(SInt(width=10)),
         Seq(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0), 4)
     ) {
-      c => new PFBFilterTester(c)//, verbose=false)
+      c => new PFBFilterTester(c)
     } should be (true)
   }
 }
