@@ -1,6 +1,6 @@
 // See LICENSE for license details.
 
-name := "dsp-template"
+name := "pfb"
 
 version := "1.0"
 
@@ -18,7 +18,7 @@ val defaultVersions = Map(
   "chisel-iotesters" -> "1.2-SNAPSHOT"
   )
 
-libraryDependencies ++= Seq("dsptools", "chisel3","chisel-iotesters").map {
+libraryDependencies ++= Seq("dsptools", "chisel3", "chisel-iotesters").map {
   dep: String => "edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) }
 
 libraryDependencies += "org.spire-math" %% "spire" % "0.11.0"
