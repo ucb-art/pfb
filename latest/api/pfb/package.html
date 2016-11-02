@@ -141,7 +141,7 @@
 The PFB consists of <code>delay</code> parallel FIR filters, which means <code>taps.length / delay</code>
 windows are added together. As a result, <code>delay</code> is required to divide <code>taps.length</code>
 evenly.</p><p>The FIR filter is implemented in transposed form. Delays are implemented with chisel
-<span class="extype" name="Mem">Mem</span>s which may be implemented with SRAMs.</p></div></div>
+<span class="extype" name="chisel3.Mem">chisel3.Mem</span>s which may be implemented with SRAMs.</p></div></div>
     </li><li name="pfb.ShiftRegisterMem" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ShiftRegisterMem[T&lt;:chisel3.Data]extendschisel3.Module"></a>
       <a id="ShiftRegisterMem[T&lt;:Data]:ShiftRegisterMem[T]"></a>
@@ -158,7 +158,7 @@ evenly.</p><p>The FIR filter is implemented in transposed form. Delays are imple
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Shift register implemented with a <span class="extype" name="Mem">Mem</span>.</p>
+      <p class="shortcomment cmt">Shift register implemented with a <span class="extype" name="chisel3.Mem">chisel3.Mem</span>.</p>
     </li><li name="pfb.WindowConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="WindowConfigextendsProductwithSerializable"></a>
       <a id="WindowConfig:WindowConfig"></a>
