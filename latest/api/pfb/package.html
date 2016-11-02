@@ -66,7 +66,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="pfb.PFB" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="pfb.PFB" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PFB[T&lt;:chisel3.Data]extendschisel3.Module"></a>
       <a id="PFB[T&lt;:Data]:PFB[T]"></a>
       <h4 class="signature">
@@ -82,7 +82,8 @@
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p>
+      <p class="shortcomment cmt">Polyphase filter bank implementation.</p><div class="fullcomment"><div class="comment cmt"><p>Polyphase filter bank implementation. See
+<a href="https://casper.berkeley.edu/wiki/The_Polyphase_Filter_Bank_Technique" target="_blank">Casper</a> for more details.</p></div></div>
     </li><li name="pfb.PFBConfig" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PFBConfigextendsProductwithSerializable"></a>
       <a id="PFBConfig:PFBConfig"></a>
@@ -99,7 +100,7 @@
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Case class for holding PFB configuration information</p><div class="fullcomment"><div class="comment cmt"><p>Case class for holding PFB configuration information</p></div><dl class="paramcmts block"><dt class="param">windowFunc</dt><dd class="cmt"><p>A function that generates a window given window a <code>WindowConfig</code>,
+      <p class="shortcomment cmt">Case class for holding PFB configuration information</p><div class="fullcomment"><div class="comment cmt"><p>Case class for holding PFB configuration information</p></div><dl class="paramcmts block"><dt class="param">windowFunc</dt><dd class="cmt"><p>A function that generates a window given window a <a href="WindowConfig.html" class="extype" name="pfb.WindowConfig">WindowConfig</a>,
                   which includes output window size and and number of taps.
                   Must give a window of size <code>numTaps * outputWindowSize</code>.</p></dd><dt class="param">numTaps</dt><dd class="cmt"><p>Number of taps, used when calling windowFunc. Must be &gt; 0.</p></dd><dt class="param">outputWindowSize</dt><dd class="cmt"><p>Size of the output window, often the same as the size of an FFT following the PFB.
                         Must be &gt; 0 and a multiple of <code>parallelism</code>.</p></dd><dt class="param">parallelism</dt><dd class="cmt"><p>Number of parallel lanes in the FFT.</p></dd><dt class="param">pipelineDepth</dt><dd class="cmt"><p>Not currently used</p></dd><dt class="param">useSinglePortMem</dt><dd class="cmt"><p>Not currently used</p></dd><dt class="param">symmetricCoeffs</dt><dd class="cmt"><p>Not currently used</p></dd><dt class="param">useDeltaCompression</dt><dd class="cmt"><p>Not currently used</p></dd></dl></div>
@@ -136,11 +137,11 @@
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">A single lane of the PFB.</p><div class="fullcomment"><div class="comment cmt"><p>A single lane of the PFB. A full PFB will include &gt;= 1 lanes operating in parallel.
+      <p class="shortcomment cmt">A single lane of a <a href="PFB.html" class="extype" name="pfb.PFB">PFB</a>.</p><div class="fullcomment"><div class="comment cmt"><p>A single lane of a <a href="PFB.html" class="extype" name="pfb.PFB">PFB</a>. A full PFB will include &gt;= 1 lanes operating in parallel.
 The PFB consists of <code>delay</code> parallel FIR filters, which means <code>taps.length / delay</code>
 windows are added together. As a result, <code>delay</code> is required to divide <code>taps.length</code>
 evenly.</p><p>The FIR filter is implemented in transposed form. Delays are implemented with chisel
-<code>Mem</code>s which may be implemented with SRAMs.</p></div></div>
+<span class="extype" name="Mem">Mem</span>s which may be implemented with SRAMs.</p></div></div>
     </li><li name="pfb.ShiftRegisterMem" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ShiftRegisterMem[T&lt;:chisel3.Data]extendschisel3.Module"></a>
       <a id="ShiftRegisterMem[T&lt;:Data]:ShiftRegisterMem[T]"></a>
@@ -157,7 +158,7 @@ evenly.</p><p>The FIR filter is implemented in transposed form. Delays are imple
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Shift register implemented with a <code>Mem</code>.</p>
+      <p class="shortcomment cmt">Shift register implemented with a <span class="extype" name="Mem">Mem</span>.</p>
     </li><li name="pfb.WindowConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="WindowConfigextendsProductwithSerializable"></a>
       <a id="WindowConfig:WindowConfig"></a>
@@ -174,7 +175,7 @@ evenly.</p><p>The FIR filter is implemented in transposed form. Delays are imple
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Object used by <code>PFB</code> to generate window from <code>PFBConfig</code> parameters</p>
+      <p class="shortcomment cmt">Object used by <a href="PFB.html" class="extype" name="pfb.PFB">PFB</a> to generate window from <a href="PFBConfig.html" class="extype" name="pfb.PFBConfig">PFBConfig</a> parameters</p>
     </li></ol>
             </div>
 
@@ -215,7 +216,8 @@ evenly.</p><p>The FIR filter is implemented in transposed form. Delays are imple
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">See https://en.wikipedia.org/wiki/Window_function#Blackman.E2.80.93Harris_window
+      <p class="shortcomment cmt">See <a href="https://en.wikipedia.org/wiki/Window_function#Blackman.E2.80.93Harris_window" target="_blank">the wikipedia page</a> for
+more details
 </p>
     </li><li name="pfb.sincHamming" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="sincHamming"></a>
