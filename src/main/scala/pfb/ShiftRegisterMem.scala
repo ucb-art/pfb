@@ -5,11 +5,41 @@ package pfb
 import chisel3.util.Counter
 import chisel3._
 
+class ShiftRegisterMem[T <: Data](n: Int, inT: => T, init: => Option[T] = None) extends Module {
+  val io = IO(new Bundle {
+    val in  = Input(inT.cloneType)
+    val en  = Input(Bool())
+    val out = Output(inT.cloneType)
+  })
+
+  val mem = Mem(n, io.in)
+  val count = Counter(n)
+  when (io.en) {
+    count.inc()
+    mem(count.value) := io.in
+  }
+
+  val out = init match {
+    case Some(i) =>
+      val init_done = Reg(init = Bool(false))
+      when (count.value === UInt(n-1)) {
+        init_done := Bool(true)
+      }
+      Mux(init_done, mem(count.value), i)
+    case None => mem(count.value)
+  }
+  io.out := out
+}
+
 object ShiftRegisterMem {
-  def apply[T <: Data](n: Int, in: T, en: Bool = Bool(true), init: Option[T] = None): T = {
+  def apply[T <: Data](n: Int, in: T, en: Bool = Bool(true), init: => Option[T] = None): T = {
     require (n >= 0)
     if (n == 0) return in
-    val mem = Mem(n, in)
+    val shrmem = Module(new ShiftRegisterMem(n, in, init))
+    shrmem.io.in := in
+    shrmem.io.en := en
+    shrmem.io.out
+/*    val mem = Mem(n, in)
     val count = Counter(n)
     when (en) {
       count.inc()
@@ -23,7 +53,7 @@ object ShiftRegisterMem {
         }
         Mux(init_done, mem(count.value), i)
       case None => mem(count.value)
-    }
+    }*/
   }
 }
 

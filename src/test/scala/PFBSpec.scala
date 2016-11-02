@@ -5,6 +5,7 @@ package pfb
 //scalastyle:off magic.number
 
 import breeze.linalg._
+import breeze.numerics.abs
 import breeze.signal.fourierTr
 import chisel3._
 import chisel3.iotesters.{PeekPokeTester, TesterOptionsManager}
@@ -15,72 +16,65 @@ import dsptools.numbers.implicits._
 import org.scalatest.{FlatSpec, Matchers}
 
 /**
-  * Basic tester to test if a PFB configuration will elaborate and run in tester
+  * Basic tester that persists after calls to driver
+  * The driver calls finish, which we override here to do nothing
+  * You should remember to call actualFinish when you are done!
   * @param c
+  * @param verbose
   * @tparam T
   */
-class PFBTester[T<:Data](val c: PFB[T]) extends DspTester(c) {
-  for(num <- -50 to 50) {
-    c.io.data_in.foreach { port => dspPoke(port, num.toDouble) }
-    step(1)
-    c.io.data_out.foreach { port => println(dspPeek(port).toString)}
-  }
-
+class PFBTester[T<:Data](val c: PFB[T], verbose: Boolean = true) extends DspTester(c, verbose=verbose) {
   // this is a hack to use PFBTester outside of the normal driver methods
   override def finish = true
 
   def actualFinish = super.finish
 }
 
-class PFBStepTester[T<:Data](c: PFB[T], stepSize: Int, expectedOutput: Seq[Double]) extends DspTester(c) {
+class PFBStepTester[T <: Data](c: PFB[T], stepSize: Int, expectedOutput: Seq[Double], threshold: Double = 1.0e-5)
+  extends DspTester(c) {
   val windowSize = c.config.windowSize
   val numTaps    = c.config.numTaps
   val parallelism = c.config.parallelism
-  val threshold = 1.0e-9
 
-  val result = (0 until windowSize / parallelism * 2).foldLeft(Seq[Double]()) ( (sum:Seq[Double], next: Int) => {
-    val toPoke = if(next < stepSize) 1.0 else 0.0
+  (0 until (expectedOutput.length / parallelism)) foreach (next => {
+    val toPoke = if(next * parallelism < stepSize) 1.0 else 0.0
     c.io.data_in.foreach { port => dspPoke(port, toPoke) }
+    println(s"Poked $toPoke")
     val retval = c.io.data_out.map { port => dspPeek(port).left.get }
     for (i <- 0 until parallelism) {
       val idx = next * parallelism + i
-      if (idx < expectedOutput.size) {
-        assert((retval(i) - expectedOutput(idx)) / expectedOutput(idx) < threshold, "Output did not match expected value")
-      }
+      println(s"Lane=$i\tRetval= ${retval(i)}\t Expected= ${expectedOutput(idx)}")
+      assert(abs(retval(i) - expectedOutput(idx)) / (expectedOutput(idx) + threshold) < threshold,
+       s"Output ${retval(i)} did not match expected value ${expectedOutput(idx)}")
     }
     step(1)
-    sum ++ retval
   })
 }
 
-class PFBFilterTester[T<:Data](c: PFBLane[T,Double],
+class PFBLaneTester[T <: Data](c: PFBLane[T, Double],
                                val start: Int = -50,
                                val stop: Int  = 50,
                                val step: Int  = 1,
-                               verbose: Boolean = true
-                              ) extends DspTester(c, verbose=verbose) {
-  /*def computedResult(n: Int): Double = {
-    val delay = c.taps.length
-    val nTaps = c.taps(0).length
+                               val threshold: Double = 0.1
+                              ) extends DspTester(c) {
+  def computedResult(n: Int): Double = {
+    val delay = c.delay
+    val nTaps = c.coeffs.length / c.delay
     val counterValue = (n - start) / step
-    val taps  = c.taps(counterValue % c.taps.length)
-    if (verbose) println(s"Using taps ${taps}")
-    val samples = Seq.tabulate(nTaps){x => {
-      val samp = n - x * delay
-      if (samp >= start) samp
-      else 0
-    }}
-    taps.zip(samples).map { case(x,y) => x*y }  reduce (_+_)
+    Seq.tabulate(nTaps){ x => {
+      val samp = max(n - x * delay, 0)
+      val tapidx = counterValue - x * nTaps
+      val tap  = if (tapidx >= 0) c.coeffs(tapidx % c.coeffs.length) else 0
+      tap * samp
+    }}.sum
   }
   for (num <- start to stop by step) {
     dspPoke(c.io.data_in, num.toDouble)
-    if (verbose) {
-      println(dspPeek(c.io.data_out).toString)
-      println(s"Should be ${computedResult(num)} at num ${num}, is actually ${dspPeek(c.io.data_out).left.get}")
-    }
-    assert(math.abs(dspPeek(c.io.data_out).left.get - computedResult(num)) < 0.1 )
+    println(dspPeek(c.io.data_out).left.toString)
+    println(s"Should be ${computedResult(num)} at num ${num}, is actually ${dspPeek(c.io.data_out).left.get}")
+    //assert(math.abs(dspPeek(c.io.data_out).left.get - computedResult(num)) < threshold )
     step(1)
-  }*/
+  }
 }
 
 object leakageTester {
@@ -101,7 +95,7 @@ object leakageTester {
   def getEnergyAtBin(x_t: Seq[Double], bin: Int) : Double = {
     val fftSize = x_t.length
     val tform = fourierTr(DenseVector(x_t.toArray)).toArray.toSeq
-    tform(bin).abs ** 2
+    (tform(bin).abs / x_t.length) ** 2
   }
 
   def getTone(numSamples: Int, f: Double): Seq[Double] = {
@@ -121,7 +115,7 @@ object leakageTester {
   def setupTester[T <: Data](c: () => PFB[T]): PFBTester[T] = {
     var tester: PFBTester[T] = null
     chisel3.iotesters.Driver.execute(Array("-fimed", "2000"), c) (c => {
-      val t = new PFBTester(c)
+      val t = new PFBTester(c, verbose=false)
       tester = t
       t
     })
@@ -133,12 +127,11 @@ object leakageTester {
     tester.actualFinish
   }
 
-  def apply[T<:Data](c: () => PFB[T], config: PFBConfig, numBins: Int = 3, os: Int = 10): Unit = {
-    val tester = setupTester(c)
+  def apply[T<:Data](c: () => PFB[T], config: PFBConfig, numBins: Int = 3, samples_per_bin: Int = 10): Unit = {
     val windowSize = config.windowSize
     val fftSize    = config.outputWindowSize
     val testBin    =  fftSize / 6
-    val delta_fs = (-numBins.toDouble to numBins.toDouble by (1.0 / os)).toSeq
+    val delta_fs = (-numBins.toDouble to numBins.toDouble by (1.0 / samples_per_bin)).toSeq
     val rawResults = delta_fs map {delta_f => {
       getEnergyAtBin(getTone(fftSize, (testBin + delta_f) / fftSize), testBin)
     }}
@@ -147,55 +140,24 @@ object leakageTester {
       val simPfb = simWindow(tone, config)
       getEnergyAtBin(simPfb, testBin)
     }}
-    val chiselResults = delta_fs map {delta_f => {
-      println(s"delta_f = $delta_f")
+    val chiselResults = delta_fs.par.map({delta_f => {
+      val tester = setupTester(c)
       val tone = getTone(windowSize, (testBin + delta_f) / fftSize)
       val testResult = testSignal(tester, tone)
       val lastWindow = testResult.drop(testResult.length - fftSize)
-      //println(s"Sim test result = ${simWindow(getTone(windowSize, (testBin + delta_f)/ fftSize), config)}")
-      //println(s"Test result = $lastWindow")
+      teardownTester(tester)
       getEnergyAtBin(lastWindow, testBin)
-    }}
-    teardownTester(tester)
-    //println(s"chisel = [ ${chiselResults.map(_.toString + ", ").reduce(_+_)} nan ];")
-    //println(s"simulated = [ ${simResults.map(_.toString + ", ").reduce(_+_)} nan ];")
-    //println(s"nowindow = [ ${rawResults.map(_.toString + ", ").reduce(_+_)} nan ];")
-    //println(s"t=[linspace(-$numBins, $numBins, length(chisel) - 1) nan];")
+    }}).seq
     val p = Plot()
       .withScatter(delta_fs, chiselResults,    ScatterOptions().name("Chisel"))
       .withScatter(delta_fs, rawResults, ScatterOptions().name("No window"))
       .withScatter(delta_fs, simResults, ScatterOptions().name("Sim window"))
-    draw(p, "leakage", writer.FileOptions(overwrite=true))
+    draw(p, "leakage-parallel", writer.FileOptions(overwrite=true))
   }
 }
 
 class PFBSpec extends FlatSpec with Matchers {
   import chisel3.{Bool, Bundle, Module, Mux, UInt, Vec}
-  behavior of "Vecs"
-  it should "don't work nicely with underlying things that have different widths" in {
-    class VecTest extends Module {
-      val io = IO(new Bundle {
-        val in = Input(Bool())
-        val out = Output(UInt(width=16))
-      })
-      val c = Mux(io.in,
-//        Vec(UInt(1), UInt(2), UInt(3)), // Fail
-        Vec(UInt(1, width=5), UInt(2), UInt(3)), // Pass
-        Vec(UInt(10), UInt(20), UInt(30)))
-      io.out := c(0)
-    }
-    class VecTestTester(c: VecTest) extends PeekPokeTester(c) {
-      poke(c.io.in, 0)
-      step(1)
-      expect(c.io.out, 10)
-      poke(c.io.in, 1)
-      step(1)
-      expect(c.io.out, 1)
-    }
-    //println(Driver.emit( () => new VecTest()) )
-    chisel3.iotesters.Driver(() =>
-      new VecTest) { c => new VecTestTester(c) } should be (true)
-  }
   behavior of "PFB"
   it should "build with SInt" in {
     chisel3.iotesters.Driver(() => new PFB(SInt(width = 10), Some(SInt(width = 16)),
@@ -206,60 +168,44 @@ class PFBSpec extends FlatSpec with Matchers {
     } should be(true)
   }
 
-  ignore should "have the correct step response" in {
+  it should "have the correct step response" in {
     {
-
       val config = PFBConfig(
-        windowFunc = blackmanHarris.apply,
-        numTaps = 8,
-        outputWindowSize = 128,
+        windowFunc = WindowConfig => Seq(1.0, 2.0, 3.0, 4.0),
+        numTaps = 2,
+        outputWindowSize = 2,
         parallelism = 2
       )
-      val expected = config.window.grouped(config.parallelism).toSeq.reverse.flatten
+      val expected = Seq(1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0) //Seq(3.0, 4.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0)
       val stepSize = config.windowSize / (config.numTaps * config.parallelism)
+
       chisel3.iotesters.Driver(() => new PFB(SInt.width(10), config = config)) {
         c => new PFBStepTester(c, stepSize, expected)
       } should be(true)
     }
-    {
+    /*{
       val config = PFBConfig(
-        windowFunc = blackmanHarris.apply,
-        numTaps = 8,
-        outputWindowSize = 128,
+        windowFunc = WindowConfig => Seq(1.0, 2.0, 3.0, 4.0),
+        numTaps = 2,
+        outputWindowSize = 2,
         parallelism = 1
       )
-      val expected = config.window.grouped(config.parallelism).toSeq.reverse.flatten
+      val expected = Seq(1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0)
       val stepSize = config.windowSize / (config.numTaps * config.parallelism)
-      chisel3.iotesters.Driver(() => new PFB(DspReal(1.0), config = config)) {
+      chisel3.iotesters.Driver(() => new PFB(SInt.width(10), config = config)) {
         c => new PFBStepTester(c, stepSize, expected)
       } should be(true)
-    }
-    {
-      val config = PFBConfig(
-        windowFunc = blackmanHarris.apply,
-        numTaps = 8,
-        outputWindowSize = 128,
-        parallelism = 1
-      )
-      val stepSize = config.windowSize / config.parallelism
-      val outputSize = config.windowSize
-      val expected = Seq.tabulate(outputSize) (i=> {
-        (0 to i/config.outputWindowSize).map(x => config.window(i - x * config.outputWindowSize)).reduce(_+_)
-      })
-      chisel3.iotesters.Driver(() => new PFB(DspReal(1.0), config = config)) {
-        c => new PFBStepTester(c, stepSize, expected)
-      } should be(true)
-    }
+    }*/
   }
 
-  ignore should "reduce leakage" in {
+  it should "reduce leakage" in {
     val config = PFBConfig(
       windowFunc = blackmanHarris.apply,
       numTaps = 8,
       outputWindowSize = 256,
-      parallelism=1
+      parallelism=8
     )
-    leakageTester( () => new PFB(DspReal(0.0), config=config), config, numBins = 5, os= 25 )
+    leakageTester( () => new PFB(DspReal(0.0), config=config), config, numBins = 5, samples_per_bin = 5 )
   }
 
   behavior of "PFBLane"
@@ -268,7 +214,33 @@ class PFBSpec extends FlatSpec with Matchers {
       SInt(width=8), Some(SInt(width=10)), Some(SInt(width=10)),
         Seq(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0), 4)
     ) {
-      c => new PFBFilterTester(c)
+      c => new PFBLaneTester(c)
     } should be (true)
   }
+
+  behavior of "SInt"
+  it should "allow me to assign to smaller widths" in {
+    chisel3.iotesters.Driver( () => new SIntPassthrough() ) {
+      c => new SIntPassthroughTester(c)
+    } should be (true)
+  }
+}
+
+class SIntPassthrough extends Module {
+  val io = IO(new Bundle {
+    val in = Input(SInt.width(5))
+    val out = Output(SInt.width(5))
+  })
+
+
+  val times4 = Reg(t = SInt.width(8), next=io.in +& io.in +& io.in +& io.in)
+
+  io.out := times4
+}
+
+class SIntPassthroughTester(c: SIntPassthrough) extends PeekPokeTester(c) {
+  poke(c.io.in, 15)
+  step(1)
+  expect(c.io.out, -4)
+  println(peek(c.io.out).toString)
 }
