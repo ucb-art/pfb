@@ -1,0 +1,247 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>pfb - pfb</title>
+          <meta name="description" content="pfb - pfb" />
+          <meta name="keywords" content="pfb pfb" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../index.html';
+            var hash = 'pfb.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../lib/package_big.png" />
+        
+        <h1>pfb</h1><span class="permalink">
+      <a href="../index.html#pfb.package" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pfb</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="pfb.PFB" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PFB[T&lt;:chisel3.Data]extendschisel3.Module"></a>
+      <a id="PFB[T&lt;:Data]:PFB[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="PFB.html"><span class="name">PFB</span></a><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.Data">Data</span></span>]</span><span class="result"> extends <span class="extype" name="chisel3.Module">Module</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.package@PFB[T&lt;:chisel3.Data]extendschisel3.Module" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p>
+    </li><li name="pfb.PFBConfig" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="PFBConfigextendsProductwithSerializable"></a>
+      <a id="PFBConfig:PFBConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="PFBConfig.html"><span class="name">PFBConfig</span></a><span class="params">(<span name="windowFunc">windowFunc: (<a href="WindowConfig.html" class="extype" name="pfb.WindowConfig">WindowConfig</a>) ⇒ <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>] = <span class="symbol"><span class="name"><a href="sincHamming$.html">sincHamming.apply</a></span></span></span>, <span name="numTaps">numTaps: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">4</span></span>, <span name="outputWindowSize">outputWindowSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">16</span></span>, <span name="parallelism">parallelism: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">8</span></span>, <span name="pipelineDepth">pipelineDepth: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">4</span></span>, <span name="useSinglePortMem">useSinglePortMem: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="symmetricCoeffs">symmetricCoeffs: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="useDeltaCompression">useDeltaCompression: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.package@PFBConfigextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Case class for holding PFB configuration information</p><div class="fullcomment"><div class="comment cmt"><p>Case class for holding PFB configuration information</p></div><dl class="paramcmts block"><dt class="param">windowFunc</dt><dd class="cmt"><p>A function that generates a window given window a <code>WindowConfig</code>,
+                  which includes output window size and and number of taps.
+                  Must give a window of size <code>numTaps * outputWindowSize</code>.</p></dd><dt class="param">numTaps</dt><dd class="cmt"><p>Number of taps, used when calling windowFunc. Must be &gt; 0.</p></dd><dt class="param">outputWindowSize</dt><dd class="cmt"><p>Size of the output window, often the same as the size of an FFT following the PFB.
+                        Must be &gt; 0 and a multiple of <code>parallelism</code>.</p></dd><dt class="param">parallelism</dt><dd class="cmt"><p>Number of parallel lanes in the FFT.</p></dd><dt class="param">pipelineDepth</dt><dd class="cmt"><p>Not currently used</p></dd><dt class="param">useSinglePortMem</dt><dd class="cmt"><p>Not currently used</p></dd><dt class="param">symmetricCoeffs</dt><dd class="cmt"><p>Not currently used</p></dd><dt class="param">useDeltaCompression</dt><dd class="cmt"><p>Not currently used</p></dd></dl></div>
+    </li><li name="pfb.PFBIO" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PFBIO[T&lt;:chisel3.Data]extendschisel3.Bundle"></a>
+      <a id="PFBIO[T&lt;:Data]:PFBIO[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="PFBIO.html"><span class="name">PFBIO</span></a><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.Data">Data</span></span>]</span><span class="result"> extends <span class="extype" name="chisel3.Bundle">Bundle</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.package@PFBIO[T&lt;:chisel3.Data]extendschisel3.Bundle" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">IO Bundle for PFB</p>
+    </li><li name="pfb.PFBLane" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="PFBLane[T&lt;:chisel3.Data,V]extendschisel3.Module"></a>
+      <a id="PFBLane[T&lt;:Data,V]:PFBLane[T,V]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="PFBLane.html"><span class="name">PFBLane</span></a><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.Data">Data</span></span>, <span name="V">V</span>]</span><span class="result"> extends <span class="extype" name="chisel3.Module">Module</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.package@PFBLane[T&lt;:chisel3.Data,V]extendschisel3.Module" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A single lane of the PFB.</p><div class="fullcomment"><div class="comment cmt"><p>A single lane of the PFB. A full PFB will include &gt;= 1 lanes operating in parallel.
+The PFB consists of <code>delay</code> parallel FIR filters, which means <code>taps.length / delay</code>
+windows are added together. As a result, <code>delay</code> is required to divide <code>taps.length</code>
+evenly.</p><p>The FIR filter is implemented in transposed form. Delays are implemented with chisel
+<code>Mem</code>s which may be implemented with SRAMs.</p></div></div>
+    </li><li name="pfb.WindowConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="WindowConfigextendsProductwithSerializable"></a>
+      <a id="WindowConfig:WindowConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="WindowConfig.html"><span class="name">WindowConfig</span></a><span class="params">(<span name="numTaps">numTaps: <span class="extype" name="scala.Int">Int</span></span>, <span name="outputWindowSize">outputWindowSize: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.package@WindowConfigextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="pfb.ShiftRegisterMem" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ShiftRegisterMem"></a>
+      <a id="ShiftRegisterMem:ShiftRegisterMem"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ShiftRegisterMem$.html"><span class="name">ShiftRegisterMem</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.package@ShiftRegisterMem" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="pfb.blackmanHarris" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="blackmanHarris"></a>
+      <a id="blackmanHarris:blackmanHarris"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="blackmanHarris$.html"><span class="name">blackmanHarris</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.package@blackmanHarris" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="pfb.sincHamming" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="sincHamming"></a>
+      <a id="sincHamming:sincHamming"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="sincHamming$.html"><span class="name">sincHamming</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.package@sincHamming" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>
