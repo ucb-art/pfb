@@ -5,7 +5,16 @@ package pfb
 import chisel3.util.Counter
 import chisel3._
 
+/**
+  * Shift register implemented with a `Mem`.
+  * @param n Size of shift register, must be > 0.
+  * @param inT Type generator for mem.
+  * @param init Initial value to output until you've seen `n` inputs.
+  * @tparam T
+  */
 class ShiftRegisterMem[T <: Data](n: Int, inT: => T, init: => Option[T] = None) extends Module {
+  require(n > 0)
+
   val io = IO(new Bundle {
     val in  = Input(inT.cloneType)
     val en  = Input(Bool())

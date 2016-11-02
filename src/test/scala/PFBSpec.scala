@@ -38,9 +38,9 @@ class PFBStepTester[T <: Data](c: PFB[T], stepSize: Int, expectedOutput: Seq[Dou
 
   (0 until (expectedOutput.length / parallelism)) foreach (next => {
     val toPoke = if(next * parallelism < stepSize) 1.0 else 0.0
-    c.io.data_in.foreach { port => dspPoke(port, toPoke) }
+    c.io.data_in.bits.foreach { port => dspPoke(port, toPoke) }
     println(s"Poked $toPoke")
-    val retval = c.io.data_out.map { port => dspPeek(port).left.get }
+    val retval = c.io.data_out.bits.map { port => dspPeek(port).left.get }
     for (i <- 0 until parallelism) {
       val idx = next * parallelism + i
       println(s"Lane=$i\tRetval= ${retval(i)}\t Expected= ${expectedOutput(idx)}")
@@ -85,8 +85,8 @@ object leakageTester {
     val groupedSignal: Seq[Seq[Double]] = signal.grouped(config.parallelism).toSeq
 
     groupedSignal.flatMap(sigGroup => {
-      sigGroup.zip(io.data_in).foreach { case(sig, port) => dut.dspPoke(port, sig) }
-      val retval = io.data_out.map (x => dut.dspPeek(x).left.get)
+      sigGroup.zip(io.data_in.bits).foreach { case(sig, port) => dut.dspPoke(port, sig) }
+      val retval = io.data_out.bits.map (x => dut.dspPeek(x).left.get)
       dut.step(1)
       retval
     })

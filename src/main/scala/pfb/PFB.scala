@@ -7,6 +7,7 @@ package pfb
 
 import chisel3._
 import chisel3.util.Counter
+import dsptools.junctions.ValidWithSync
 import dsptools.numbers.Real
 import dsptools.numbers.implicits._
 import spire.algebra.Ring
@@ -58,10 +59,8 @@ case class PFBConfig(
 class PFBIO[T <: Data](genIn: => T,
                        genOut: => Option[T] = None,
                        parallelism: Int) extends Bundle {
-  val data_in = Input(Vec(parallelism, genIn))
-  val data_out = Output(Vec(parallelism, genOut.getOrElse(genIn)))
-  val sync_in  = Input(Bool())
-  val sync_out = Output(Bool())
+  val data_in = Input(ValidWithSync(Vec(parallelism, genIn)))
+  val data_out = Output(ValidWithSync(Vec(parallelism, genOut.getOrElse(genIn))))
   val overflow = Output(Bool())
 }
 
@@ -89,11 +88,11 @@ class PFB[T<:Data:Real](genIn: => T,
   val counter = Counter(cycleTime)
   counter.inc()
 
-  io.sync_out := counter.value === UInt(0)
+  io.data_out.sync := counter.value === UInt(0)
 
   val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime)))
-  filters.zip(io.data_in).foreach( { case (filt, port) => filt.io.data_in := port } )
-  filters.zip(io.data_out).foreach( { case (filt, port) => port := filt.io.data_out } )
+  filters.zip(io.data_in.bits).foreach( { case (filt, port) => filt.io.data_in := port } )
+  filters.zip(io.data_out.bits).foreach( { case (filt, port) => port := filt.io.data_out } )
 }
 
 /**
