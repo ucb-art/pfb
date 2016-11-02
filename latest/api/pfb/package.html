@@ -141,6 +141,23 @@ The PFB consists of <code>delay</code> parallel FIR filters, which means <code>t
 windows are added together. As a result, <code>delay</code> is required to divide <code>taps.length</code>
 evenly.</p><p>The FIR filter is implemented in transposed form. Delays are implemented with chisel
 <code>Mem</code>s which may be implemented with SRAMs.</p></div></div>
+    </li><li name="pfb.ShiftRegisterMem" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ShiftRegisterMem[T&lt;:chisel3.Data]extendschisel3.Module"></a>
+      <a id="ShiftRegisterMem[T&lt;:Data]:ShiftRegisterMem[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ShiftRegisterMem.html"><span class="name">ShiftRegisterMem</span></a><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.Data">Data</span></span>]</span><span class="result"> extends <span class="extype" name="chisel3.Module">Module</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.package@ShiftRegisterMem[T&lt;:chisel3.Data]extendschisel3.Module" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Shift register implemented with a <code>Mem</code>.</p>
     </li><li name="pfb.WindowConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="WindowConfigextendsProductwithSerializable"></a>
       <a id="WindowConfig:WindowConfig"></a>
@@ -157,7 +174,7 @@ evenly.</p><p>The FIR filter is implemented in transposed form. Delays are imple
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Object used by <code>PFB</code> to generate window from <code>PFBConfig</code> parameters</p>
     </li></ol>
             </div>
 
@@ -198,7 +215,8 @@ evenly.</p><p>The FIR filter is implemented in transposed form. Delays are imple
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">See https://en.wikipedia.org/wiki/Window_function#Blackman.E2.80.93Harris_window
+</p>
     </li><li name="pfb.sincHamming" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="sincHamming"></a>
       <a id="sincHamming:sincHamming"></a>
@@ -215,7 +233,8 @@ evenly.</p><p>The FIR filter is implemented in transposed form. Delays are imple
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Copied (erroneously?) from SPLASH
+</p>
     </li></ol>
             </div>
 
