@@ -15,7 +15,7 @@ import spire.math.{ConvertableFrom, ConvertableTo}
 
 /**
   * Case class for holding PFB configuration information
-  * @param windowFunc A function that generates a window given window a `WindowConfig`,
+  * @param windowFunc A function that generates a window given window a [[WindowConfig]],
   *                   which includes output window size and and number of taps.
   *                   Must give a window of size `numTaps * outputWindowSize`.
   * @param numTaps Number of taps, used when calling windowFunc. Must be > 0.
@@ -51,8 +51,8 @@ case class PFBConfig(
 
 /**
   * IO Bundle for PFB
-  * @param genIn Type generator for input to PFB.
-  * @param genOut Optional type generator for output, genIn if None.
+  * @param genIn Type generator for input to [[PFB]].
+  * @param genOut Optional type generator for output, `genIn` if `None`.
   * @param parallelism Number of lanes for both input and output
   * @tparam T
   */
@@ -65,10 +65,11 @@ class PFBIO[T <: Data](genIn: => T,
 }
 
 /**
-  *
+  * Polyphase filter bank implementation. See
+  * [[https://casper.berkeley.edu/wiki/The_Polyphase_Filter_Bank_Technique Casper]] for more details.
   * @param genIn Type generator for input.
-  * @param genOut Optional type generator for output, `genIn` by default.
-  * @param genTap Optional type generator for window coefficients, `genIn` by default.
+  * @param genOut Optional type generator for output, `genIn` if `None`.
+  * @param genTap Optional type generator for window coefficients, `genIn` if `None`.
   * @param config PFB configuration object, includes the window function.
   * @tparam T
   */
@@ -96,7 +97,7 @@ class PFB[T<:Data:Real](genIn: => T,
 }
 
 /**
-  * A single lane of the PFB. A full PFB will include >= 1 lanes operating in parallel.
+  * A single lane of a [[PFB]]. A full PFB will include >= 1 lanes operating in parallel.
   * The PFB consists of `delay` parallel FIR filters, which means `taps.length / delay`
   * windows are added together. As a result, `delay` is required to divide `taps.length`
   * evenly.
