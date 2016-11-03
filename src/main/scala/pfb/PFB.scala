@@ -59,7 +59,7 @@ case class PFBConfig(
 class PFBIO[T <: Data](genIn: => T,
                        genOut: => Option[T] = None,
                        parallelism: Int) extends Bundle {
-  val data_in = Input(ValidWithSync(Vec(parallelism, genIn)))
+  val data_in  = Input (ValidWithSync(Vec(parallelism, genIn)))
   val data_out = Output(ValidWithSync(Vec(parallelism, genOut.getOrElse(genIn))))
   val overflow = Output(Bool())
 }
@@ -88,12 +88,19 @@ class PFB[T<:Data:Real](genIn: => T,
   val cycleTime = config.outputWindowSize / config.parallelism
   val counter = Counter(cycleTime)
   counter.inc()
+  when (io.data_in.sync) {
+    counter.value := UInt(0)
+  }
 
   io.data_out.sync := counter.value === UInt(0)
 
   val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime)))
   filters.zip(io.data_in.bits).foreach( { case (filt, port) => filt.io.data_in := port } )
   filters.zip(io.data_out.bits).foreach( { case (filt, port) => port := filt.io.data_out } )
+  filters.foreach (f => {
+    f.io.valid_in := io.data_in.valid
+    f.io.sync_in := io.data_in.sync
+  })
 }
 
 /**
@@ -121,16 +128,22 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
   val delay: Int
 ) extends Module {
   val io = IO(new Bundle {
-    val data_in = Input(genIn)
+    val data_in  = Input(genIn)
+    val valid_in = Input(Bool())
+    val sync_in  = Input(Bool())
     val data_out = Output(genOut.getOrElse(genIn))
     val overflow = Output(Bool())
   })
 
   require(coeffs.length % delay == 0)
 
+  val en = io.valid_in
   val count = Counter(delay)
-  count.inc()
-  val countDelayed = Reg(next=count.value)
+
+  when (en) { count.inc() }
+  when (io.sync_in) {
+    count.value := UInt.Lit(0)
+  }
 
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
   val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
@@ -143,7 +156,7 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
   val products = coeffsWire.map(tap => tap(count.value) * io.data_in)
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
-    prod + ShiftRegisterMem(delay, prev, init = Some(Ring[T].zero))
+    prod + ShiftRegisterMem(delay, prev, en = en, init = Some(Ring[T].zero))
   }
 
   io.data_out := result

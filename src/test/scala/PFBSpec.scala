@@ -24,6 +24,9 @@ import org.scalatest.{FlatSpec, Matchers}
   * @tparam T
   */
 class PFBTester[T<:Data](val c: PFB[T], verbose: Boolean = true) extends DspTester(c, verbose=verbose) {
+  poke(c.io.data_in.valid, 1)
+  poke(c.io.data_in.sync,  0)
+
   // this is a hack to use PFBTester outside of the normal driver methods
   override def finish = true
 
@@ -32,6 +35,9 @@ class PFBTester[T<:Data](val c: PFB[T], verbose: Boolean = true) extends DspTest
 
 class PFBStepTester[T <: Data](c: PFB[T], stepSize: Int, expectedOutput: Seq[Double], threshold: Double = 1.0e-5)
   extends DspTester(c) {
+  poke(c.io.data_in.valid, 1)
+  poke(c.io.data_in.sync,  0)
+
   val windowSize = c.config.windowSize
   val numTaps    = c.config.numTaps
   val parallelism = c.config.parallelism
