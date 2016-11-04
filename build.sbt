@@ -29,6 +29,14 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.5",
   "org.scalacheck" %% "scalacheck" % "1.12.4")
 
+lazy val TravisTest = config("travis") extend(Test)
+
+lazy val pfb = (project in file(".")).
+  configs(TravisTest).
+  settings(inConfig(TravisTest)(Defaults.testTasks): _*)
+
+testOptions in TravisTest += Tests.Argument(TestFrameworks.ScalaTest, "-l", "edu.berkeley.tags.LocalTest")
+
 ghpages.settings
 
 git.remoteRepo := "git@github.com:ucb-art/pfb.git"
