@@ -89,7 +89,7 @@ class PFB[T<:Data:Real](genIn: => T,
   val counter = Counter(cycleTime)
   counter.inc()
   when (io.data_in.sync) {
-    counter.restart()
+    if (cycleTime > 1) counter.value := UInt(0) //counter.restart()
   }
 
   io.data_out.sync := counter.value === UInt(0)
