@@ -13,7 +13,9 @@ import co.theasi.plotly._
 import dsptools.DspTester
 import dsptools.numbers.DspReal
 import dsptools.numbers.implicits._
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{FlatSpec, Matchers, Tag}
+
+object LocalTest extends Tag("edu.berkeley.tags.LocalTest")
 
 /**
   * Basic tester that persists after calls to driver
@@ -174,7 +176,7 @@ class PFBSpec extends FlatSpec with Matchers {
     } should be(true)
   }
 
-  it should "have the correct step response" in {
+  ignore should "have the correct step response" in {
     {
       val config = PFBConfig(
         windowFunc = WindowConfig => Seq(1.0, 2.0, 3.0, 4.0),
@@ -204,7 +206,7 @@ class PFBSpec extends FlatSpec with Matchers {
     }*/
   }
 
-  it should "reduce leakage" in {
+  it should "reduce leakage" taggedAs(LocalTest) in {
     val config = PFBConfig(
       windowFunc = blackmanHarris.apply,
       numTaps = 8,
@@ -225,7 +227,7 @@ class PFBSpec extends FlatSpec with Matchers {
   }
 
   behavior of "SInt"
-  it should "allow me to assign to smaller widths" in {
+  ignore should "allow me to assign to smaller widths" in {
     chisel3.iotesters.Driver( () => new SIntPassthrough() ) {
       c => new SIntPassthroughTester(c)
     } should be (true)
