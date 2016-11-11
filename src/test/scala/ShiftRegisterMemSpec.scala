@@ -18,7 +18,7 @@ class SRMemModule( dut: (UInt, Bool) => UInt ) extends Module {
 
 // expected_output < 0 means don't care
 class SRMemTester( dut: SRMemModule, input: Seq[(Int, Boolean)], expected_output: Seq[Int], verbose: Boolean = true)
-  extends DspTester(dut, verbose=verbose) {
+  extends DspTester(dut) {
   input.zip(expected_output).foreach({case ((num, valid), expected) => {
     poke(dut.io.in, num)
     poke(dut.io.en, valid)

@@ -25,7 +25,7 @@ object LocalTest extends Tag("edu.berkeley.tags.LocalTest")
   * @param verbose
   * @tparam T
   */
-class PFBTester[T<:Data](val c: PFB[T], verbose: Boolean = true) extends DspTester(c, verbose=verbose) {
+class PFBTester[T<:Data](val c: PFB[T], verbose: Boolean = true) extends DspTester(c) {
   poke(c.io.data_in.valid, 1)
   poke(c.io.data_in.sync,  0)
 
