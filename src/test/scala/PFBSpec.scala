@@ -148,14 +148,14 @@ object leakageTester {
       val simPfb = simWindow(tone, config)
       getEnergyAtBin(simPfb, testBin)
     }}
-    val chiselResults = delta_fs.par.map({delta_f => {
+    val chiselResults = delta_fs.map({delta_f => {//delta_fs.par.map({delta_f => {
       val tester = setupTester(c)
       val tone = getTone(windowSize, (testBin + delta_f) / fftSize)
       val testResult = testSignal(tester, tone)
       val lastWindow = testResult.drop(testResult.length - fftSize)
       teardownTester(tester)
       getEnergyAtBin(lastWindow, testBin)
-    }}).seq
+    }})//.seq
     val p = Plot()
       .withScatter(delta_fs, chiselResults,    ScatterOptions().name("Chisel"))
       .withScatter(delta_fs, rawResults, ScatterOptions().name("No window"))
@@ -228,7 +228,7 @@ class PFBSpec extends FlatSpec with Matchers {
 
   behavior of "SInt"
   ignore should "allow me to assign to smaller widths" in {
-    chisel3.iotesters.Driver( () => new SIntPassthrough() ) {
+    chisel3.iotesters.Driver.execute( Array("-tiv"), () => new SIntPassthrough()) {
       c => new SIntPassthroughTester(c)
     } should be (true)
   }
