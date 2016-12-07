@@ -34,7 +34,7 @@ class DspConfig extends Config(
           maxManagerXacts = 1,
           dataBeats = 1,
           dataBits = 64)
-    case DspBlockKey => DspBlockParameters(1, 1) //1024, 1024)
+    // case DspBlockKey => DspBlockParameters(-1, 1) //1024, 1024)
     case GenKey => new GenParameters {
       def getReal(): DspReal = DspReal(0.0).cloneType
       def genIn [T <: Data] = getReal().asInstanceOf[T]

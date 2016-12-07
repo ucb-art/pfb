@@ -16,7 +16,7 @@ CFG_PROJECT ?= $(PROJECT)
 CONFIG ?= DspConfig
 
 
-$(build_dir)/$(PROJECT).$(MODEL).$(CONFIG).fir:
+$(build_dir)/$(PROJECT).$(MODEL).$(CONFIG).fir: $(call lookup_scala_srcs, $(base_dir)/src) $(all_stamps)
 	mkdir -p $(build_dir)
 	cd $(base_dir) && $(SBT) "run-main $(PROJECT).Generator $(CHISEL_ARGS) $(build_dir) $(PROJECT) $(MODEL) $(CFG_PROJECT) $(CONFIG)"
 

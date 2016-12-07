@@ -201,5 +201,5 @@ trait DspGeneratorApp extends GeneratorApp {
 object Generator extends DspGeneratorApp {
   val longName = names.fullTopModuleClass + "." + names.configs
   generateFirrtl
-  generateIPXact
+  // generateIPXact
 }
