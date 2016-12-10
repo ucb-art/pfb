@@ -341,3 +341,5 @@ test_run_dir/*
 
 # rocket-chip
 lib
+.ivy2
+generated-src

@@ -3,16 +3,6 @@
 package pfb
 
 /**
-  * Object used by [[PFB]] to generate window from [[PFBConfig]] parameters
-  * @param numTaps
-  * @param outputWindowSize
-  */
-case class WindowConfig(
-                         numTaps: Int,
-                         outputWindowSize: Int
-                       )
-
-/**
   * See [[https://en.wikipedia.org/wiki/Window_function#Blackman.E2.80.93Harris_window the wikipedia page]] for
   * more details
   */

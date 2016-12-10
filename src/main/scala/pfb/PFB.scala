@@ -14,42 +14,6 @@ import spire.algebra.Ring
 import spire.math.{ConvertableFrom, ConvertableTo}
 
 /**
-  * Case class for holding PFB configuration information
-  * @param windowFunc A function that generates a window given window a [[WindowConfig]],
-  *                   which includes output window size and and number of taps.
-  *                   Must give a window of size `numTaps * outputWindowSize`.
-  * @param numTaps Number of taps, used when calling windowFunc. Must be > 0.
-  * @param outputWindowSize Size of the output window, often the same as the size of an FFT following the PFB.
-  *                         Must be > 0 and a multiple of `parallelism`.
-  * @param parallelism Number of parallel lanes in the FFT.
-  * @param pipelineDepth Not currently used
-  * @param useSinglePortMem Not currently used
-  * @param symmetricCoeffs Not currently used
-  * @param useDeltaCompression Not currently used
-  */
-case class PFBConfig(
-                      windowFunc: WindowConfig => Seq[Double] = sincHamming.apply,
-                      numTaps: Int = 4,
-                      outputWindowSize: Int = 16,
-                      parallelism: Int = 8,
-                    // the below are currently ignored
-                      pipelineDepth: Int = 4,
-                      useSinglePortMem: Boolean = false,
-                      symmetricCoeffs: Boolean  = false,
-                      useDeltaCompression: Boolean = false
-                    ) {
-  val window = windowFunc( WindowConfig(numTaps, outputWindowSize))
-  val windowSize = window.length
-
-  // various checks for validity
-  require(numTaps > 0, "Must have more than zero taps")
-  require(outputWindowSize > 0, "Output window must have size > 0")
-  require(outputWindowSize % parallelism == 0, "Number of parallel inputs must divide the output window size")
-  require(windowSize > 0, "PFB window must have > 0 elements")
-  require(windowSize == numTaps * outputWindowSize, "windowFunc must return a Seq() of the right size")
-}
-
-/**
   * IO Bundle for PFB
   * @param genIn Type generator for input to [[PFB]].
   * @param genOut Optional type generator for output, `genIn` if `None`.
@@ -142,7 +106,7 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
 
   when (en) { count.inc() }
   when (io.sync_in) {
-    count.value := UInt.Lit(0)
+    count.value := 0.U
   }
 
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
