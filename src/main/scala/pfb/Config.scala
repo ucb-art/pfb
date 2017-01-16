@@ -7,6 +7,7 @@ import chisel3._
 import dsptools._
 import dsptools.numbers.{DspReal, Real}
 import dsptools.numbers.implicits._
+import dspjunctions._
 import _root_.junctions._
 import uncore.tilelink._
 import uncore.coherence._
@@ -15,7 +16,7 @@ class DspConfig extends Config(
   (pname, site, here) => pname match {
     case BuildDSP => q:Parameters =>
       implicit val p = q
-      Module(new PFBBlock[DspReal])
+      new LazyPFBBlock[DspReal]
     case PFBKey => PFBConfig()
     case NastiKey => NastiParameters(64, 32, 1)
     case PAddrBits => 32
