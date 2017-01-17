@@ -27,14 +27,15 @@ class DspConfig extends Config(
     case BuildDSP => q:Parameters =>
       implicit val p = q
       new LazyPFBBlock[DspReal]
-    case NumTaps => 4
+    case NumTaps => 2
     case TotalWidth => 16
     case FractionalBits => 8
-    case PFBKey => PFBConfig(numTaps=site(NumTaps))
+    case PFBKey => PFBConfig(numTaps=site(NumTaps), parallelism=site(GenKey).lanesIn)
     case NastiKey => NastiParameters(64, 32, 1)
     case PAddrBits => 32
     case CacheBlockOffsetBits => 6
     case AmoAluOperandBits => 64
+    case BaseAddr => 0
     case TLId => "PFB"
     case TLKey("PFB") =>
         TileLinkParameters(
@@ -48,14 +49,14 @@ class DspConfig extends Config(
           maxManagerXacts = 1,
           dataBeats = 1,
           dataBits = 64)
-    case DspBlockKey => DspBlockParameters(site(TotalWidth), site(TotalWidth))
+    case DspBlockKey => DspBlockParameters(site(TotalWidth)*site(GenKey).lanesIn, site(TotalWidth)*site(GenKey).lanesIn)
     case GenKey => new GenParameters {
-      //def getReal(): DspReal = DspReal(0.0).cloneType
-      def getReal(): FixedPoint = FixedPoint(width=site(TotalWidth), binaryPoint=site(FractionalBits)) 
+      def getReal(): DspReal = DspReal(0.0).cloneType
+      //def getReal(): FixedPoint = FixedPoint(width=site(TotalWidth), binaryPoint=site(FractionalBits)) 
       def genIn [T <: Data] = getReal().asInstanceOf[T]
       override def genOut[T <: Data] = getReal().asInstanceOf[T]
-      val lanesIn = 8
-      override val lanesOut = 8
+      val lanesIn = 2
+      override val lanesOut = 2
     }
     case _ => throw new CDEMatchError
   }) with HasIPXACTParameters {

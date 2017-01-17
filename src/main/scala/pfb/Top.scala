@@ -39,11 +39,11 @@ class DspTopModule[+L <: DspTop, +B <: DspTopBundle](val p: Parameters, l: L, b:
     io <> module.io
   }
 
-case object BuildDSP extends Field[(Parameters) => DspBlock]
+case object BuildDSP extends Field[(Parameters) => LazyDspBlock]
 
 trait DspModule {
   val p: Parameters
-  val module = p(BuildDSP)(p)
+  val module = LazyModule(p(BuildDSP)(p)).module
 }
 
 class DspBareTop(val p: Parameters) extends Module with DspModule {
