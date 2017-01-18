@@ -10,7 +10,9 @@ import breeze.signal.fourierTr
 import chisel3._
 import chisel3.iotesters.{PeekPokeTester, TesterOptionsManager}
 import co.theasi.plotly._
+import cde.Parameters
 import dsptools.DspTester
+import dspblocks._
 import dsptools.numbers.DspReal
 import dsptools.numbers.implicits._
 import org.scalatest.{FlatSpec, Matchers, Tag}
@@ -168,7 +170,8 @@ class PFBSpec extends FlatSpec with Matchers {
   import chisel3.{Bool, Bundle, Module, Mux, UInt, Vec}
   behavior of "PFB"
   it should "build with SInt" in {
-    chisel3.iotesters.Driver(() => new PFB(SInt(width = 10), Some(SInt(width = 16)),
+    //implicit val p: Parameters = Parameters.root(new DspConfig().toInstance)
+    chisel3.iotesters.Driver(() => new PFB(SInt(10.W), Some(SInt(16.W)),
       config = PFBConfig(
         outputWindowSize = 4, numTaps = 4, parallelism = 2
       ))) {
@@ -187,7 +190,7 @@ class PFBSpec extends FlatSpec with Matchers {
       val expected = Seq(1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0) //Seq(3.0, 4.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0)
       val stepSize = config.windowSize / (config.numTaps * config.parallelism)
 
-      chisel3.iotesters.Driver(() => new PFB(SInt.width(10), config = config)) {
+      chisel3.iotesters.Driver(() => new PFB(SInt(10.W), config = config)) {
         c => new PFBStepTester(c, stepSize, expected)
       } should be(true)
     }
@@ -206,20 +209,20 @@ class PFBSpec extends FlatSpec with Matchers {
     }*/
   }
 
-  it should "reduce leakage" taggedAs(LocalTest) in {
-    val config = PFBConfig(
-      windowFunc = blackmanHarris.apply,
-      numTaps = 8,
-      outputWindowSize = 256,
-      parallelism=8
-    )
-    leakageTester( () => new PFB(DspReal(0.0), config=config), config, numBins = 5, samples_per_bin = 5 )
-  }
+  //it should "reduce leakage" taggedAs(LocalTest) in {
+  //  val config = PFBConfig(
+  //    windowFunc = blackmanHarris.apply,
+  //    numTaps = 8,
+  //    outputWindowSize = 256,
+  //    parallelism=8
+  //  )
+  //  leakageTester( () => new PFB(DspReal(), config=config), config, numBins = 5, samples_per_bin = 5 )
+  //}
 
   behavior of "PFBLane"
   it should "build and run correctly" in {
     chisel3.iotesters.Driver(() => new PFBLane[SInt,Double](
-      SInt(width=8), Some(SInt(width=10)), Some(SInt(width=10)),
+      SInt(8.W), Some(SInt(10.W)), Some(SInt(10.W)),
         Seq(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0), 4)
     ) {
       c => new PFBLaneTester(c)
@@ -241,7 +244,7 @@ class SIntPassthrough extends Module {
   })
 
 
-  val times4 = Reg(t = SInt.width(8), next=io.in +& io.in +& io.in +& io.in)
+  val times4 = Reg(t = SInt(8.W), next=io.in +& io.in +& io.in +& io.in)
 
   io.out := times4
 }

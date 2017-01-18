@@ -8,6 +8,7 @@ import dsptools._
 import dsptools.numbers.{DspReal, Real}
 import dsptools.numbers.implicits._
 import dspjunctions._
+import dspblocks._
 import _root_.junctions._
 import uncore.tilelink._
 import uncore.coherence._

@@ -25,6 +25,7 @@ import uncore.tilelink._
 import uncore.coherence._
 
 import dsptools._
+import dspblocks._
 import dspjunctions._
 
 class DspTop(p: Parameters) extends LazyModule {
