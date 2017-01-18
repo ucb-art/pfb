@@ -13,7 +13,7 @@ class LazyPFBBlock[T <: Data : Real]()(implicit p: Parameters) extends LazyDspBl
   def controls = Seq()
   def statuses = Seq()
 
-  lazy val module = Module(new PFBBlock[T](this))
+  lazy val module = new PFBBlock[T](this)
 
 }
 

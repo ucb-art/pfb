@@ -209,15 +209,15 @@ class PFBSpec extends FlatSpec with Matchers {
     }*/
   }
 
-  //it should "reduce leakage" taggedAs(LocalTest) in {
-  //  val config = PFBConfig(
-  //    windowFunc = blackmanHarris.apply,
-  //    numTaps = 8,
-  //    outputWindowSize = 256,
-  //    parallelism=8
-  //  )
-  //  leakageTester( () => new PFB(DspReal(), config=config), config, numBins = 5, samples_per_bin = 5 )
-  //}
+  it should "reduce leakage" taggedAs(LocalTest) in {
+    val config = PFBConfig(
+      windowFunc = blackmanHarris.apply,
+      numTaps = 8,
+      outputWindowSize = 256,
+      parallelism=8
+    )
+    leakageTester( () => new PFB(DspReal(), config=config), config, numBins = 5, samples_per_bin = 5 )
+  }
 
   behavior of "PFBLane"
   it should "build and run correctly" in {
