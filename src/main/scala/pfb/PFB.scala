@@ -7,7 +7,7 @@ package pfb
 
 import chisel3._
 import chisel3.util.Counter
-import dsptools.junctions.ValidWithSync
+import dspjunctions.ValidWithSync
 import dsptools.numbers.Real
 import dsptools.numbers.implicits._
 import spire.algebra.Ring

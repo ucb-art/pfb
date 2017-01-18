@@ -25,6 +25,8 @@ import uncore.tilelink._
 import uncore.coherence._
 
 import dsptools._
+import dspblocks._
+import dspjunctions._
 
 class DspTop(p: Parameters) extends LazyModule {
   override lazy val module = Module(new DspTopModule(p, this, new DspTopBundle(p)))
@@ -38,11 +40,11 @@ class DspTopModule[+L <: DspTop, +B <: DspTopBundle](val p: Parameters, l: L, b:
     io <> module.io
   }
 
-case object BuildDSP extends Field[(Parameters) => DspBlock]
+case object BuildDSP extends Field[(Parameters) => LazyDspBlock]
 
 trait DspModule {
   val p: Parameters
-  val module = p(BuildDSP)(p)
+  val module = Module(LazyModule(p(BuildDSP)(p)).module)
 }
 
 class DspBareTop(val p: Parameters) extends Module with DspModule {
