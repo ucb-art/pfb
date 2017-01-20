@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>TestHarness - fft.TestHarness</title>
-          <meta name="description" content="TestHarness - fft.TestHarness" />
-          <meta name="keywords" content="TestHarness fft.TestHarness" />
+          <title>PFBLane - pfb.PFBLane</title>
+          <meta name="description" content="PFBLane - pfb.PFBLane" />
+          <meta name="keywords" content="PFBLane pfb.PFBLane" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'fft.TestHarness';
+            var hash = 'pfb.PFBLane';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -29,11 +29,11 @@
         <body class="type">
       <div id="definition">
         <img alt="Class" src="../lib/class_big.png" />
-        <p id="owner"><a href="package.html" class="extype" name="fft">fft</a></p>
-        <h1>TestHarness</h1><h3><span class="morelinks"><div>Related Doc:
-            <a href="package.html" class="extype" name="fft">package fft</a>
+        <p id="owner"><a href="package.html" class="extype" name="pfb">pfb</a></p>
+        <h1>PFBLane</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="pfb">package pfb</a>
           </div></span></h3><span class="permalink">
-      <a href="../index.html#fft.TestHarness" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -45,11 +45,15 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">TestHarness</span><span class="result"> extends <span class="extype" name="chisel3.Module">Module</span></span>
+        <span class="name">PFBLane</span><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.Data">Data</span></span>, <span name="V">V</span>]</span><span class="result"> extends <span class="extype" name="chisel3.Module">Module</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A single lane of a <a href="PFB.html" class="extype" name="pfb.PFB">PFB</a>. A full PFB will include &gt;= 1 lanes operating in parallel.
+The PFB consists of <code>delay</code> parallel FIR filters, which means <code>taps.length / delay</code>
+windows are added together. As a result, <code>delay</code> is required to divide <code>taps.length</code>
+evenly.</p><p>The FIR filter is implemented in transposed form. Delays are implemented with chisel
+<code>Mem</code>s which may be implemented with SRAMs.</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="chisel3.core.Module">Module</span>, <span class="extype" name="chisel3.internal.HasId">HasId</span>, <span class="extype" name="chisel3.internal.InstanceId">InstanceId</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -69,7 +73,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="fft.TestHarness"><span>TestHarness</span></li><li class="in" name="chisel3.core.Module"><span>Module</span></li><li class="in" name="chisel3.internal.HasId"><span>HasId</span></li><li class="in" name="chisel3.internal.InstanceId"><span>InstanceId</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="pfb.PFBLane"><span>PFBLane</span></li><li class="in" name="chisel3.core.Module"><span>Module</span></li><li class="in" name="chisel3.internal.HasId"><span>HasId</span></li><li class="in" name="chisel3.internal.InstanceId"><span>InstanceId</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -88,23 +92,24 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="fft.TestHarness#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;()(implicitp:cde.Parameters):fft.TestHarness"></a>
-      <a id="&lt;init&gt;:TestHarness"></a>
+              <ol><li name="pfb.PFBLane#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(genIn:=&gt;T,genOut:=&gt;Option[T],genTap:=&gt;Option[T],coeffs:Seq[V],delay:Int)(implicitevidence$2:spire.algebra.Ring[T],implicitevidence$3:spire.math.ConvertableTo[T],implicitevidence$4:spire.math.ConvertableFrom[V]):pfb.PFBLane[T,V]"></a>
+      <a id="&lt;init&gt;:PFBLane[T,V]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">TestHarness</span><span class="params">()</span><span class="params">(<span class="implicit">implicit </span><span name="p">p: <span class="extype" name="cde.Parameters">Parameters</span></span>)</span>
+        <span class="name">PFBLane</span><span class="params">(<span name="genIn">genIn: ⇒ <span class="extype" name="pfb.PFBLane.T">T</span></span>, <span name="genOut">genOut: ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="pfb.PFBLane.T">T</span>] = <span class="symbol">None</span></span>, <span name="genTap">genTap: ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="pfb.PFBLane.T">T</span>] = <span class="symbol">None</span></span>, <span name="coeffs">coeffs: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="pfb.PFBLane.V">V</span>]</span>, <span name="delay">delay: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="spire.algebra.Ring">Ring</span>[<span class="extype" name="pfb.PFBLane.T">T</span>]</span>, <span name="arg1">arg1: <span class="extype" name="spire.math.ConvertableTo">ConvertableTo</span>[<span class="extype" name="pfb.PFBLane.T">T</span>]</span>, <span name="arg2">arg2: <span class="extype" name="spire.math.ConvertableFrom">ConvertableFrom</span>[<span class="extype" name="pfb.PFBLane.V">V</span>]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@&lt;init&gt;()(implicitp:cde.Parameters):fft.TestHarness" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@&lt;init&gt;(genIn:=&gt;T,genOut:=&gt;Option[T],genTap:=&gt;Option[T],coeffs:Seq[V],delay:Int)(implicitevidence$2:spire.algebra.Ring[T],implicitevidence$3:spire.math.ConvertableTo[T],implicitevidence$4:spire.math.ConvertableFrom[V]):pfb.PFBLane[T,V]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">genIn</dt><dd class="cmt"><p>Type generator for input</p></dd><dt class="param">genOut</dt><dd class="cmt"><p>Optional type generator for output, <code>genIn</code> by default.</p></dd><dt class="param">genTap</dt><dd class="cmt"><p>Optional type generator for window coefficients, <code>genIn</code> by default.</p></dd><dt class="param">coeffs</dt><dd class="cmt"><p>Seq of window coefficients. <code>V</code> must be a type that is convertable to <code>T</code></p></dd><dt class="param">delay</dt><dd class="cmt"><p>Size of the delays in the PFB. This also ends up being the number of parallel
+             FIR filters.</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -126,7 +131,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -143,7 +148,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@##():Int" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@##():Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -160,7 +165,7 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -177,7 +182,7 @@
         <span class="name">IO</span><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.core.Data">Data</span></span>]</span><span class="params">(<span name="iodef">iodef: <span class="extype" name="chisel3.core.Module.IO.T">T</span></span>)</span><span class="result">: <span class="extype" name="chisel3.core.Module.IO.iodef">iodef</span>.type</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@IO[T&lt;:chisel3.core.Data](iodef:T):iodef.type" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@IO[T&lt;:chisel3.core.Data](iodef:T):iodef.type" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -194,7 +199,7 @@
         <span class="name">annotate</span><span class="params">(<span name="annotation">annotation: <span class="extype" name="chisel3.core.ChiselAnnotation">ChiselAnnotation</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@annotate(annotation:chisel3.core.ChiselAnnotation):Unit" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@annotate(annotation:chisel3.core.ChiselAnnotation):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -211,28 +216,11 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="fft.TestHarness#buildTop" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="buildTop(p:cde.Parameters):fft.DspTop"></a>
-      <a id="buildTop(Parameters):DspTop"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">buildTop</span><span class="params">(<span name="p">p: <span class="extype" name="cde.Parameters">Parameters</span></span>)</span><span class="result">: <a href="DspTop.html" class="extype" name="fft.DspTop">DspTop</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@buildTop(p:cde.Parameters):fft.DspTop" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
     </li><li name="chisel3.core.Module#clock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clock:chisel3.core.Clock"></a>
       <a id="clock:Clock"></a>
@@ -245,7 +233,7 @@
         <span class="name">clock</span><span class="result">: <span class="extype" name="chisel3.core.Clock">Clock</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@clock:chisel3.core.Clock" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@clock:chisel3.core.Clock" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -262,7 +250,7 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@clone():Object" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@clone():Object" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -273,6 +261,74 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="pfb.PFBLane#coeffs" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="coeffs:Seq[V]"></a>
+      <a id="coeffs:Seq[V]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">coeffs</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="pfb.PFBLane.V">V</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBLane@coeffs:Seq[V]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Seq of window coefficients.</p><div class="fullcomment"><div class="comment cmt"><p>Seq of window coefficients. <code>V</code> must be a type that is convertable to <code>T</code></p></div></div>
+    </li><li name="pfb.PFBLane#coeffsGrouped" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="coeffsGrouped:Seq[Seq[V]]"></a>
+      <a id="coeffsGrouped:Seq[Seq[V]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">coeffsGrouped</span><span class="result">: <span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="pfb.PFBLane.V">V</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBLane@coeffsGrouped:Seq[Seq[V]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="pfb.PFBLane#coeffsReversed" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="coeffsReversed:Seq[Seq[V]]"></a>
+      <a id="coeffsReversed:Seq[Seq[V]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">coeffsReversed</span><span class="result">: <span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="pfb.PFBLane.V">V</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBLane@coeffsReversed:Seq[Seq[V]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="pfb.PFBLane#coeffsWire" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="coeffsWire:Seq[chisel3.core.Vec[T]]"></a>
+      <a id="coeffsWire:Seq[Vec[T]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">coeffsWire</span><span class="result">: <span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="chisel3.core.Vec">Vec</span>[<span class="extype" name="pfb.PFBLane.T">T</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBLane@coeffsWire:Seq[chisel3.core.Vec[T]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
     </li><li name="chisel3.core.Module#compileOptions" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="compileOptions:chisel3.core.CompileOptions"></a>
       <a id="compileOptions:CompileOptions"></a>
@@ -285,11 +341,46 @@
         <span class="name">compileOptions</span><span class="result">: <span class="extype" name="chisel3.core.CompileOptions">CompileOptions</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@compileOptions:chisel3.core.CompileOptions" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@compileOptions:chisel3.core.CompileOptions" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module</dd></dl></div>
+    </li><li name="pfb.PFBLane#count" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="count:chisel3.util.Counter"></a>
+      <a id="count:Counter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">count</span><span class="result">: <span class="extype" name="chisel3.util.Counter">Counter</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBLane@count:chisel3.util.Counter" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="pfb.PFBLane#delay" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="delay:Int"></a>
+      <a id="delay:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">delay</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBLane@delay:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Size of the delays in the PFB.</p><div class="fullcomment"><div class="comment cmt"><p>Size of the delays in the PFB. This also ends up being the number of parallel
+             FIR filters.</p></div></div>
     </li><li name="chisel3.core.Module#desiredName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="desiredName:String"></a>
       <a id="desiredName:String"></a>
@@ -302,24 +393,24 @@
         <span class="name">desiredName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@desiredName:String" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@desiredName:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module</dd></dl></div>
-    </li><li name="fft.TestHarness#dut" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="dut:fft.DspTopModule[fft.DspTop,fft.DspTopBundle]"></a>
-      <a id="dut:DspTopModule[DspTop,DspTopBundle]"></a>
+    </li><li name="pfb.PFBLane#en" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="en:chisel3.core.Bool"></a>
+      <a id="en:Bool"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">dut</span><span class="result">: <a href="DspTopModule.html" class="extype" name="fft.DspTopModule">DspTopModule</a>[<a href="DspTop.html" class="extype" name="fft.DspTop">DspTop</a>, <a href="DspTopBundle.html" class="extype" name="fft.DspTopBundle">DspTopBundle</a>]</span>
+        <span class="name">en</span><span class="result">: <span class="extype" name="chisel3.core.Bool">Bool</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@dut:fft.DspTopModule[fft.DspTop,fft.DspTopBundle]" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@en:chisel3.core.Bool" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -336,7 +427,7 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -353,7 +444,7 @@
         <span class="name">equals</span><span class="params">(<span name="that">that: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@equals(that:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@equals(that:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -370,7 +461,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@finalize():Unit" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@finalize():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -393,7 +484,7 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -410,7 +501,7 @@
         <span class="name">getPorts</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="chisel3.internal.firrtl.Port">Port</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@getPorts:Seq[chisel3.internal.firrtl.Port]" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@getPorts:Seq[chisel3.internal.firrtl.Port]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -427,7 +518,7 @@
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@hashCode():Int" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@hashCode():Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -444,28 +535,28 @@
         <span class="name">instanceName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@instanceName:String" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@instanceName:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module → HasId → InstanceId</dd></dl></div>
-    </li><li name="fft.TestHarness#io" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="io:chisel3.Bundle"></a>
-      <a id="io:Bundle"></a>
+    </li><li name="pfb.PFBLane#io" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="io:chisel3.Bundle{valdata_in:T;valvalid_in:chisel3.core.Bool;valsync_in:chisel3.core.Bool;valdata_out:T;valoverflow:chisel3.core.Bool}"></a>
+      <a id="io:Bundle{.../*5definitionsintyperefinement*/}"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">io</span><span class="result">: <span class="extype" name="chisel3.Bundle">Bundle</span></span>
+        <span class="name">io</span><span class="result">: <span class="extype" name="chisel3.Bundle">Bundle</span> { ... /* 5 definitions in type refinement */ }</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@io:chisel3.Bundle" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@io:chisel3.Bundle{valdata_in:T;valvalid_in:chisel3.core.Bool;valsync_in:chisel3.core.Bool;valdata_out:T;valoverflow:chisel3.core.Bool}" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="fft.TestHarness">TestHarness</a> → Module</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="pfb.PFBLane">PFBLane</a> → Module</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -478,7 +569,7 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -495,7 +586,7 @@
         <span class="name">name</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@name:String" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@name:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -512,7 +603,7 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -529,7 +620,7 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@notify():Unit" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@notify():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -546,28 +637,11 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="fft.TestHarness#p" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="p:cde.Parameters"></a>
-      <a id="p:Parameters"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">p</span><span class="result">: <span class="extype" name="cde.Parameters">Parameters</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@p:cde.Parameters" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
     </li><li name="chisel3.internal.HasId#parentModName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="parentModName:String"></a>
       <a id="parentModName:String"></a>
@@ -580,7 +654,7 @@
         <span class="name">parentModName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@parentModName:String" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@parentModName:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -597,7 +671,7 @@
         <span class="name">parentPathName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@parentPathName:String" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@parentPathName:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -614,11 +688,28 @@
         <span class="name">pathName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@pathName:String" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@pathName:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → InstanceId</dd></dl></div>
+    </li><li name="pfb.PFBLane#products" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="products:Seq[T]"></a>
+      <a id="products:Seq[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">products</span><span class="result">: <span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="pfb.PFBLane.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBLane@products:Seq[T]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
     </li><li name="chisel3.core.Module#reset" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="reset:chisel3.core.Bool"></a>
       <a id="reset:Bool"></a>
@@ -631,24 +722,41 @@
         <span class="name">reset</span><span class="result">: <span class="extype" name="chisel3.core.Bool">Bool</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@reset:chisel3.core.Bool" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@reset:chisel3.core.Bool" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module</dd></dl></div>
+    </li><li name="pfb.PFBLane#result" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="result:T"></a>
+      <a id="result:T"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">result</span><span class="result">: <span class="extype" name="pfb.PFBLane.T">T</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBLane@result:T" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
     </li><li name="chisel3.internal.HasId#suggestName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="suggestName(name:=&gt;String):HasId.this.type"></a>
-      <a id="suggestName(⇒String):TestHarness.this.type"></a>
+      <a id="suggestName(⇒String):PFBLane.this.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">suggestName</span><span class="params">(<span name="name">name: ⇒ <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="fft.TestHarness">TestHarness</a>.this.type</span>
+        <span class="name">suggestName</span><span class="params">(<span name="name">name: ⇒ <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="pfb.PFBLane">PFBLane</a>.this.type</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@suggestName(name:=&gt;String):HasId.this.type" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@suggestName(name:=&gt;String):HasId.this.type" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -665,7 +773,7 @@
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -682,7 +790,7 @@
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@toString():String" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@toString():String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -699,7 +807,7 @@
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@wait():Unit" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@wait():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -722,7 +830,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -745,7 +853,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fft.TestHarness@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBLane@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
