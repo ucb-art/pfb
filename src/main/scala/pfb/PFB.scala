@@ -25,7 +25,6 @@ class PFBIO[T <: Data](genIn: => T,
                        parallelism: Int) extends Bundle {
   val data_in  = Input (ValidWithSync(Vec(parallelism, genIn)))
   val data_out = Output(ValidWithSync(Vec(parallelism, genOut.getOrElse(genIn))))
-  val overflow = Output(Bool())
 }
 
 /**
@@ -53,13 +52,22 @@ class PFB[T<:Data:Real](genIn: => T,
   val counter = Counter(cycleTime)
   counter.inc()
   when (io.data_in.sync) {
-    if (cycleTime > 1) counter.value := UInt(0) //counter.restart()
+    if (cycleTime > 1) counter.value := 0.U //counter.restart()
   }
 
-  io.data_out.sync := counter.value === UInt(0)
+  io.data_out.sync := counter.value === 0.U
+  io.data_out.valid := ShiftRegisterWithReset(io.data_in.valid, cycleTime*config.numTaps, 0.U)
+
+  // feed in zeros when invalid
+  val in = Wire(Vec(lanesIn, genIn))
+  when (io.in.valid) {
+    in := io.in.bits
+  } .otherwise {
+    in := Wire(Vec(lanesIn, implicitly[Real[T]].zero))
+  }
 
   val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime)))
-  filters.zip(io.data_in.bits).foreach( { case (filt, port) => filt.io.data_in := port } )
+  filters.zip(in).foreach( { case (filt, port) => filt.io.data_in := port } )
   filters.zip(io.data_out.bits).foreach( { case (filt, port) => port := filt.io.data_out } )
   filters.foreach (f => {
     f.io.valid_in := io.data_in.valid
@@ -96,7 +104,6 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
     val valid_in = Input(Bool())
     val sync_in  = Input(Bool())
     val data_out = Output(genOut.getOrElse(genIn))
-    val overflow = Output(Bool())
   })
 
   require(coeffs.length % delay == 0)
