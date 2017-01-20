@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>PFB - pfb.PFB</title>
-          <meta name="description" content="PFB - pfb.PFB" />
-          <meta name="keywords" content="PFB pfb.PFB" />
+          <title>LazyFFTBlock - fft.LazyFFTBlock</title>
+          <meta name="description" content="LazyFFTBlock - fft.LazyFFTBlock" />
+          <meta name="keywords" content="LazyFFTBlock fft.LazyFFTBlock" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'pfb.PFB';
+            var hash = 'fft.LazyFFTBlock';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -29,11 +29,11 @@
         <body class="type">
       <div id="definition">
         <img alt="Class" src="../lib/class_big.png" />
-        <p id="owner"><a href="package.html" class="extype" name="pfb">pfb</a></p>
-        <h1>PFB</h1><h3><span class="morelinks"><div>Related Doc:
-            <a href="package.html" class="extype" name="pfb">package pfb</a>
+        <p id="owner"><a href="package.html" class="extype" name="fft">fft</a></p>
+        <h1>LazyFFTBlock</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="fft">package fft</a>
           </div></span></h3><span class="permalink">
-      <a href="../index.html#pfb.PFB" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -45,14 +45,13 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">PFB</span><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.Data">Data</span></span>]</span><span class="result"> extends <span class="extype" name="chisel3.Module">Module</span></span>
+        <span class="name">LazyFFTBlock</span><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.Data">Data</span></span>]</span><span class="result"> extends <span class="extype" name="dspblocks.LazyDspBlock">LazyDspBlock</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Polyphase filter bank implementation. See
-<a href="https://casper.berkeley.edu/wiki/The_Polyphase_Filter_Bank_Technique" target="_blank">Casper</a> for more details.</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="chisel3.core.Module">Module</span>, <span class="extype" name="chisel3.internal.HasId">HasId</span>, <span class="extype" name="chisel3.internal.InstanceId">InstanceId</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="dspblocks.LazyDspBlock">LazyDspBlock</span>, <span class="extype" name="dspblocks.HasLazyDspBlockParameters">HasLazyDspBlockParameters</span>, <span class="extype" name="diplomacy.LazyModule">LazyModule</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -70,7 +69,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="pfb.PFB"><span>PFB</span></li><li class="in" name="chisel3.core.Module"><span>Module</span></li><li class="in" name="chisel3.internal.HasId"><span>HasId</span></li><li class="in" name="chisel3.internal.InstanceId"><span>InstanceId</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="fft.LazyFFTBlock"><span>LazyFFTBlock</span></li><li class="in" name="dspblocks.LazyDspBlock"><span>LazyDspBlock</span></li><li class="in" name="dspblocks.HasLazyDspBlockParameters"><span>HasLazyDspBlockParameters</span></li><li class="in" name="diplomacy.LazyModule"><span>LazyModule</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -89,23 +88,23 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="pfb.PFB#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(genIn:=&gt;T,genOut:=&gt;Option[T],genTap:=&gt;Option[T],config:pfb.PFBConfig)(implicitevidence$1:dsptools.numbers.Real[T]):pfb.PFB[T]"></a>
-      <a id="&lt;init&gt;:PFB[T]"></a>
+              <ol><li name="fft.LazyFFTBlock#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;()(implicitevidence$1:dsptools.numbers.Real[T],implicitp:cde.Parameters):fft.LazyFFTBlock[T]"></a>
+      <a id="&lt;init&gt;:LazyFFTBlock[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">PFB</span><span class="params">(<span name="genIn">genIn: ⇒ <span class="extype" name="pfb.PFB.T">T</span></span>, <span name="genOut">genOut: ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="pfb.PFB.T">T</span>] = <span class="symbol">None</span></span>, <span name="genTap">genTap: ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="pfb.PFB.T">T</span>] = <span class="symbol">None</span></span>, <span name="config">config: <a href="PFBConfig.html" class="extype" name="pfb.PFBConfig">PFBConfig</a> = <span class="symbol">PFBConfig()</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="dsptools.numbers.Real">Real</span>[<span class="extype" name="pfb.PFB.T">T</span>]</span>)</span>
+        <span class="name">LazyFFTBlock</span><span class="params">()</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="dsptools.numbers.Real">Real</span>[<span class="extype" name="fft.LazyFFTBlock.T">T</span>]</span>, <span name="p">p: <span class="extype" name="cde.Parameters">Parameters</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@&lt;init&gt;(genIn:=&gt;T,genOut:=&gt;Option[T],genTap:=&gt;Option[T],config:pfb.PFBConfig)(implicitevidence$1:dsptools.numbers.Real[T]):pfb.PFB[T]" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@&lt;init&gt;()(implicitevidence$1:dsptools.numbers.Real[T],implicitp:cde.Parameters):fft.LazyFFTBlock[T]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">genIn</dt><dd class="cmt"><p>Type generator for input.</p></dd><dt class="param">genOut</dt><dd class="cmt"><p>Optional type generator for output, <code>genIn</code> if <code>None</code>.</p></dd><dt class="param">genTap</dt><dd class="cmt"><p>Optional type generator for window coefficients, <code>genIn</code> if <code>None</code>.</p></dd><dt class="param">config</dt><dd class="cmt"><p>PFB configuration object, includes the window function.</p></dd></dl></div>
+      
     </li></ol>
             </div>
 
@@ -127,7 +126,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -144,7 +143,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@##():Int" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@##():Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -161,28 +160,45 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="chisel3.core.Module#IO" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="IO[T&lt;:chisel3.core.Data](iodef:T):iodef.type"></a>
-      <a id="IO[T&lt;:Data](T):iodef.type"></a>
+    </li><li name="dspblocks.LazyDspBlock#addControl" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="addControl(name:&lt;?&gt;,init:&lt;?&gt;):Unit"></a>
+      <a id="addControl(String,UInt):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">IO</span><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.core.Data">Data</span></span>]</span><span class="params">(<span name="iodef">iodef: <span class="extype" name="chisel3.core.Module.IO.T">T</span></span>)</span><span class="result">: <span class="extype" name="chisel3.core.Module.IO.iodef">iodef</span>.type</span>
+        <span class="name">addControl</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="init">init: <span class="extype" name="chisel3.UInt">UInt</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@IO[T&lt;:chisel3.core.Data](iodef:T):iodef.type" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@addControl(name:String,init:chisel3.UInt):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LazyDspBlock</dd></dl></div>
+    </li><li name="dspblocks.LazyDspBlock#addStatus" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="addStatus(name:&lt;?&gt;):Unit"></a>
+      <a id="addStatus(String):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">addStatus</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.LazyFFTBlock@addStatus(name:String):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LazyDspBlock</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -195,28 +211,62 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="chisel3.core.Module#clock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="clock:chisel3.core.Clock"></a>
-      <a id="clock:Clock"></a>
+    </li><li name="dspblocks.HasLazyDspBlockParameters#baseAddr" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="baseAddr:Int"></a>
+      <a id="baseAddr:Int"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">val</span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">clock</span><span class="result">: <span class="extype" name="chisel3.core.Clock">Clock</span></span>
+        <span class="name">baseAddr</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@clock:chisel3.core.Clock" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@baseAddr:Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasLazyDspBlockParameters</dd></dl></div>
+    </li><li name="diplomacy.LazyModule#bindings" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="bindings:List[()=&gt;Unit]"></a>
+      <a id="bindings:List[()⇒Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">var</span>
+      </span>
+      <span class="symbol">
+        <span class="name">bindings</span><span class="result">: <span class="extype" name="scala.collection.immutable.List">List</span>[() ⇒ <span class="extype" name="scala.Unit">Unit</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.LazyFFTBlock@bindings:List[()=&gt;Unit]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../diplomacy.html" class="extype" name="diplomacy">diplomacy</a>] </dd><dt>Definition Classes</dt><dd>LazyModule</dd></dl></div>
+    </li><li name="diplomacy.LazyModule#children" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="children:List[diplomacy.LazyModule]"></a>
+      <a id="children:List[LazyModule]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">var</span>
+      </span>
+      <span class="symbol">
+        <span class="name">children</span><span class="result">: <span class="extype" name="scala.collection.immutable.List">List</span>[<span class="extype" name="diplomacy.LazyModule">LazyModule</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.LazyFFTBlock@children:List[diplomacy.LazyModule]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../diplomacy.html" class="extype" name="diplomacy">diplomacy</a>] </dd><dt>Definition Classes</dt><dd>LazyModule</dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -229,7 +279,7 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@clone():Object" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@clone():Object" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -240,91 +290,23 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="chisel3.core.Module#compileOptions" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="compileOptions:chisel3.core.CompileOptions"></a>
-      <a id="compileOptions:CompileOptions"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">compileOptions</span><span class="result">: <span class="extype" name="chisel3.core.CompileOptions">CompileOptions</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@compileOptions:chisel3.core.CompileOptions" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module</dd></dl></div>
-    </li><li name="pfb.PFB#config" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="config:pfb.PFBConfig"></a>
-      <a id="config:PFBConfig"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">config</span><span class="result">: <a href="PFBConfig.html" class="extype" name="pfb.PFBConfig">PFBConfig</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@config:pfb.PFBConfig" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">PFB configuration object, includes the window function.</p>
-    </li><li name="pfb.PFB#counter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="counter:chisel3.util.Counter"></a>
-      <a id="counter:Counter"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">counter</span><span class="result">: <span class="extype" name="chisel3.util.Counter">Counter</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@counter:chisel3.util.Counter" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
-    </li><li name="pfb.PFB#cycleTime" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="cycleTime:Int"></a>
-      <a id="cycleTime:Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">cycleTime</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@cycleTime:Int" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
-    </li><li name="chisel3.core.Module#desiredName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="desiredName:String"></a>
-      <a id="desiredName:String"></a>
+    </li><li name="fft.LazyFFTBlock#controls" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="controls:Seq[Nothing]"></a>
+      <a id="controls:Seq[Nothing]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">desiredName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">controls</span><span class="result">: <span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="scala.Nothing">Nothing</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@desiredName:String" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@controls:Seq[Nothing]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module</dd></dl></div>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -337,13 +319,13 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="chisel3.internal.HasId#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(that:Any):Boolean"></a>
+    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(x$1:Any):Boolean"></a>
       <a id="equals(Any):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -351,31 +333,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="that">that: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@equals(that:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@equals(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → AnyRef → Any</dd></dl></div>
-    </li><li name="pfb.PFB#filters" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="filters:scala.collection.immutable.IndexedSeq[pfb.PFBLane[T,Double]]"></a>
-      <a id="filters:IndexedSeq[PFBLane[T,Double]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">filters</span><span class="result">: <span class="extype" name="scala.collection.immutable.IndexedSeq">IndexedSeq</span>[<a href="PFBLane.html" class="extype" name="pfb.PFBLane">PFBLane</a>[<span class="extype" name="pfb.PFB.T">T</span>, <span class="extype" name="scala.Double">Double</span>]]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@filters:scala.collection.immutable.IndexedSeq[pfb.PFBLane[T,Double]]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -388,7 +353,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@finalize():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@finalize():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -411,46 +376,29 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="chisel3.core.Module#getPorts" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getPorts:Seq[chisel3.internal.firrtl.Port]"></a>
-      <a id="getPorts:Seq[Port]"></a>
+    </li><li name="diplomacy.LazyModule#graphML" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="graphML:String"></a>
+      <a id="graphML:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">lazy val</span>
       </span>
       <span class="symbol">
-        <span class="name">getPorts</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="chisel3.internal.firrtl.Port">Port</span>]</span>
+        <span class="name">graphML</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@getPorts:Seq[chisel3.internal.firrtl.Port]" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@graphML:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module</dd></dl></div>
-    </li><li name="pfb.PFB#groupedWindow" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="groupedWindow:scala.collection.immutable.IndexedSeq[Seq[Double]]"></a>
-      <a id="groupedWindow:IndexedSeq[Seq[Double]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">groupedWindow</span><span class="result">: <span class="extype" name="scala.collection.immutable.IndexedSeq">IndexedSeq</span>[<span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@groupedWindow:scala.collection.immutable.IndexedSeq[Seq[Double]]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
-    </li><li name="chisel3.internal.HasId#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LazyModule</dd></dl></div>
+    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
       <h4 class="signature">
@@ -462,45 +410,45 @@
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@hashCode():Int" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@hashCode():Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → AnyRef → Any</dd></dl></div>
-    </li><li name="chisel3.core.Module#instanceName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="instanceName:String"></a>
-      <a id="instanceName:String"></a>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="diplomacy.LazyModule#info" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="info:chisel3.internal.sourceinfo.SourceInfo"></a>
+      <a id="info:SourceInfo"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">var</span>
+      </span>
+      <span class="symbol">
+        <span class="name">info</span><span class="result">: <span class="extype" name="chisel3.internal.sourceinfo.SourceInfo">SourceInfo</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.LazyFFTBlock@info:chisel3.internal.sourceinfo.SourceInfo" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../diplomacy.html" class="extype" name="diplomacy">diplomacy</a>] </dd><dt>Definition Classes</dt><dd>LazyModule</dd></dl></div>
+    </li><li name="diplomacy.LazyModule#instantiate" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="instantiate():Unit"></a>
+      <a id="instantiate():Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">instanceName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">instantiate</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@instanceName:String" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@instantiate():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module → HasId → InstanceId</dd></dl></div>
-    </li><li name="pfb.PFB#io" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="io:pfb.PFBIO[T]"></a>
-      <a id="io:PFBIO[T]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">io</span><span class="result">: <a href="PFBIO.html" class="extype" name="pfb.PFBIO">PFBIO</a>[<span class="extype" name="pfb.PFB.T">T</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@io:pfb.PFBIO[T]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="pfb.PFB">PFB</a> → Module</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../diplomacy.html" class="extype" name="diplomacy">diplomacy</a>] </dd><dt>Definition Classes</dt><dd>LazyModule</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -513,28 +461,62 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="chisel3.core.Module#name" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="diplomacy.LazyModule#line" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="line:String"></a>
+      <a id="line:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">line</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.LazyFFTBlock@line:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LazyModule</dd></dl></div>
+    </li><li name="fft.LazyFFTBlock#module" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="module:fft.FFTBlock[T]"></a>
+      <a id="module:FFTBlock[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">lazy val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">module</span><span class="result">: <a href="FFTBlock.html" class="extype" name="fft.FFTBlock">FFTBlock</a>[<span class="extype" name="fft.LazyFFTBlock.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.LazyFFTBlock@module:fft.FFTBlock[T]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="fft.LazyFFTBlock">LazyFFTBlock</a> → LazyDspBlock → LazyModule</dd></dl></div>
+    </li><li name="diplomacy.LazyModule#name" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="name:String"></a>
       <a id="name:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
+        <span class="modifier"></span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">name</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@name:String" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@name:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LazyModule</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -547,11 +529,28 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="diplomacy.LazyModule#nodes" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="nodes:List[diplomacy.BaseNode]"></a>
+      <a id="nodes:List[BaseNode]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">var</span>
+      </span>
+      <span class="symbol">
+        <span class="name">nodes</span><span class="result">: <span class="extype" name="scala.collection.immutable.List">List</span>[<span class="extype" name="diplomacy.BaseNode">BaseNode</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.LazyFFTBlock@nodes:List[diplomacy.BaseNode]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../diplomacy.html" class="extype" name="diplomacy">diplomacy</a>] </dd><dt>Definition Classes</dt><dd>LazyModule</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
       <a id="notify():Unit"></a>
@@ -564,7 +563,7 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@notify():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@notify():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -581,96 +580,113 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="chisel3.internal.HasId#parentModName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="parentModName:String"></a>
-      <a id="parentModName:String"></a>
+    </li><li name="diplomacy.LazyModule#omitGraphML" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="omitGraphML:Boolean"></a>
+      <a id="omitGraphML:Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">parentModName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">omitGraphML</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@parentModName:String" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@omitGraphML:Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → InstanceId</dd></dl></div>
-    </li><li name="chisel3.internal.HasId#parentPathName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="parentPathName:String"></a>
-      <a id="parentPathName:String"></a>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LazyModule</dd></dl></div>
+    </li><li name="dspblocks.LazyDspBlock#p" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="p:cde.Parameters"></a>
+      <a id="p:Parameters"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">parentPathName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">p</span><span class="result">: <span class="extype" name="cde.Parameters">Parameters</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@parentPathName:String" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@p:cde.Parameters" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → InstanceId</dd></dl></div>
-    </li><li name="chisel3.internal.HasId#pathName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="pathName:String"></a>
-      <a id="pathName:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">pathName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@pathName:String" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → InstanceId</dd></dl></div>
-    </li><li name="chisel3.core.Module#reset" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="reset:chisel3.core.Bool"></a>
-      <a id="reset:Bool"></a>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LazyDspBlock → HasLazyDspBlockParameters</dd></dl></div>
+    </li><li name="diplomacy.LazyModule#parent" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="parent:Option[diplomacy.LazyModule]"></a>
+      <a id="parent:Option[LazyModule]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">reset</span><span class="result">: <span class="extype" name="chisel3.core.Bool">Bool</span></span>
+        <span class="name">parent</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="diplomacy.LazyModule">LazyModule</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@reset:chisel3.core.Bool" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@parent:Option[diplomacy.LazyModule]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module</dd></dl></div>
-    </li><li name="chisel3.internal.HasId#suggestName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="suggestName(name:=&gt;String):HasId.this.type"></a>
-      <a id="suggestName(⇒String):PFB.this.type"></a>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../diplomacy.html" class="extype" name="diplomacy">diplomacy</a>] </dd><dt>Definition Classes</dt><dd>LazyModule</dd></dl></div>
+    </li><li name="dspblocks.LazyDspBlock#scrbuilder" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="scrbuilder:testchipip.SCRBuilder"></a>
+      <a id="scrbuilder:SCRBuilder"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">scrbuilder</span><span class="result">: <span class="extype" name="testchipip.SCRBuilder">SCRBuilder</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.LazyFFTBlock@scrbuilder:testchipip.SCRBuilder" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LazyDspBlock</dd></dl></div>
+    </li><li name="dspblocks.LazyDspBlock#size" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="size:Int"></a>
+      <a id="size:Int"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">suggestName</span><span class="params">(<span name="name">name: ⇒ <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="pfb.PFB">PFB</a>.this.type</span>
+        <span class="name">size</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@suggestName(name:=&gt;String):HasId.this.type" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@size:Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LazyDspBlock</dd></dl></div>
+    </li><li name="fft.LazyFFTBlock#statuses" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="statuses:Seq[Nothing]"></a>
+      <a id="statuses:Seq[Nothing]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">statuses</span><span class="result">: <span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="scala.Nothing">Nothing</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.LazyFFTBlock@statuses:Seq[Nothing]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -683,7 +699,7 @@
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -700,7 +716,7 @@
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@toString():String" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@toString():String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -717,7 +733,7 @@
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@wait():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@wait():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -740,7 +756,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -763,7 +779,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.LazyFFTBlock@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -783,12 +799,12 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="chisel3.core.Module">
-              <h3>Inherited from <span class="extype" name="chisel3.core.Module">Module</span></h3>
-            </div><div class="parent" name="chisel3.internal.HasId">
-              <h3>Inherited from <span class="extype" name="chisel3.internal.HasId">HasId</span></h3>
-            </div><div class="parent" name="chisel3.internal.InstanceId">
-              <h3>Inherited from <span class="extype" name="chisel3.internal.InstanceId">InstanceId</span></h3>
+        <div class="parent" name="dspblocks.LazyDspBlock">
+              <h3>Inherited from <span class="extype" name="dspblocks.LazyDspBlock">LazyDspBlock</span></h3>
+            </div><div class="parent" name="dspblocks.HasLazyDspBlockParameters">
+              <h3>Inherited from <span class="extype" name="dspblocks.HasLazyDspBlockParameters">HasLazyDspBlockParameters</span></h3>
+            </div><div class="parent" name="diplomacy.LazyModule">
+              <h3>Inherited from <span class="extype" name="diplomacy.LazyModule">LazyModule</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">

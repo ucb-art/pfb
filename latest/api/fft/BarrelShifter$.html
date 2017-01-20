@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>sincHamming - pfb.sincHamming</title>
-          <meta name="description" content="sincHamming - pfb.sincHamming" />
-          <meta name="keywords" content="sincHamming pfb.sincHamming" />
+          <title>BarrelShifter - fft.BarrelShifter</title>
+          <meta name="description" content="BarrelShifter - fft.BarrelShifter" />
+          <meta name="keywords" content="BarrelShifter fft.BarrelShifter" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'pfb.sincHamming$';
+            var hash = 'fft.BarrelShifter$';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -29,11 +29,11 @@
         <body class="value">
       <div id="definition">
         <img alt="Object" src="../lib/object_big.png" />
-        <p id="owner"><a href="package.html" class="extype" name="pfb">pfb</a></p>
-        <h1>sincHamming</h1><h3><span class="morelinks"><div>Related Doc:
-            <a href="package.html" class="extype" name="pfb">package pfb</a>
+        <p id="owner"><a href="package.html" class="extype" name="fft">fft</a></p>
+        <h1>BarrelShifter</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="fft">package fft</a>
           </div></span></h3><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -45,12 +45,11 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">sincHamming</span>
+        <span class="name">BarrelShifter</span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Copied (erroneously?) from SPLASH
-</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -70,7 +69,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="pfb.sincHamming"><span>sincHamming</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="fft.BarrelShifter"><span>BarrelShifter</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -107,7 +106,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -124,7 +123,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@##():Int" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@##():Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -141,41 +140,24 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="pfb.sincHamming#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(w:pfb.WindowConfig):Seq[Double]"></a>
-      <a id="apply(WindowConfig):Seq[Double]"></a>
+    </li><li name="fft.BarrelShifter#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="apply[T&lt;:chisel3.Data](in:chisel3.Vec[T],shift:chisel3.UInt):chisel3.Vec[T]"></a>
+      <a id="apply[T&lt;:Data](Vec[T],UInt):Vec[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="w">w: <a href="WindowConfig.html" class="extype" name="pfb.WindowConfig">WindowConfig</a></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>
+        <span class="name">apply</span><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.Data">Data</span></span>]</span><span class="params">(<span name="in">in: <span class="extype" name="chisel3.Vec">Vec</span>[<span class="extype" name="fft.BarrelShifter.apply.T">T</span>]</span>, <span name="shift">shift: <span class="extype" name="chisel3.UInt">UInt</span></span>)</span><span class="result">: <span class="extype" name="chisel3.Vec">Vec</span>[<span class="extype" name="fft.BarrelShifter.apply.T">T</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@apply(w:pfb.WindowConfig):Seq[Double]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
-    </li><li name="pfb.sincHamming#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(size:Int,nfft:Int):Seq[Double]"></a>
-      <a id="apply(Int,Int):Seq[Double]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="size">size: <span class="extype" name="scala.Int">Int</span></span>, <span name="nfft">nfft: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@apply(size:Int,nfft:Int):Seq[Double]" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@apply[T&lt;:chisel3.Data](in:chisel3.Vec[T],shift:chisel3.UInt):chisel3.Vec[T]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -192,7 +174,7 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -209,7 +191,7 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@clone():Object" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@clone():Object" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -232,7 +214,7 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -249,7 +231,7 @@
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -266,7 +248,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@finalize():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@finalize():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -289,7 +271,7 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -306,7 +288,7 @@
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@hashCode():Int" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@hashCode():Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -323,7 +305,7 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -340,7 +322,7 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -357,7 +339,7 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@notify():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@notify():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -374,7 +356,7 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -391,7 +373,7 @@
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -408,7 +390,7 @@
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@toString():String" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@toString():String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -425,7 +407,7 @@
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@wait():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@wait():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -448,7 +430,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -471,7 +453,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.sincHamming$@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.BarrelShifter$@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>

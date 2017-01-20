@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>PFBIO - pfb.PFBIO</title>
-          <meta name="description" content="PFBIO - pfb.PFBIO" />
-          <meta name="keywords" content="PFBIO pfb.PFBIO" />
+          <title>FFTIO - fft.FFTIO</title>
+          <meta name="description" content="FFTIO - fft.FFTIO" />
+          <meta name="keywords" content="FFTIO fft.FFTIO" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'pfb.PFBIO';
+            var hash = 'fft.FFTIO';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -29,11 +29,11 @@
         <body class="type">
       <div id="definition">
         <img alt="Class" src="../lib/class_big.png" />
-        <p id="owner"><a href="package.html" class="extype" name="pfb">pfb</a></p>
-        <h1>PFBIO</h1><h3><span class="morelinks"><div>Related Doc:
-            <a href="package.html" class="extype" name="pfb">package pfb</a>
+        <p id="owner"><a href="package.html" class="extype" name="fft">fft</a></p>
+        <h1>FFTIO</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="fft">package fft</a>
           </div></span></h3><span class="permalink">
-      <a href="../index.html#pfb.PFBIO" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -45,13 +45,13 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">PFBIO</span><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.Data">Data</span></span>]</span><span class="result"> extends <span class="extype" name="chisel3.Bundle">Bundle</span></span>
+        <span class="name">FFTIO</span><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="chisel3.Data">Data</span></span>]</span><span class="result"> extends <span class="extype" name="chisel3.Bundle">Bundle</span> with <span class="extype" name="dspblocks.HasGenParameters">HasGenParameters</span>[<span class="extype" name="dsptools.numbers.DspComplex">DspComplex</span>[<span class="extype" name="fft.FFTIO.T">T</span>], <span class="extype" name="dsptools.numbers.DspComplex">DspComplex</span>[<span class="extype" name="fft.FFTIO.T">T</span>]]</span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>IO Bundle for PFB</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>IO Bundle for FFT</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="chisel3.core.Bundle">Bundle</span>, <span class="extype" name="chisel3.core.Aggregate">Aggregate</span>, <span class="extype" name="chisel3.core.Data">Data</span>, <span class="extype" name="chisel3.internal.HasId">HasId</span>, <span class="extype" name="chisel3.internal.InstanceId">InstanceId</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="dspblocks.HasGenParameters">HasGenParameters</span>[<span class="extype" name="dsptools.numbers.DspComplex">DspComplex</span>[<span class="extype" name="fft.FFTIO.T">T</span>], <span class="extype" name="dsptools.numbers.DspComplex">DspComplex</span>[<span class="extype" name="fft.FFTIO.T">T</span>]], <span class="extype" name="chisel3.core.Bundle">Bundle</span>, <span class="extype" name="chisel3.core.Aggregate">Aggregate</span>, <span class="extype" name="chisel3.core.Data">Data</span>, <span class="extype" name="chisel3.internal.HasId">HasId</span>, <span class="extype" name="chisel3.internal.InstanceId">InstanceId</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -69,7 +69,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="pfb.PFBIO"><span>PFBIO</span></li><li class="in" name="chisel3.core.Bundle"><span>Bundle</span></li><li class="in" name="chisel3.core.Aggregate"><span>Aggregate</span></li><li class="in" name="chisel3.core.Data"><span>Data</span></li><li class="in" name="chisel3.internal.HasId"><span>HasId</span></li><li class="in" name="chisel3.internal.InstanceId"><span>InstanceId</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="fft.FFTIO"><span>FFTIO</span></li><li class="in" name="dspblocks.HasGenParameters"><span>HasGenParameters</span></li><li class="in" name="chisel3.core.Bundle"><span>Bundle</span></li><li class="in" name="chisel3.core.Aggregate"><span>Aggregate</span></li><li class="in" name="chisel3.core.Data"><span>Data</span></li><li class="in" name="chisel3.internal.HasId"><span>HasId</span></li><li class="in" name="chisel3.internal.InstanceId"><span>InstanceId</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -88,23 +88,23 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="pfb.PFBIO#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(genIn:=&gt;T,genOut:=&gt;Option[T],parallelism:Int):pfb.PFBIO[T]"></a>
-      <a id="&lt;init&gt;:PFBIO[T]"></a>
+              <ol><li name="fft.FFTIO#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;()(implicitevidence$1:dsptools.numbers.Real[T],implicitp:cde.Parameters):fft.FFTIO[T]"></a>
+      <a id="&lt;init&gt;:FFTIO[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">PFBIO</span><span class="params">(<span name="genIn">genIn: ⇒ <span class="extype" name="pfb.PFBIO.T">T</span></span>, <span name="genOut">genOut: ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="pfb.PFBIO.T">T</span>] = <span class="symbol">None</span></span>, <span name="parallelism">parallelism: <span class="extype" name="scala.Int">Int</span></span>)</span>
+        <span class="name">FFTIO</span><span class="params">()</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="dsptools.numbers.Real">Real</span>[<span class="extype" name="fft.FFTIO.T">T</span>]</span>, <span name="p">p: <span class="extype" name="cde.Parameters">Parameters</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@&lt;init&gt;(genIn:=&gt;T,genOut:=&gt;Option[T],parallelism:Int):pfb.PFBIO[T]" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@&lt;init&gt;()(implicitevidence$1:dsptools.numbers.Real[T],implicitp:cde.Parameters):fft.FFTIO[T]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">genIn</dt><dd class="cmt"><p>Type generator for input to <a href="PFB.html" class="extype" name="pfb.PFB">PFB</a>.</p></dd><dt class="param">genOut</dt><dd class="cmt"><p>Optional type generator for output, <code>genIn</code> if <code>None</code>.</p></dd><dt class="param">parallelism</dt><dd class="cmt"><p>Number of lanes for both input and output</p></dd></dl></div>
+      
     </li></ol>
             </div>
 
@@ -126,7 +126,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -143,7 +143,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@##():Int" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@##():Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -160,7 +160,7 @@
         <span title="gt4s: $colon$eq" class="name">:=</span><span class="params">(<span name="that">that: <span class="extype" name="chisel3.core.Data">Data</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="sourceInfo">sourceInfo: <span class="extype" name="chisel3.internal.sourceinfo.SourceInfo">SourceInfo</span></span>, <span name="connectionCompileOptions">connectionCompileOptions: <span class="extype" name="chisel3.core.CompileOptions">CompileOptions</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@:=(that:chisel3.core.Data)(implicitsourceInfo:chisel3.internal.sourceinfo.SourceInfo,implicitconnectionCompileOptions:chisel3.core.CompileOptions):Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@:=(that:chisel3.core.Data)(implicitsourceInfo:chisel3.internal.sourceinfo.SourceInfo,implicitconnectionCompileOptions:chisel3.core.CompileOptions):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -177,7 +177,7 @@
         <span title="gt4s: $less$greater" class="name">&lt;&gt;</span><span class="params">(<span name="that">that: <span class="extype" name="chisel3.core.Data">Data</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="sourceInfo">sourceInfo: <span class="extype" name="chisel3.internal.sourceinfo.SourceInfo">SourceInfo</span></span>, <span name="connectionCompileOptions">connectionCompileOptions: <span class="extype" name="chisel3.core.CompileOptions">CompileOptions</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@&lt;&gt;(that:chisel3.core.Data)(implicitsourceInfo:chisel3.internal.sourceinfo.SourceInfo,implicitconnectionCompileOptions:chisel3.core.CompileOptions):Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@&lt;&gt;(that:chisel3.core.Data)(implicitsourceInfo:chisel3.internal.sourceinfo.SourceInfo,implicitconnectionCompileOptions:chisel3.core.CompileOptions):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -194,7 +194,7 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -211,7 +211,7 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -228,24 +228,24 @@
         <span class="name">asUInt</span><span class="params">()</span><span class="result">: <span class="extype" name="chisel3.core.UInt">UInt</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@asUInt():chisel3.core.UInt" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@asUInt():chisel3.core.UInt" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Data</dd></dl></div>
     </li><li name="chisel3.core.Data#chiselCloneType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="chiselCloneType(implicitcompileOptions:chisel3.core.CompileOptions):Data.this.type"></a>
-      <a id="chiselCloneType(CompileOptions):PFBIO.this.type"></a>
+      <a id="chiselCloneType(CompileOptions):FFTIO.this.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">chiselCloneType</span><span class="params">(<span class="implicit">implicit </span><span name="compileOptions">compileOptions: <span class="extype" name="chisel3.core.CompileOptions">CompileOptions</span></span>)</span><span class="result">: <a href="" class="extype" name="pfb.PFBIO">PFBIO</a>.this.type</span>
+        <span class="name">chiselCloneType</span><span class="params">(<span class="implicit">implicit </span><span name="compileOptions">compileOptions: <span class="extype" name="chisel3.core.CompileOptions">CompileOptions</span></span>)</span><span class="result">: <a href="" class="extype" name="fft.FFTIO">FFTIO</a>.this.type</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@chiselCloneType(implicitcompileOptions:chisel3.core.CompileOptions):Data.this.type" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@chiselCloneType(implicitcompileOptions:chisel3.core.CompileOptions):Data.this.type" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -262,7 +262,7 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@clone():Object" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@clone():Object" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -275,55 +275,21 @@
         </dd></dl></div>
     </li><li name="chisel3.core.Bundle#cloneType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="cloneType:Bundle.this.type"></a>
-      <a id="cloneType:PFBIO.this.type"></a>
+      <a id="cloneType:FFTIO.this.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">cloneType</span><span class="result">: <a href="" class="extype" name="pfb.PFBIO">PFBIO</a>.this.type</span>
+        <span class="name">cloneType</span><span class="result">: <a href="" class="extype" name="fft.FFTIO">FFTIO</a>.this.type</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@cloneType:Bundle.this.type" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@cloneType:Bundle.this.type" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Bundle → Data</dd></dl></div>
-    </li><li name="pfb.PFBIO#data_in" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="data_in:dsptools.junctions.ValidWithSync[chisel3.core.Vec[T]]"></a>
-      <a id="data_in:ValidWithSync[Vec[T]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">data_in</span><span class="result">: <span class="extype" name="dsptools.junctions.ValidWithSync">ValidWithSync</span>[<span class="extype" name="chisel3.core.Vec">Vec</span>[<span class="extype" name="pfb.PFBIO.T">T</span>]]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@data_in:dsptools.junctions.ValidWithSync[chisel3.core.Vec[T]]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
-    </li><li name="pfb.PFBIO#data_out" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="data_out:dsptools.junctions.ValidWithSync[chisel3.core.Vec[T]]"></a>
-      <a id="data_out:ValidWithSync[Vec[T]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">data_out</span><span class="result">: <span class="extype" name="dsptools.junctions.ValidWithSync">ValidWithSync</span>[<span class="extype" name="chisel3.core.Vec">Vec</span>[<span class="extype" name="pfb.PFBIO.T">T</span>]]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@data_out:dsptools.junctions.ValidWithSync[chisel3.core.Vec[T]]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
     </li><li name="chisel3.core.Aggregate#do_asUInt" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="do_asUInt(implicitsourceInfo:chisel3.internal.sourceinfo.SourceInfo):chisel3.core.UInt"></a>
       <a id="do_asUInt(SourceInfo):UInt"></a>
@@ -336,28 +302,28 @@
         <span class="name">do_asUInt</span><span class="params">(<span class="implicit">implicit </span><span name="sourceInfo">sourceInfo: <span class="extype" name="chisel3.internal.sourceinfo.SourceInfo">SourceInfo</span></span>)</span><span class="result">: <span class="extype" name="chisel3.core.UInt">UInt</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@do_asUInt(implicitsourceInfo:chisel3.internal.sourceinfo.SourceInfo):chisel3.core.UInt" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@do_asUInt(implicitsourceInfo:chisel3.internal.sourceinfo.SourceInfo):chisel3.core.UInt" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Aggregate → Data</dd></dl></div>
-    </li><li name="chisel3.core.Data#do_fromBits" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="do_fromBits(that:chisel3.core.Bits)(implicitsourceInfo:chisel3.internal.sourceinfo.SourceInfo,implicitcompileOptions:chisel3.core.CompileOptions):Data.this.type"></a>
-      <a id="do_fromBits(Bits)(SourceInfo,CompileOptions):PFBIO.this.type"></a>
+    </li><li name="chisel3.core.Aggregate#do_fromBits" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="do_fromBits(that:chisel3.core.Bits)(implicitsourceInfo:chisel3.internal.sourceinfo.SourceInfo,implicitcompileOptions:chisel3.core.CompileOptions):Aggregate.this.type"></a>
+      <a id="do_fromBits(Bits)(SourceInfo,CompileOptions):FFTIO.this.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">do_fromBits</span><span class="params">(<span name="that">that: <span class="extype" name="chisel3.core.Bits">Bits</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="sourceInfo">sourceInfo: <span class="extype" name="chisel3.internal.sourceinfo.SourceInfo">SourceInfo</span></span>, <span name="compileOptions">compileOptions: <span class="extype" name="chisel3.core.CompileOptions">CompileOptions</span></span>)</span><span class="result">: <a href="" class="extype" name="pfb.PFBIO">PFBIO</a>.this.type</span>
+        <span class="name">do_fromBits</span><span class="params">(<span name="that">that: <span class="extype" name="chisel3.core.Bits">Bits</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="sourceInfo">sourceInfo: <span class="extype" name="chisel3.internal.sourceinfo.SourceInfo">SourceInfo</span></span>, <span name="compileOptions">compileOptions: <span class="extype" name="chisel3.core.CompileOptions">CompileOptions</span></span>)</span><span class="result">: <a href="" class="extype" name="fft.FFTIO">FFTIO</a>.this.type</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@do_fromBits(that:chisel3.core.Bits)(implicitsourceInfo:chisel3.internal.sourceinfo.SourceInfo,implicitcompileOptions:chisel3.core.CompileOptions):Data.this.type" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@do_fromBits(that:chisel3.core.Bits)(implicitsourceInfo:chisel3.internal.sourceinfo.SourceInfo,implicitcompileOptions:chisel3.core.CompileOptions):Aggregate.this.type" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Data</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Aggregate → Data</dd></dl></div>
     </li><li name="chisel3.core.Bundle#elements" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="elements:scala.collection.immutable.ListMap[String,chisel3.core.Data]"></a>
       <a id="elements:ListMap[String,Data]"></a>
@@ -370,7 +336,7 @@
         <span class="name">elements</span><span class="result">: <span class="extype" name="scala.collection.immutable.ListMap">ListMap</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="chisel3.core.Data">Data</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@elements:scala.collection.immutable.ListMap[String,chisel3.core.Data]" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@elements:scala.collection.immutable.ListMap[String,chisel3.core.Data]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -387,7 +353,7 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -404,7 +370,7 @@
         <span class="name">equals</span><span class="params">(<span name="that">that: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@equals(that:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@equals(that:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -421,7 +387,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@finalize():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@finalize():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -434,21 +400,72 @@
         </dd></dl></div>
     </li><li name="chisel3.core.Data#fromBits" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fromBits(that:chisel3.core.Bits):Data.this.type"></a>
-      <a id="fromBits(Bits):PFBIO.this.type"></a>
+      <a id="fromBits(Bits):FFTIO.this.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">macro </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">fromBits</span><span class="params">(<span name="that">that: <span class="extype" name="chisel3.core.Bits">Bits</span></span>)</span><span class="result">: <a href="" class="extype" name="pfb.PFBIO">PFBIO</a>.this.type</span>
+        <span class="name">fromBits</span><span class="params">(<span name="that">that: <span class="extype" name="chisel3.core.Bits">Bits</span></span>)</span><span class="result">: <a href="" class="extype" name="fft.FFTIO">FFTIO</a>.this.type</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@fromBits(that:chisel3.core.Bits):Data.this.type" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@fromBits(that:chisel3.core.Bits):Data.this.type" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Data</dd></dl></div>
+    </li><li name="dspblocks.HasGenParameters#genExternal" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="genExternal:dspblocks.GenParameters"></a>
+      <a id="genExternal:GenParameters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">genExternal</span><span class="result">: <span class="extype" name="dspblocks.GenParameters">GenParameters</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.FFTIO@genExternal:dspblocks.GenParameters" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenParameters</dd></dl></div>
+    </li><li name="dspblocks.HasGenParameters#genIn" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="genIn(dummy:Int):T"></a>
+      <a id="genIn(Int):DspComplex[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">genIn</span><span class="params">(<span name="dummy">dummy: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="dsptools.numbers.DspComplex">DspComplex</span>[<span class="extype" name="fft.FFTIO.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.FFTIO@genIn(dummy:Int):T" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenParameters</dd></dl></div>
+    </li><li name="dspblocks.HasGenParameters#genOut" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="genOut(dummy:Int):V"></a>
+      <a id="genOut(Int):DspComplex[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">genOut</span><span class="params">(<span name="dummy">dummy: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="dsptools.numbers.DspComplex">DspComplex</span>[<span class="extype" name="fft.FFTIO.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.FFTIO@genOut(dummy:Int):V" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenParameters</dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -461,7 +478,7 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -478,7 +495,7 @@
         <span class="name">getWidth</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@getWidth:Int" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@getWidth:Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -495,11 +512,28 @@
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@hashCode():Int" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@hashCode():Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → AnyRef → Any</dd></dl></div>
+    </li><li name="fft.FFTIO#in" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="in:dspjunctions.ValidWithSync[chisel3.core.Vec[dsptools.numbers.DspComplex[T]]]"></a>
+      <a id="in:ValidWithSync[Vec[DspComplex[T]]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">in</span><span class="result">: <span class="extype" name="dspjunctions.ValidWithSync">ValidWithSync</span>[<span class="extype" name="chisel3.core.Vec">Vec</span>[<span class="extype" name="dsptools.numbers.DspComplex">DspComplex</span>[<span class="extype" name="fft.FFTIO.T">T</span>]]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.FFTIO@in:dspjunctions.ValidWithSync[chisel3.core.Vec[dsptools.numbers.DspComplex[T]]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
     </li><li name="chisel3.internal.HasId#instanceName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="instanceName:String"></a>
       <a id="instanceName:String"></a>
@@ -512,7 +546,7 @@
         <span class="name">instanceName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@instanceName:String" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@instanceName:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -529,7 +563,7 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -546,7 +580,7 @@
         <span class="name">isLit</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@isLit():Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@isLit():Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -563,11 +597,45 @@
         <span class="name">isWidthKnown</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@isWidthKnown:Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@isWidthKnown:Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Data</dd></dl></div>
+    </li><li name="dspblocks.HasGenParameters#lanesIn" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="lanesIn:Int"></a>
+      <a id="lanesIn:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">lanesIn</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.FFTIO@lanesIn:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenParameters</dd></dl></div>
+    </li><li name="dspblocks.HasGenParameters#lanesOut" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="lanesOut:Int"></a>
+      <a id="lanesOut:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">lanesOut</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.FFTIO@lanesOut:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenParameters</dd></dl></div>
     </li><li name="chisel3.core.Data#litArg" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="litArg():Option[chisel3.internal.firrtl.LitArg]"></a>
       <a id="litArg():Option[LitArg]"></a>
@@ -580,7 +648,7 @@
         <span class="name">litArg</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="chisel3.internal.firrtl.LitArg">LitArg</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@litArg():Option[chisel3.internal.firrtl.LitArg]" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@litArg():Option[chisel3.internal.firrtl.LitArg]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -597,7 +665,7 @@
         <span class="name">litValue</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.BigInt">BigInt</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@litValue():BigInt" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@litValue():BigInt" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -614,7 +682,7 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -631,7 +699,7 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@notify():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@notify():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -648,28 +716,45 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="pfb.PFBIO#overflow" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="overflow:chisel3.core.Bool"></a>
-      <a id="overflow:Bool"></a>
+    </li><li name="fft.FFTIO#out" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="out:dspjunctions.ValidWithSync[chisel3.core.Vec[dsptools.numbers.DspComplex[T]]]"></a>
+      <a id="out:ValidWithSync[Vec[DspComplex[T]]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">overflow</span><span class="result">: <span class="extype" name="chisel3.core.Bool">Bool</span></span>
+        <span class="name">out</span><span class="result">: <span class="extype" name="dspjunctions.ValidWithSync">ValidWithSync</span>[<span class="extype" name="chisel3.core.Vec">Vec</span>[<span class="extype" name="dsptools.numbers.DspComplex">DspComplex</span>[<span class="extype" name="fft.FFTIO.T">T</span>]]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@overflow:chisel3.core.Bool" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@out:dspjunctions.ValidWithSync[chisel3.core.Vec[dsptools.numbers.DspComplex[T]]]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
+    </li><li name="fft.FFTIO#p" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="p:cde.Parameters"></a>
+      <a id="p:Parameters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">p</span><span class="result">: <span class="extype" name="cde.Parameters">Parameters</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fft.FFTIO@p:cde.Parameters" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="fft.FFTIO">FFTIO</a> → HasGenParameters</dd></dl></div>
     </li><li name="chisel3.internal.HasId#parentModName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="parentModName:String"></a>
       <a id="parentModName:String"></a>
@@ -682,7 +767,7 @@
         <span class="name">parentModName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@parentModName:String" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@parentModName:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -699,7 +784,7 @@
         <span class="name">parentPathName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@parentPathName:String" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@parentPathName:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -716,24 +801,24 @@
         <span class="name">pathName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@pathName:String" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@pathName:String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → InstanceId</dd></dl></div>
     </li><li name="chisel3.internal.HasId#suggestName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="suggestName(name:=&gt;String):HasId.this.type"></a>
-      <a id="suggestName(⇒String):PFBIO.this.type"></a>
+      <a id="suggestName(⇒String):FFTIO.this.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">suggestName</span><span class="params">(<span name="name">name: ⇒ <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="pfb.PFBIO">PFBIO</a>.this.type</span>
+        <span class="name">suggestName</span><span class="params">(<span name="name">name: ⇒ <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="fft.FFTIO">FFTIO</a>.this.type</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@suggestName(name:=&gt;String):HasId.this.type" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@suggestName(name:=&gt;String):HasId.this.type" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -750,7 +835,7 @@
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -767,7 +852,7 @@
         <span class="name">toPrintable</span><span class="result">: <span class="extype" name="chisel3.core.Printable">Printable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@toPrintable:chisel3.core.Printable" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@toPrintable:chisel3.core.Printable" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -784,7 +869,7 @@
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@toString():String" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@toString():String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -801,7 +886,7 @@
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@wait():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@wait():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -824,7 +909,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -847,7 +932,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -870,7 +955,7 @@
         <span class="name">widthOption</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Int">Int</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@widthOption:Option[Int]" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@widthOption:Option[Int]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -894,7 +979,7 @@
         <span class="name deprecated" title="Deprecated: (Since version chisel3) Best alternative, .asUInt()">toBits</span><span class="params">()</span><span class="result">: <span class="extype" name="chisel3.core.UInt">UInt</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBIO@toBits():chisel3.core.UInt" title="Permalink" target="_top">
+      <a href="../index.html#fft.FFTIO@toBits():chisel3.core.UInt" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -907,7 +992,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="chisel3.core.Bundle">
+        <div class="parent" name="dspblocks.HasGenParameters">
+              <h3>Inherited from <span class="extype" name="dspblocks.HasGenParameters">HasGenParameters</span>[<span class="extype" name="dsptools.numbers.DspComplex">DspComplex</span>[<span class="extype" name="fft.FFTIO.T">T</span>], <span class="extype" name="dsptools.numbers.DspComplex">DspComplex</span>[<span class="extype" name="fft.FFTIO.T">T</span>]]</h3>
+            </div><div class="parent" name="chisel3.core.Bundle">
               <h3>Inherited from <span class="extype" name="chisel3.core.Bundle">Bundle</span></h3>
             </div><div class="parent" name="chisel3.core.Aggregate">
               <h3>Inherited from <span class="extype" name="chisel3.core.Aggregate">Aggregate</span></h3>
