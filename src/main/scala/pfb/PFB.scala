@@ -8,10 +8,8 @@ package pfb
 import chisel3._
 import chisel3.util.Counter
 import dspjunctions.ValidWithSync
-import dsptools.numbers.Real
+import dsptools.numbers._
 import dsptools.numbers.implicits._
-import spire.algebra.Ring
-import spire.math.{ConvertableFrom, ConvertableTo}
 import dsptools.counters._
 
 /**
@@ -37,7 +35,7 @@ class PFBIO[T <: Data](genIn: => T,
   * @param config PFB configuration object, includes the window function.
   * @tparam T
   */
-class PFB[T<:Data:Real](genIn: => T,
+class PFB[T<:Data:Ring:ConvertableTo](genIn: => T,
                         genOut: => Option[T] = None,
                         genTap: => Option[T] = None,
                         val config: PFBConfig = PFBConfig()
@@ -121,14 +119,14 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
   val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
   val coeffsWire     = coeffsReversed.map(tapGroup => {
     val coeffWire = Wire(Vec(tapGroup.length, genTap.getOrElse(genIn)))
-    coeffWire.zip(tapGroup).foreach({case (t,d) => t := ConvertableTo[T].fromType(d)})
+    coeffWire.zip(tapGroup).foreach({case (t,d) => t := implicitly[ConvertableTo[T]].fromType(d)})
     coeffWire
   })
 
   val products = coeffsWire.map(tap => tap(count.value) * io.data_in)
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
-    prod + ShiftRegisterMem(delay, prev, en = en, init = Some(Ring[T].zero))
+    prod + ShiftRegisterMem(delay, prev, en = en, init = Some(implicitly[Ring[T]].zero))
   }
 
   io.data_out := result

@@ -10,6 +10,7 @@ import java.math.BigInteger
 import rocketchip._
 import junctions._
 import cde.Parameters
+import dspblocks._
 import dspjunctions._
 import dspblocks._
 import dsptools._
@@ -361,8 +362,8 @@ trait DspGeneratorApp extends GeneratorApp {
   }
 
   def generateIPXact {
-    val bits_in = params(DspBlockKey).inputWidth
-    val bits_out = params(DspBlockKey).outputWidth
+    val bits_in = params(DspBlockKey(params(DspBlockId))).inputWidth
+    val bits_out = params(DspBlockKey(params(DspBlockId))).outputWidth
     val factory = new ObjectFactory
     val memMapName = "mm"
 

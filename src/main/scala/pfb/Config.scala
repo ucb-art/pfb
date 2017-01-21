@@ -7,6 +7,7 @@ import chisel3._
 import dsptools._
 import dsptools.numbers.{DspReal, Real}
 import dsptools.numbers.implicits._
+import dspblocks._
 import dspjunctions._
 import dspblocks._
 import _root_.junctions._
@@ -50,8 +51,9 @@ class DspConfig extends Config(
           maxManagerXacts = 1,
           dataBeats = 1,
           dataBits = 64)
-    case DspBlockKey => DspBlockParameters(site(TotalWidth)*site(GenKey).lanesIn, site(TotalWidth)*site(GenKey).lanesIn)
-    case GenKey => new GenParameters {
+    case DspBlockKey("pfb") => DspBlockParameters(site(TotalWidth)*site(GenKey).lanesIn, site(TotalWidth)*site(GenKey).lanesIn)
+    case DspBlockId => "pfb"
+    case GenKey("pfb") => new GenParameters {
       def getReal(): DspReal = DspReal(0.0).cloneType
       //def getReal(): FixedPoint = FixedPoint(width=site(TotalWidth), binaryPoint=site(FractionalBits)) 
       def genIn [T <: Data] = getReal().asInstanceOf[T]

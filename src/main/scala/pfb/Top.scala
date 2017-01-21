@@ -10,6 +10,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.iotesters._
 import firrtl_interpreter.InterpreterOptions
+import dspblocks._
 import dsptools.numbers.{DspReal, SIntOrder, SIntRing}
 import dsptools.{DspContext, DspTester, Grow}
 import org.scalatest.{FlatSpec, Matchers}
