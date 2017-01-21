@@ -32,7 +32,7 @@ class DspConfig extends Config(
     case NumTaps => 2
     case TotalWidth => 16
     case FractionalBits => 8
-    case PFBKey => PFBConfig(numTaps=site(NumTaps), parallelism=site(GenKey).lanesIn)
+    case PFBKey => PFBConfig(numTaps=site(NumTaps), parallelism=site(GenKey(site(DspBlockId))).lanesIn)
     case NastiKey => NastiParameters(64, 32, 1)
     case PAddrBits => 32
     case CacheBlockOffsetBits => 6
@@ -51,8 +51,8 @@ class DspConfig extends Config(
           maxManagerXacts = 1,
           dataBeats = 1,
           dataBits = 64)
-    case DspBlockKey("pfb") => DspBlockParameters(site(TotalWidth)*site(GenKey).lanesIn, site(TotalWidth)*site(GenKey).lanesIn)
     case DspBlockId => "pfb"
+    case DspBlockKey("pfb") => DspBlockParameters(site(TotalWidth)*site(GenKey(site(DspBlockId))).lanesIn, site(TotalWidth)*site(GenKey(site(DspBlockId))).lanesIn)
     case GenKey("pfb") => new GenParameters {
       def getReal(): DspReal = DspReal(0.0).cloneType
       //def getReal(): FixedPoint = FixedPoint(width=site(TotalWidth), binaryPoint=site(FractionalBits)) 
@@ -70,7 +70,7 @@ class DspConfig extends Config(
 
     // Conjure up some IPXACT synthsized parameters.
     val numTaps = params(NumTaps)
-    val gk = params(GenKey)
+    val gk = params(GenKey(params(DspBlockId)))
     parameterMap ++= List(("nTaps", numTaps.toString), ("InputLanes", gk.lanesIn.toString),
       ("InputTotalBits", params(TotalWidth).toString), ("OutputLanes", gk.lanesOut.toString), ("OutputTotalBits", params(TotalWidth).toString),
       ("OutputPartialBitReversed", "1"))
