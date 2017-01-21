@@ -12,6 +12,7 @@ import dsptools.numbers.Real
 import dsptools.numbers.implicits._
 import spire.algebra.Ring
 import spire.math.{ConvertableFrom, ConvertableTo}
+import dsptools.counters._
 
 /**
   * IO Bundle for PFB
@@ -59,11 +60,11 @@ class PFB[T<:Data:Real](genIn: => T,
   io.data_out.valid := ShiftRegisterWithReset(io.data_in.valid, cycleTime*config.numTaps, 0.U)
 
   // feed in zeros when invalid
-  val in = Wire(Vec(lanesIn, genIn))
-  when (io.in.valid) {
-    in := io.in.bits
+  val in = Wire(Vec(config.parallelism, genIn))
+  when (io.data_in.valid) {
+    in := io.data_in.bits
   } .otherwise {
-    in := Wire(Vec(lanesIn, implicitly[Real[T]].zero))
+    in := Wire(Vec(config.parallelism, implicitly[Real[T]].zero))
   }
 
   val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime)))
