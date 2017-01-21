@@ -27,3 +27,9 @@ verilog: $(build_dir)/$(PROJECT).$(MODEL).$(CONFIG).v
 
 test: $(all_stamps)
 	$(SBT) test
+
+travis: $(all_stamps)
+	$(SBT) travis:test
+
+pages: $(all_stamps)
+	$(SBT) ghpagesPushSite
