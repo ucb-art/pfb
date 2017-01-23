@@ -34,7 +34,9 @@ class ShiftRegisterMem[T <: Data](n: Int, inT: => T, init: => Option[T] = None) 
       when (count.value === UInt(n-1)) {
         init_done := Bool(true)
       }
-      Mux(init_done, mem(count.value), i)
+      val init_wire = Wire(io.in.cloneType)
+      init_wire := i
+      Mux(init_done, mem(count.value), init_wire)
     case None => mem(count.value)
   }
   io.out := out
