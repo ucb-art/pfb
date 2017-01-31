@@ -4,8 +4,10 @@ package pfb
 
 import cde._
 import chisel3._
+import chisel3.experimental._
+import craft._
 import dsptools._
-import dsptools.numbers.{DspReal, Real}
+import dsptools.numbers.{Field=>_,_}
 import dsptools.numbers.implicits._
 import dspblocks._
 import dspjunctions._
@@ -13,90 +15,56 @@ import dspblocks._
 import _root_.junctions._
 import uncore.tilelink._
 import uncore.coherence._
-import pfb.Generator.params
 import scala.collection.mutable.Map
 
-trait HasIPXACTParameters {
-  def getIPXACTParameters: Map[String, String]
+object PFBConfigBuilder {
+  def apply[T <: Data : Ring : ConvertableTo](
+    id:String, pfbConfig: PFBConfig, gen: () => T): Config = new Config(
+      (pname, site, here) => pname match {
+        case PFBKey(id) => pfbConfig
+        case IPXACTParameters(id) => {
+          val parameterMap = Map[String, String]()
+      
+          // Conjure up some IPXACT synthsized parameters.
+          val numTaps = pfbConfig.numTaps
+          val gk = site(GenKey(site(DspBlockId)))
+          val inputLanes = gk.lanesIn
+          val outputLanes = gk.lanesOut
+          val inputTotalBits = gk.genIn.getWidth * inputLanes
+          val outputTotalBits = gk.genOut.getWidth * outputLanes
+          parameterMap ++= List(("nTaps", numTaps.toString), ("InputLanes", inputLanes.toString),
+            ("InputTotalBits", inputTotalBits.toString), ("OutputLanes", outputLanes.toString), ("OutputTotalBits", outputTotalBits.toString),
+            ("OutputPartialBitReversed", "1"))
+      
+          // add fractional bits if it's fixed point
+          gen () match {
+            case fp: FixedPoint =>
+              parameterMap ++= List(("InputFractionalBits", fp.binaryPoint.toString))
+              parameterMap ++= List(("OutputFractionalBits", fp.binaryPoint.toString))
+          }
+          // Coefficients
+          parameterMap ++= pfbConfig.window.zipWithIndex.map{case (coeff, index) => (s"FilterCoefficients$index", coeff.toString)}
+          parameterMap ++= List(("FilterScale", "1"))
+      
+          // tech stuff, TODO
+          parameterMap ++= List(("ClockRate", "100"), ("Technology", "TSMC16nm"))
+      
+          parameterMap
+        }
+      }) ++
+    ConfigBuilder.dspBlockParams(id, pfbConfig.parallelism, gen)
+  def standalone[T <: Data : Ring : ConvertableTo](id: String, pfbConfig: PFBConfig, gen: () => T): Config =
+    apply(id, pfbConfig, gen) ++
+    ConfigBuilder.buildDSP(id, {implicit p: Parameters => new LazyPFBBlock[T]})
 }
 
-case object NumTaps extends Field[Int]
-case object TotalWidth extends Field[Int]
-case object FractionalBits extends Field[Int]
+class DefaultStandaloneRealPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => DspReal()))
 
-class DspConfig extends Config(
-  (pname, site, here) => pname match {
-    case BuildDSP => q:Parameters =>
-      implicit val p = q
-      new LazyPFBBlock[DspReal]
-    case NumTaps => 2
-    case TotalWidth => 16
-    case FractionalBits => 8
-    case PFBKey => PFBConfig(numTaps=site(NumTaps), parallelism=site(GenKey(site(DspBlockId))).lanesIn)
-    case NastiKey => NastiParameters(64, 32, 1)
-    case PAddrBits => 32
-    case CacheBlockOffsetBits => 6
-    case AmoAluOperandBits => 64
-    case BaseAddr => 0
-    case TLId => "PFB"
-    case TLKey("PFB") =>
-        TileLinkParameters(
-          coherencePolicy = new MICoherence(
-            new NullRepresentation(1)),
-          nManagers = 1,
-          nCachingClients = 0,
-          nCachelessClients = 1,
-          maxClientXacts = 4,
-          maxClientsPerPort = 1,
-          maxManagerXacts = 1,
-          dataBeats = 1,
-          dataBits = 64)
-    case DspBlockId => "pfb"
-    case DspBlockKey("pfb") => DspBlockParameters(site(TotalWidth)*site(GenKey(site(DspBlockId))).lanesIn, site(TotalWidth)*site(GenKey(site(DspBlockId))).lanesIn)
-    case GenKey("pfb") => new GenParameters {
-      def getReal(): DspReal = DspReal(0.0).cloneType
-      //def getReal(): FixedPoint = FixedPoint(width=site(TotalWidth), binaryPoint=site(FractionalBits)) 
-      def genIn [T <: Data] = getReal().asInstanceOf[T]
-      override def genOut[T <: Data] = getReal().asInstanceOf[T]
-      val lanesIn = 2
-      override val lanesOut = 2
-    }
-    case _ => throw new CDEMatchError
-  }) with HasIPXACTParameters {
-
-  def getIPXACTParameters: Map[String, String] = {
-
-    val parameterMap = Map[String, String]()
-
-    // Conjure up some IPXACT synthsized parameters.
-    val numTaps = params(NumTaps)
-    val gk = params(GenKey(params(DspBlockId)))
-    parameterMap ++= List(("nTaps", numTaps.toString), ("InputLanes", gk.lanesIn.toString),
-      ("InputTotalBits", params(TotalWidth).toString), ("OutputLanes", gk.lanesOut.toString), ("OutputTotalBits", params(TotalWidth).toString),
-      ("OutputPartialBitReversed", "1"))
-
-    // add fractional bits if it's fixed point
-    // TODO: check if it's fixed point or not
-    parameterMap ++= List(("InputFractionalBits", params(FractionalBits).toString), 
-      ("OutputFractionalBits", params(FractionalBits).toString))
-
-    // Coefficients
-    val config = params(PFBKey)
-    parameterMap ++= config.window.zipWithIndex.map{case (coeff, index) => (s"FilterCoefficients$index", coeff.toString)}
-    parameterMap ++= List(("FilterScale", "1"))
-
-    // tech stuff, TODO
-    parameterMap ++= List(("ClockRate", "100"), ("Technology", "TSMC16nm"))
-
-    parameterMap
-  }
-}
-
-case object PFBKey extends Field[PFBConfig]
+case class PFBKey(id: String) extends Field[PFBConfig]
 
 trait HasPFBParameters[T <: Data] extends HasGenParameters[T, T] {
   implicit val p: Parameters
-  val pfbConfig = p(PFBKey)
+  val pfbConfig = p(PFBKey(p(DspBlockId)))
   def genTap: Option[T] = None
 }
 
