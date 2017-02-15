@@ -32,15 +32,20 @@ object PFBConfigBuilder {
           val outputLanes = gk.lanesOut
           val inputTotalBits = gk.genIn.getWidth * inputLanes
           val outputTotalBits = gk.genOut.getWidth * outputLanes
-          parameterMap ++= List(("nTaps", numTaps.toString), ("InputLanes", inputLanes.toString),
-            ("InputTotalBits", inputTotalBits.toString), ("OutputLanes", outputLanes.toString), ("OutputTotalBits", outputTotalBits.toString),
-            ("OutputPartialBitReversed", "1"))
+          parameterMap ++= List(
+            ("nTaps", numTaps.toString), 
+            ("InputLanes", inputLanes.toString),
+            ("InputTotalBits", inputTotalBits.toString), 
+            ("OutputLanes", outputLanes.toString), 
+            ("OutputTotalBits", outputTotalBits.toString),
+            ("OutputPartialBitReversed", "1")
+          )
       
           // add fractional bits if it's fixed point
           gen () match {
             case fp: FixedPoint =>
-              parameterMap ++= List(("InputFractionalBits", fp.binaryPoint.toString))
-              parameterMap ++= List(("OutputFractionalBits", fp.binaryPoint.toString))
+              parameterMap ++= List(("InputFractionalBits", fp.binaryPoint.get.toString))
+              parameterMap ++= List(("OutputFractionalBits", fp.binaryPoint.get.toString))
           }
           // Coefficients
           parameterMap ++= pfbConfig.window.zipWithIndex.map{case (coeff, index) => (s"FilterCoefficients$index", coeff.toString)}
