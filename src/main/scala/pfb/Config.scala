@@ -27,7 +27,7 @@ object PFBConfigBuilder {
       
           // Conjure up some IPXACT synthsized parameters.
           val numTaps = pfbConfig.numTaps
-          val gk = site(GenKey(site(DspBlockId)))
+          val gk = site(GenKey(id))
           val inputLanes = gk.lanesIn
           val outputLanes = gk.lanesOut
           val inputTotalBits = gk.genIn.getWidth * inputLanes
