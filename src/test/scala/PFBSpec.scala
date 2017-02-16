@@ -8,6 +8,7 @@ import breeze.linalg._
 import breeze.numerics.abs
 import breeze.signal.fourierTr
 import chisel3._
+import chisel3.experimental._
 import chisel3.iotesters.{PeekPokeTester, TesterOptionsManager}
 import co.theasi.plotly._
 import cde.Parameters
@@ -179,6 +180,35 @@ class PFBSpec extends FlatSpec with Matchers {
     } should be(true)
   }
 
+  it should "build with FixedPoint" in {
+    chisel3.iotesters.Driver(() => new PFB(FixedPoint(10.W, 5.BP), Some(FixedPoint(16.W, 7.BP)),
+      config = PFBConfig(
+        outputWindowSize = 4, numTaps = 4, parallelism = 2
+      ))) {
+      c => new PFBTester(c)
+    } should be(true)
+  }
+
+  it should "build any parameterization" in {
+    val numTaps = Seq(1, 7, 16, 43)
+    val outputWindowSize = Seq(4, 256, 1024)
+    val parallelism = Seq(2, 8)
+    for (i <- numTaps) {
+      for (j <- outputWindowSize) {
+        for (k <- parallelism) {
+          if (k <= j) {
+            chisel3.iotesters.Driver(() => new PFB(FixedPoint(4.W, 2.BP), Some(FixedPoint(2.W, 7.BP)),
+              config = PFBConfig(
+                outputWindowSize = j, numTaps = i, parallelism = k
+              ))) {
+              c => new PFBTester(c)
+            } should be(true)
+          }
+        }
+      }
+    }
+  }
+
   ignore should "have the correct step response" in {
     {
       val config = PFBConfig(
@@ -214,9 +244,9 @@ class PFBSpec extends FlatSpec with Matchers {
       windowFunc = blackmanHarris.apply,
       numTaps = 8,
       outputWindowSize = 256,
-      parallelism=8
+      parallelism=16
     )
-    leakageTester( () => new PFB(DspReal(), config=config), config, numBins = 5, samples_per_bin = 5 )
+    leakageTester( () => new PFB(FixedPoint(32.W, 16.BP), config=config), config, numBins = 5, samples_per_bin = 5 )
   }
 
   behavior of "PFBLane"

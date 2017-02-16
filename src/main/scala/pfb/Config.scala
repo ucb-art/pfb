@@ -19,7 +19,7 @@ import scala.collection.mutable.Map
 
 object PFBConfigBuilder {
   def apply[T <: Data : Ring : ConvertableTo](
-    id:String, pfbConfig: PFBConfig, gen: () => T): Config = new Config(
+    id: String, pfbConfig: PFBConfig, genIn: () => T, genOut: Option[() => T] = None): Config = new Config(
       (pname, site, here) => pname match {
         case PFBKey(id) => pfbConfig
         case IPXACTParameters(id) => {
@@ -42,11 +42,23 @@ object PFBConfigBuilder {
           )
       
           // add fractional bits if it's fixed point
-          gen () match {
+          genIn() match {
             case fp: FixedPoint =>
-              parameterMap ++= List(("InputFractionalBits", fp.binaryPoint.get.toString))
-              parameterMap ++= List(("OutputFractionalBits", fp.binaryPoint.get.toString))
+              val fractionalBits = fp.binaryPoint
+              parameterMap ++= List(
+                ("InputFractionalBits", fractionalBits.get.toString)
+              )
+            case _ =>
           }
+          genOut.getOrElse(genIn)() match {
+            case fp: FixedPoint =>
+              val fractionalBits = fp.binaryPoint
+              parameterMap ++= List(
+                ("OutputFractionalBits", fractionalBits.get.toString)
+              )
+            case _ =>
+          }
+
           // Coefficients
           parameterMap ++= pfbConfig.window.zipWithIndex.map{case (coeff, index) => (s"FilterCoefficients$index", coeff.toString)}
           parameterMap ++= List(("FilterScale", "1"))
@@ -57,13 +69,14 @@ object PFBConfigBuilder {
           parameterMap
         }
       }) ++
-    ConfigBuilder.dspBlockParams(id, pfbConfig.parallelism, gen)
-  def standalone[T <: Data : Ring : ConvertableTo](id: String, pfbConfig: PFBConfig, gen: () => T): Config =
-    apply(id, pfbConfig, gen) ++
+  ConfigBuilder.dspBlockParams(id, pfbConfig.parallelism, genIn, genOutFunc = genOut)
+  def standalone[T <: Data : Ring : ConvertableTo](id: String, pfbConfig: PFBConfig, genIn: () => T, genOut: Option[() => T] = None): Config =
+    apply(id, pfbConfig, genIn, genOut) ++
     ConfigBuilder.buildDSP(id, {implicit p: Parameters => new LazyPFBBlock[T]})
 }
 
 class DefaultStandaloneRealPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => DspReal()))
+class DefaultStandaloneFixedPointPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(parallelism=16), () => FixedPoint(32.W, 16.BP)))
 
 case class PFBKey(id: String) extends Field[PFBConfig]
 

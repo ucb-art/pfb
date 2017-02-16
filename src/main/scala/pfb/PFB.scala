@@ -6,7 +6,6 @@
 package pfb
 
 import chisel3._
-import chisel3.util.Counter
 import dspjunctions.ValidWithSync
 import dsptools.numbers._
 import dsptools.numbers.implicits._
@@ -48,13 +47,9 @@ class PFB[T<:Data:Ring:ConvertableTo](genIn: => T,
   )
 
   val cycleTime = config.outputWindowSize / config.parallelism
-  val counter = Counter(cycleTime)
-  counter.inc()
-  when (io.data_in.sync) {
-    if (cycleTime > 1) counter.value := 0.U //counter.restart()
-  }
+  val counter = CounterWithReset(true.B, cycleTime, io.data_in.sync)._1
 
-  io.data_out.sync := counter.value === 0.U
+  io.data_out.sync := counter === 0.U
   io.data_out.valid := ShiftRegisterWithReset(io.data_in.valid, cycleTime*config.numTaps, 0.U)
 
   // feed in zeros when invalid
@@ -108,12 +103,7 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
   require(coeffs.length % delay == 0)
 
   val en = io.valid_in
-  val count = Counter(delay)
-
-  when (en) { count.inc() }
-  when (io.sync_in) {
-    count.value := 0.U
-  }
+  val count = CounterWithReset(en, delay, io.sync_in)._1
 
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
   val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
@@ -123,7 +113,7 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
     coeffWire
   })
 
-  val products = coeffsWire.map(tap => tap(count.value) * io.data_in)
+  val products = coeffsWire.map(tap => tap(count) * io.data_in)
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
     prod + ShiftRegisterMem(delay, prev, en = en, init = Some(implicitly[Ring[T]].zero))
