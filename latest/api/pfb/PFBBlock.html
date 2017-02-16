@@ -89,7 +89,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="pfb.PFBBlock#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(outer:dspblocks.LazyDspBlock)(implicitevidence$2:dsptools.numbers.Real[T],implicitp:cde.Parameters):pfb.PFBBlock[T]"></a>
+      <a id="&lt;init&gt;(outer:dspblocks.LazyDspBlock)(implicitevidence$3:dsptools.numbers.Ring[T],implicitevidence$4:dsptools.numbers.ConvertableTo[T],implicitp:cde.Parameters):pfb.PFBBlock[T]"></a>
       <a id="&lt;init&gt;:PFBBlock[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -97,10 +97,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">PFBBlock</span><span class="params">(<span name="outer">outer: <span class="extype" name="dspblocks.LazyDspBlock">LazyDspBlock</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="dsptools.numbers.Real">Real</span>[<span class="extype" name="pfb.PFBBlock.T">T</span>]</span>, <span name="p">p: <span class="extype" name="cde.Parameters">Parameters</span></span>)</span>
+        <span class="name">PFBBlock</span><span class="params">(<span name="outer">outer: <span class="extype" name="dspblocks.LazyDspBlock">LazyDspBlock</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="dsptools.numbers.Ring">Ring</span>[<span class="extype" name="pfb.PFBBlock.T">T</span>]</span>, <span name="arg1">arg1: <span class="extype" name="dsptools.numbers.ConvertableTo">ConvertableTo</span>[<span class="extype" name="pfb.PFBBlock.T">T</span>]</span>, <span name="p">p: <span class="extype" name="cde.Parameters">Parameters</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBBlock@&lt;init&gt;(outer:dspblocks.LazyDspBlock)(implicitevidence$2:dsptools.numbers.Real[T],implicitp:cde.Parameters):pfb.PFBBlock[T]" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFBBlock@&lt;init&gt;(outer:dspblocks.LazyDspBlock)(implicitevidence$3:dsptools.numbers.Ring[T],implicitevidence$4:dsptools.numbers.ConvertableTo[T],implicitp:cde.Parameters):pfb.PFBBlock[T]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -182,6 +182,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Module</dd></dl></div>
+    </li><li name="dspblocks.DspBlock#addrmap" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="addrmap:scala.collection.mutable.HashMap[String,BigInt]"></a>
+      <a id="addrmap:HashMap[String,BigInt]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">addrmap</span><span class="result">: <span class="extype" name="scala.collection.mutable.HashMap">HashMap</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.BigInt">BigInt</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBBlock@addrmap:scala.collection.mutable.HashMap[String,BigInt]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>DspBlock</dd></dl></div>
     </li><li name="chisel3.core.Module#annotate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="annotate(annotation:chisel3.core.ChiselAnnotation):Unit"></a>
       <a id="annotate(ChiselAnnotation):Unit"></a>
@@ -216,23 +233,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="pfb.PFBBlock#baseAddr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="baseAddr:scala.math.BigInt"></a>
-      <a id="baseAddr:BigInt"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">baseAddr</span><span class="result">: <span class="extype" name="scala.math.BigInt">BigInt</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#pfb.PFBBlock@baseAddr:scala.math.BigInt" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
     </li><li name="chisel3.core.Module#clock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clock:chisel3.core.Clock"></a>
       <a id="clock:Clock"></a>
@@ -324,6 +324,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LazyModuleImp → Module</dd></dl></div>
+    </li><li name="dspblocks.HasDspBlockParameters#dspBlockExternal" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="dspBlockExternal:dspblocks.DspBlockParameters"></a>
+      <a id="dspBlockExternal:DspBlockParameters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">dspBlockExternal</span><span class="result">: <span class="extype" name="dspblocks.DspBlockParameters">DspBlockParameters</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBBlock@dspBlockExternal:dspblocks.DspBlockParameters" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasDspBlockParameters</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -500,6 +517,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → AnyRef → Any</dd></dl></div>
+    </li><li name="dspblocks.HasDspBlockParameters#id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="id:String"></a>
+      <a id="id:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">id</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBBlock@id:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasDspBlockParameters</dd></dl></div>
     </li><li name="dspblocks.HasGenDspParameters#inputWidth" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="inputWidth:Int"></a>
       <a id="inputWidth:Int"></a>
@@ -687,6 +721,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="dspblocks.DspBlock#outer" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="outer:dspblocks.LazyDspBlock"></a>
+      <a id="outer:LazyDspBlock"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">outer</span><span class="result">: <span class="extype" name="dspblocks.LazyDspBlock">LazyDspBlock</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFBBlock@outer:dspblocks.LazyDspBlock" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>DspBlock</dd></dl></div>
     </li><li name="dspblocks.HasGenDspParameters#outputWidth" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="outputWidth:Int"></a>
       <a id="outputWidth:Int"></a>

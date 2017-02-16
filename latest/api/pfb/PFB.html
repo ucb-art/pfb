@@ -90,7 +90,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="pfb.PFB#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(genIn:=&gt;T,genOut:=&gt;Option[T],genTap:=&gt;Option[T],config:pfb.PFBConfig)(implicitevidence$1:dsptools.numbers.Real[T]):pfb.PFB[T]"></a>
+      <a id="&lt;init&gt;(genIn:=&gt;T,genOut:=&gt;Option[T],genTap:=&gt;Option[T],config:pfb.PFBConfig)(implicitevidence$1:dsptools.numbers.Ring[T],implicitevidence$2:dsptools.numbers.ConvertableTo[T]):pfb.PFB[T]"></a>
       <a id="&lt;init&gt;:PFB[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -98,10 +98,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">PFB</span><span class="params">(<span name="genIn">genIn: ⇒ <span class="extype" name="pfb.PFB.T">T</span></span>, <span name="genOut">genOut: ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="pfb.PFB.T">T</span>] = <span class="symbol">None</span></span>, <span name="genTap">genTap: ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="pfb.PFB.T">T</span>] = <span class="symbol">None</span></span>, <span name="config">config: <a href="PFBConfig.html" class="extype" name="pfb.PFBConfig">PFBConfig</a> = <span class="symbol">PFBConfig()</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="dsptools.numbers.Real">Real</span>[<span class="extype" name="pfb.PFB.T">T</span>]</span>)</span>
+        <span class="name">PFB</span><span class="params">(<span name="genIn">genIn: ⇒ <span class="extype" name="pfb.PFB.T">T</span></span>, <span name="genOut">genOut: ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="pfb.PFB.T">T</span>] = <span class="symbol">None</span></span>, <span name="genTap">genTap: ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="pfb.PFB.T">T</span>] = <span class="symbol">None</span></span>, <span name="config">config: <a href="PFBConfig.html" class="extype" name="pfb.PFBConfig">PFBConfig</a> = <span class="symbol">PFBConfig()</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="dsptools.numbers.Ring">Ring</span>[<span class="extype" name="pfb.PFB.T">T</span>]</span>, <span name="arg1">arg1: <span class="extype" name="dsptools.numbers.ConvertableTo">ConvertableTo</span>[<span class="extype" name="pfb.PFB.T">T</span>]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@&lt;init&gt;(genIn:=&gt;T,genOut:=&gt;Option[T],genTap:=&gt;Option[T],config:pfb.PFBConfig)(implicitevidence$1:dsptools.numbers.Real[T]):pfb.PFB[T]" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFB@&lt;init&gt;(genIn:=&gt;T,genOut:=&gt;Option[T],genTap:=&gt;Option[T],config:pfb.PFBConfig)(implicitevidence$1:dsptools.numbers.Ring[T],implicitevidence$2:dsptools.numbers.ConvertableTo[T]):pfb.PFB[T]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -292,18 +292,18 @@
     </span>
       <p class="shortcomment cmt">PFB configuration object, includes the window function.</p>
     </li><li name="pfb.PFB#counter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="counter:chisel3.util.Counter"></a>
-      <a id="counter:Counter"></a>
+      <a id="counter:chisel3.UInt"></a>
+      <a id="counter:UInt"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">counter</span><span class="result">: <span class="extype" name="chisel3.util.Counter">Counter</span></span>
+        <span class="name">counter</span><span class="result">: <span class="extype" name="chisel3.UInt">UInt</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#pfb.PFB@counter:chisel3.util.Counter" title="Permalink" target="_top">
+      <a href="../index.html#pfb.PFB@counter:chisel3.UInt" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -484,6 +484,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → AnyRef → Any</dd></dl></div>
+    </li><li name="pfb.PFB#in" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="in:chisel3.core.Vec[T]"></a>
+      <a id="in:Vec[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">in</span><span class="result">: <span class="extype" name="chisel3.core.Vec">Vec</span>[<span class="extype" name="pfb.PFB.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#pfb.PFB@in:chisel3.core.Vec[T]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
     </li><li name="chisel3.core.Module#instanceName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="instanceName:String"></a>
       <a id="instanceName:String"></a>
