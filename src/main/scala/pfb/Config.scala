@@ -69,14 +69,14 @@ object PFBConfigBuilder {
           parameterMap
         }
       }) ++
-  ConfigBuilder.dspBlockParams(id, pfbConfig.parallelism, genIn, genOutFunc = genOut)
+  ConfigBuilder.dspBlockParams(id, pfbConfig.lanes, genIn, genOutFunc = genOut)
   def standalone[T <: Data : Ring : ConvertableTo](id: String, pfbConfig: PFBConfig, genIn: () => T, genOut: Option[() => T] = None): Config =
     apply(id, pfbConfig, genIn, genOut) ++
     ConfigBuilder.buildDSP(id, {implicit p: Parameters => new LazyPFBBlock[T]})
 }
 
 class DefaultStandaloneRealPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => DspReal()))
-class DefaultStandaloneFixedPointPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(parallelism=16), () => FixedPoint(32.W, 16.BP)))
+class DefaultStandaloneFixedPointPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(lanes=16), () => FixedPoint(32.W, 16.BP)))
 
 case class PFBKey(id: String) extends Field[PFBConfig]
 
@@ -93,8 +93,8 @@ trait HasPFBParameters[T <: Data] extends HasGenParameters[T, T] {
   *                   Must give a window of size `numTaps * outputWindowSize`.
   * @param numTaps Number of taps, used when calling windowFunc. Must be > 0.
   * @param outputWindowSize Size of the output window, often the same as the size of an FFT following the PFB.
-  *                         Must be > 0 and a multiple of `parallelism`.
-  * @param parallelism Number of parallel lanes in the FFT.
+  *                         Must be > 0 and a multiple of `lanes`.
+  * @param lanes Number of parallel lanes in the FFT.
   * @param pipelineDepth Not currently used
   * @param useSinglePortMem Not currently used
   * @param symmetricCoeffs Not currently used
@@ -104,7 +104,7 @@ case class PFBConfig(
                       val windowFunc: WindowConfig => Seq[Double] = sincHamming.apply,
                       numTaps: Int = 4,
                       outputWindowSize: Int = 16,
-                      parallelism: Int = 8,
+                      lanes: Int = 8,
                     // the below are currently ignored
                       pipelineDepth: Int = 4,
                       useSinglePortMem: Boolean = false,
@@ -117,7 +117,7 @@ case class PFBConfig(
   // various checks for validity
   require(numTaps > 0, "Must have more than zero taps")
   require(outputWindowSize > 0, "Output window must have size > 0")
-  require(outputWindowSize % parallelism == 0, "Number of parallel inputs must divide the output window size")
+  require(outputWindowSize % lanes == 0, "Number of parallel inputs must divide the output window size")
   require(windowSize > 0, "PFB window must have > 0 elements")
   require(windowSize == numTaps * outputWindowSize, "windowFunc must return a Seq() of the right size")
 }

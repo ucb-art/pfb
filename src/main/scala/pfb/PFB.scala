@@ -15,14 +15,14 @@ import dsptools.counters._
   * IO Bundle for PFB
   * @param genIn Type generator for input to [[PFB]].
   * @param genOut Optional type generator for output, `genIn` if `None`.
-  * @param parallelism Number of lanes for both input and output
+  * @param lanes Number of lanes for both input and output
   * @tparam T
   */
 class PFBIO[T <: Data](genIn: => T,
                        genOut: => Option[T] = None,
-                       parallelism: Int) extends Bundle {
-  val data_in  = Input (ValidWithSync(Vec(parallelism, genIn)))
-  val data_out = Output(ValidWithSync(Vec(parallelism, genOut.getOrElse(genIn))))
+                       lanes: Int) extends Bundle {
+  val data_in  = Input (ValidWithSync(Vec(lanes, genIn)))
+  val data_out = Output(ValidWithSync(Vec(lanes, genOut.getOrElse(genIn))))
 }
 
 /**
@@ -39,25 +39,25 @@ class PFB[T<:Data:Ring:ConvertableTo](genIn: => T,
                         genTap: => Option[T] = None,
                         val config: PFBConfig = PFBConfig()
                         ) extends Module {
-  val io = IO(new PFBIO(genIn, genOut, config.parallelism))
+  val io = IO(new PFBIO(genIn, genOut, config.lanes))
 
-  // split window up into config.parallelism different sub-windows
-  val groupedWindow = (0 until config.parallelism).map(
-    config.window.drop(_).grouped(config.parallelism).map(_.head).toSeq
+  // split window up into config.lanes different sub-windows
+  val groupedWindow = (0 until config.lanes).map(
+    config.window.drop(_).grouped(config.lanes).map(_.head).toSeq
   )
 
-  val cycleTime = config.outputWindowSize / config.parallelism
+  val cycleTime = config.outputWindowSize / config.lanes
   val counter = CounterWithReset(true.B, cycleTime, io.data_in.sync)._1
 
   io.data_out.sync := counter === 0.U
   io.data_out.valid := ShiftRegisterWithReset(io.data_in.valid, cycleTime*config.numTaps, 0.U)
 
   // feed in zeros when invalid
-  val in = Wire(Vec(config.parallelism, genIn))
+  val in = Wire(Vec(config.lanes, genIn))
   when (io.data_in.valid) {
     in := io.data_in.bits
   } .otherwise {
-    in := Wire(Vec(config.parallelism, implicitly[Ring[T]].zero))
+    in := Wire(Vec(config.lanes, implicitly[Ring[T]].zero))
   }
 
   val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime)))
