@@ -8,6 +8,7 @@ import breeze.linalg._
 import breeze.numerics.abs
 import breeze.signal.fourierTr
 import chisel3._
+import chisel3.experimental._
 import chisel3.iotesters.{PeekPokeTester, TesterOptionsManager}
 import co.theasi.plotly._
 import cde.Parameters
@@ -44,15 +45,15 @@ class PFBStepTester[T <: Data](c: PFB[T], stepSize: Int, expectedOutput: Seq[Dou
 
   val windowSize = c.config.windowSize
   val numTaps    = c.config.numTaps
-  val parallelism = c.config.parallelism
+  val lanes = c.config.lanes
 
-  (0 until (expectedOutput.length / parallelism)) foreach (next => {
-    val toPoke = if(next * parallelism < stepSize) 1.0 else 0.0
+  (0 until (expectedOutput.length / lanes)) foreach (next => {
+    val toPoke = if(next * lanes < stepSize) 1.0 else 0.0
     c.io.data_in.bits.foreach { port => dspPoke(port, toPoke) }
     println(s"Poked $toPoke")
     val retval = c.io.data_out.bits.map { port => dspPeek(port).left.get }
-    for (i <- 0 until parallelism) {
-      val idx = next * parallelism + i
+    for (i <- 0 until lanes) {
+      val idx = next * lanes + i
       println(s"Lane=$i\tRetval= ${retval(i)}\t Expected= ${expectedOutput(idx)}")
       assert(abs(retval(i) - expectedOutput(idx)) / (expectedOutput(idx) + threshold) < threshold,
        s"Output ${retval(i)} did not match expected value ${expectedOutput(idx)}")
@@ -92,7 +93,7 @@ object leakageTester {
     dut.reset(5)
     val config = dut.c.config
     val io = dut.c.io
-    val groupedSignal: Seq[Seq[Double]] = signal.grouped(config.parallelism).toSeq
+    val groupedSignal: Seq[Seq[Double]] = signal.grouped(config.lanes).toSeq
 
     groupedSignal.flatMap(sigGroup => {
       sigGroup.zip(io.data_in.bits).foreach { case(sig, port) => dut.dspPoke(port, sig) }
@@ -173,10 +174,39 @@ class PFBSpec extends FlatSpec with Matchers {
     //implicit val p: Parameters = Parameters.root(new DspConfig().toInstance)
     chisel3.iotesters.Driver(() => new PFB(SInt(10.W), Some(SInt(16.W)),
       config = PFBConfig(
-        outputWindowSize = 4, numTaps = 4, parallelism = 2
+        outputWindowSize = 4, numTaps = 4, lanes = 2
       ))) {
       c => new PFBTester(c)
     } should be(true)
+  }
+
+  it should "build with FixedPoint" in {
+    chisel3.iotesters.Driver(() => new PFB(FixedPoint(10.W, 5.BP), Some(FixedPoint(16.W, 7.BP)),
+      config = PFBConfig(
+        outputWindowSize = 4, numTaps = 4, lanes = 2
+      ))) {
+      c => new PFBTester(c)
+    } should be(true)
+  }
+
+  it should "build any parameterization" in {
+    val numTaps = Seq(1, 7, 16, 43)
+    val outputWindowSize = Seq(4, 256, 1024)
+    val lanes = Seq(2, 8)
+    for (i <- numTaps) {
+      for (j <- outputWindowSize) {
+        for (k <- lanes) {
+          if (k <= j) {
+            chisel3.iotesters.Driver(() => new PFB(FixedPoint(4.W, 2.BP), Some(FixedPoint(2.W, 7.BP)),
+              config = PFBConfig(
+                outputWindowSize = j, numTaps = i, lanes = k
+              ))) {
+              c => new PFBTester(c)
+            } should be(true)
+          }
+        }
+      }
+    }
   }
 
   ignore should "have the correct step response" in {
@@ -185,10 +215,10 @@ class PFBSpec extends FlatSpec with Matchers {
         windowFunc = WindowConfig => Seq(1.0, 2.0, 3.0, 4.0),
         numTaps = 2,
         outputWindowSize = 2,
-        parallelism = 2
+        lanes = 2
       )
       val expected = Seq(1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0) //Seq(3.0, 4.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0)
-      val stepSize = config.windowSize / (config.numTaps * config.parallelism)
+      val stepSize = config.windowSize / (config.numTaps * config.lanes)
 
       chisel3.iotesters.Driver(() => new PFB(SInt(10.W), config = config)) {
         c => new PFBStepTester(c, stepSize, expected)
@@ -199,10 +229,10 @@ class PFBSpec extends FlatSpec with Matchers {
         windowFunc = WindowConfig => Seq(1.0, 2.0, 3.0, 4.0),
         numTaps = 2,
         outputWindowSize = 2,
-        parallelism = 1
+        lanes = 1
       )
       val expected = Seq(1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0)
-      val stepSize = config.windowSize / (config.numTaps * config.parallelism)
+      val stepSize = config.windowSize / (config.numTaps * config.lanes)
       chisel3.iotesters.Driver(() => new PFB(SInt.width(10), config = config)) {
         c => new PFBStepTester(c, stepSize, expected)
       } should be(true)
@@ -214,9 +244,9 @@ class PFBSpec extends FlatSpec with Matchers {
       windowFunc = blackmanHarris.apply,
       numTaps = 8,
       outputWindowSize = 256,
-      parallelism=8
+      lanes=16
     )
-    leakageTester( () => new PFB(DspReal(), config=config), config, numBins = 5, samples_per_bin = 5 )
+    leakageTester( () => new PFB(FixedPoint(32.W, 16.BP), config=config), config, numBins = 5, samples_per_bin = 5 )
   }
 
   behavior of "PFBLane"

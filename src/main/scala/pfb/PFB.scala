@@ -6,26 +6,23 @@
 package pfb
 
 import chisel3._
-import chisel3.util.Counter
 import dspjunctions.ValidWithSync
-import dsptools.numbers.Real
+import dsptools.numbers._
 import dsptools.numbers.implicits._
-import spire.algebra.Ring
-import spire.math.{ConvertableFrom, ConvertableTo}
 import dsptools.counters._
 
 /**
   * IO Bundle for PFB
   * @param genIn Type generator for input to [[PFB]].
   * @param genOut Optional type generator for output, `genIn` if `None`.
-  * @param parallelism Number of lanes for both input and output
+  * @param lanes Number of lanes for both input and output
   * @tparam T
   */
 class PFBIO[T <: Data](genIn: => T,
                        genOut: => Option[T] = None,
-                       parallelism: Int) extends Bundle {
-  val data_in  = Input (ValidWithSync(Vec(parallelism, genIn)))
-  val data_out = Output(ValidWithSync(Vec(parallelism, genOut.getOrElse(genIn))))
+                       lanes: Int) extends Bundle {
+  val data_in  = Input (ValidWithSync(Vec(lanes, genIn)))
+  val data_out = Output(ValidWithSync(Vec(lanes, genOut.getOrElse(genIn))))
 }
 
 /**
@@ -37,34 +34,30 @@ class PFBIO[T <: Data](genIn: => T,
   * @param config PFB configuration object, includes the window function.
   * @tparam T
   */
-class PFB[T<:Data:Real](genIn: => T,
+class PFB[T<:Data:Ring:ConvertableTo](genIn: => T,
                         genOut: => Option[T] = None,
                         genTap: => Option[T] = None,
                         val config: PFBConfig = PFBConfig()
                         ) extends Module {
-  val io = IO(new PFBIO(genIn, genOut, config.parallelism))
+  val io = IO(new PFBIO(genIn, genOut, config.lanes))
 
-  // split window up into config.parallelism different sub-windows
-  val groupedWindow = (0 until config.parallelism).map(
-    config.window.drop(_).grouped(config.parallelism).map(_.head).toSeq
+  // split window up into config.lanes different sub-windows
+  val groupedWindow = (0 until config.lanes).map(
+    config.window.drop(_).grouped(config.lanes).map(_.head).toSeq
   )
 
-  val cycleTime = config.outputWindowSize / config.parallelism
-  val counter = Counter(cycleTime)
-  counter.inc()
-  when (io.data_in.sync) {
-    if (cycleTime > 1) counter.value := 0.U //counter.restart()
-  }
+  val cycleTime = config.outputWindowSize / config.lanes
+  val counter = CounterWithReset(true.B, cycleTime, io.data_in.sync)._1
 
-  io.data_out.sync := counter.value === 0.U
+  io.data_out.sync := counter === 0.U
   io.data_out.valid := ShiftRegisterWithReset(io.data_in.valid, cycleTime*config.numTaps, 0.U)
 
   // feed in zeros when invalid
-  val in = Wire(Vec(config.parallelism, genIn))
+  val in = Wire(Vec(config.lanes, genIn))
   when (io.data_in.valid) {
     in := io.data_in.bits
   } .otherwise {
-    in := Wire(Vec(config.parallelism, implicitly[Real[T]].zero))
+    in := Wire(Vec(config.lanes, Ring[T].zero))
   }
 
   val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime)))
@@ -110,12 +103,7 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
   require(coeffs.length % delay == 0)
 
   val en = io.valid_in
-  val count = Counter(delay)
-
-  when (en) { count.inc() }
-  when (io.sync_in) {
-    count.value := 0.U
-  }
+  val count = CounterWithReset(en, delay, io.sync_in)._1
 
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
   val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
@@ -125,7 +113,7 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
     coeffWire
   })
 
-  val products = coeffsWire.map(tap => tap(count.value) * io.data_in)
+  val products = coeffsWire.map(tap => tap(count) * io.data_in)
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
     prod + ShiftRegisterMem(delay, prev, en = en, init = Some(Ring[T].zero))
