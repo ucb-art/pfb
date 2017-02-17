@@ -6,7 +6,7 @@ Polyphase Filter Bank [![Build Status](https://travis-ci.org/ucb-art/pfb.svg?bra
 
 This project contains an implementation of a [Casper](https://casper.berkeley.edu/wiki/The_Polyphase_Filter_Bank_Technique)-style PFB.
 It consists of a bank of Finite Impulse Response (FIR) filters to shape the input time-series data in such a way that the spectral channels are properly windowed, reducing spectral leakage between frequency bins. 
-The weights for these filters are programmable at either compile time (maps to a ROM) or run time (maps to a RAM).
+The weights for these filters are programmable at compile time (maps to a ROM).
 
 # Usage
 
@@ -14,35 +14,53 @@ The weights for these filters are programmable at either compile time (maps to a
 
 See [here](https://ucb-art.github.io/pfb/latest/api/) for the GitHub pages scaladoc.
 
+## Setup
+
+Clone the repository and update the depenedencies:
+
+```
+git clone git@github.com:ucb-art/pfb.git
+git submodule update --init
+cd dsp-framework
+./update.bash
+cd ..
+```
+
+See the [https://github.com/ucb-art/dsp-framework/blob/master/README.md](dsp-framework README) for more details on this infrastructure.
+Build the dependencies by typing `make libs`.
+
 ## Building
 
-Build the dependencies by typing `make libs`.
-To build the Verilog and IP-Xact output, type `make verilog`.
+The build flow generates FIRRTL, then generates Verilog, then runs the TSMC memory compiler to generate memories.
+Memories are black boxes in the Verilog by default.
+IP-Xact is created with the FIRRTL.
+The build targets for each of these are firrtl, verilog, and mems, respectively.
+Depedencies are handled automatically, so to build the Verilog and memories, just type `make mems`.
 Results are placed in a `generated-src` directory.
 
 ## Testing
 
 To test the block, type `make test`.
 This runs the block tester in the `src/test/scala` directory.
-It currently just tests the DC bin until unscrambling and futher testing capabilities are added.
 
 ## Configuring
 
 In `src/main/scala` there is a `Config.scala` file.
-In the `DspConfig` class are a bunch of parameters, like `NumTaps` and `FractionalBits`.
-You can choose the windowing function by setting it when creating the PFBConfig in the PFBKey parameter.
+A few default configurations are defined for you, called DefaultStandaloneXPFBConfig, where X is either Real or FixedPoint.
+These generate a small PFB with default parameters.
+To run them, type `make verilog CONFIG=DefaultStandaloneXPFBConfig`, replacing X with Real or FixedPoint.
+The default make target is the default FixedPoint configuration.
+
+The suggested way to create a custom configuration is to modify CustomStandalonePFBConfig, which defines values for all possible parameters.
+Then run `make verilog CONFIG=CustomStandalonePFBConfig` to generate the Verilog.
+Define your own window here, or create the function in Windows.scala and refer to it here.
 Current choices are a Sinc + Hamming window or a Blackman Harris window.
-Set these parameters to your desired values, then rebuild and retest the design.
-
-TODO: changing between FixedPoint and DspReal
-
 
 # Specifications
 
 ## Interfaces
 
-The PFB uses the DSP streaming interface (a subset of AXI4-Stream) on both the data input and data output.
-When using a RAM to set the window coefficients, this RAM exists in the SCR file and is accessible through the AXI4 control interface.
+The PFB uses the [https://github.com/ucb-art/rocket-dsp-utils/blob/master/doc/stream.md](DSP streaming interface) (a subset of AXI4-Stream) on both the data input and data output.
 If the coefficients are hard-coded, no SCR file exists.
 
 ## Signaling
@@ -69,5 +87,6 @@ The shift register delaying the sync signal is set to all 0s during reset.
 
 The PFB is implemented as described in the [Casper](https://casper.berkeley.edu/wiki/The_Polyphase_Filter_Bank_Technique) website.
 
-In Chisel, the design is split into lanes. Each lane implements a FIR filter in transposed form, using Chisel `Mems` for delays, which may be mapped to SRAMs.
+In Chisel, the design is split into lanes. 
+Each lane implements a FIR filter in transposed form, using Chisel `Mems` for delays, which may be mapped to SRAMs.
 Currently, only constant coefficients are allowed.

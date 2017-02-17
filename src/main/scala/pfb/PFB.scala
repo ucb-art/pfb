@@ -57,7 +57,7 @@ class PFB[T<:Data:Ring:ConvertableTo](genIn: => T,
   when (io.data_in.valid) {
     in := io.data_in.bits
   } .otherwise {
-    in := Wire(Vec(config.lanes, implicitly[Ring[T]].zero))
+    in := Wire(Vec(config.lanes, Ring[T].zero))
   }
 
   val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime)))
@@ -109,14 +109,14 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
   val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
   val coeffsWire     = coeffsReversed.map(tapGroup => {
     val coeffWire = Wire(Vec(tapGroup.length, genTap.getOrElse(genIn)))
-    coeffWire.zip(tapGroup).foreach({case (t,d) => t := implicitly[ConvertableTo[T]].fromType(d)})
+    coeffWire.zip(tapGroup).foreach({case (t,d) => t := ConvertableTo[T].fromType(d)})
     coeffWire
   })
 
   val products = coeffsWire.map(tap => tap(count) * io.data_in)
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
-    prod + ShiftRegisterMem(delay, prev, en = en, init = Some(implicitly[Ring[T]].zero))
+    prod + ShiftRegisterMem(delay, prev, en = en, init = Some(Ring[T].zero))
   }
 
   io.data_out := result

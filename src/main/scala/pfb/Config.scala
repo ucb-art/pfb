@@ -21,8 +21,8 @@ object PFBConfigBuilder {
   def apply[T <: Data : Ring : ConvertableTo](
     id: String, pfbConfig: PFBConfig, genIn: () => T, genOut: Option[() => T] = None): Config = new Config(
       (pname, site, here) => pname match {
-        case PFBKey(id) => pfbConfig
-        case IPXACTParameters(id) => {
+        case PFBKey(_id) if _id == id => pfbConfig
+        case IPXACTParameters(_id) if _id == id => {
           val parameterMap = Map[String, String]()
       
           // Conjure up some IPXACT synthsized parameters.
@@ -68,6 +68,7 @@ object PFBConfigBuilder {
       
           parameterMap
         }
+        case _ => throw new CDEMatchError
       }) ++
   ConfigBuilder.dspBlockParams(id, pfbConfig.lanes, genIn, genOutFunc = genOut)
   def standalone[T <: Data : Ring : ConvertableTo](id: String, pfbConfig: PFBConfig, genIn: () => T, genOut: Option[() => T] = None): Config =
@@ -75,11 +76,26 @@ object PFBConfigBuilder {
     ConfigBuilder.buildDSP(id, {implicit p: Parameters => new LazyPFBBlock[T]})
 }
 
+// default floating point and fixed point configurations
 class DefaultStandaloneRealPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => DspReal()))
-class DefaultStandaloneFixedPointPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(lanes=16), () => FixedPoint(32.W, 16.BP)))
+class DefaultStandaloneFixedPointPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => FixedPoint(32.W, 16.BP)))
+
+// provides a sample custom configuration
+class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
+  "pfb", 
+  PFBConfig(
+    // must be numTaps * outputWindowSize in length
+    windowFunc= (w: WindowConfig) => Seq.tabulate(w.numTaps*w.outputWindowSize)(i => scala.math.sin(i)),
+    numTaps=23, 
+    outputWindowSize=32, 
+    lanes=16), 
+  genIn = () => FixedPoint(32.W, 16.BP),
+  genOut = Some(() => FixedPoint(40.W, 16.BP))
+))
 
 case class PFBKey(id: String) extends Field[PFBConfig]
 
+// by default, the taps have no data type, which defaults to the input data type
 trait HasPFBParameters[T <: Data] extends HasGenParameters[T, T] {
   implicit val p: Parameters
   val pfbConfig = p(PFBKey(p(DspBlockId)))
