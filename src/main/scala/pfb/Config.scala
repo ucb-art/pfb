@@ -22,7 +22,7 @@ object PFBConfigBuilder {
     id: String, pfbConfig: PFBConfig, genIn: () => T, genOut: Option[() => T] = None): Config = new Config(
       (pname, site, here) => pname match {
         case PFBKey(_id) if _id == id => pfbConfig
-        case IPXACTParameters(_id) if _id == id => {
+        case IPXactParameters(_id) if _id == id => {
           val parameterMap = Map[String, String]()
       
           // Conjure up some IPXACT synthsized parameters.

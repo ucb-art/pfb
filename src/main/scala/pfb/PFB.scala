@@ -57,7 +57,7 @@ class PFB[T<:Data:Ring:ConvertableTo](genIn: => T,
   when (io.data_in.valid) {
     in := io.data_in.bits
   } .otherwise {
-    in := Wire(Vec(config.lanes, Ring[T].zero))
+    in := Vec.fill(config.lanes)(Ring[T].zero)
   }
 
   val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime)))
