@@ -22,7 +22,7 @@ object PFBConfigBuilder {
     id: String, pfbConfig: PFBConfig, genIn: () => T, genOut: Option[() => T] = None): Config = new Config(
       (pname, site, here) => pname match {
         case PFBKey(_id) if _id == id => pfbConfig
-        case IPXACTParameters(_id) if _id == id => {
+        case IPXactParameters(_id) if _id == id => {
           val parameterMap = Map[String, String]()
       
           // Conjure up some IPXACT synthsized parameters.
@@ -70,10 +70,10 @@ object PFBConfigBuilder {
         }
         case _ => throw new CDEMatchError
       }) ++
-  ConfigBuilder.dspBlockParams(id, pfbConfig.lanes, genIn, genOutFunc = genOut)
+  ConfigBuilder.genParams(id, pfbConfig.lanes, genIn, genOutFunc = genOut)
   def standalone[T <: Data : Ring : ConvertableTo](id: String, pfbConfig: PFBConfig, genIn: () => T, genOut: Option[() => T] = None): Config =
     apply(id, pfbConfig, genIn, genOut) ++
-    ConfigBuilder.buildDSP(id, {implicit p: Parameters => new LazyPFBBlock[T]})
+    ConfigBuilder.buildDSP(id, {implicit p: Parameters => new PFBBlock[T]})
 }
 
 // default floating point and fixed point configurations
