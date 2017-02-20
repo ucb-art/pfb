@@ -26,4 +26,5 @@ class PFBBlock[T <: Data : Ring : ConvertableTo](outer: LazyDspBlock)(implicit p
   module.io.data_in <> unpackInput(lanesIn, genIn())
   unpackOutput(lanesOut, genOut()) <> module.io.data_out
 
+  IPXactComponents._ipxactComponents += DspIPXact.makeDspBlockComponent
 }
