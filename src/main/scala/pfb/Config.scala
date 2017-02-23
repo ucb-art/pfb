@@ -48,6 +48,15 @@ object PFBConfigBuilder {
               parameterMap ++= List(
                 ("InputFractionalBits", fractionalBits.get.toString)
               )
+            case c: DspComplex[T] =>
+              c.underlyingType() match {
+                case "fixed" =>
+                  val fractionalBits = c.real.asInstanceOf[FixedPoint].binaryPoint
+                  parameterMap ++= List(
+                    ("InputFractionalBits", fractionalBits.get.toString)
+                  )
+                case _ => 
+              }
             case _ =>
           }
           genOut.getOrElse(genIn)() match {
@@ -56,6 +65,15 @@ object PFBConfigBuilder {
               parameterMap ++= List(
                 ("OutputFractionalBits", fractionalBits.get.toString)
               )
+            case c: DspComplex[T] =>
+              c.underlyingType() match {
+                case "fixed" =>
+                  val fractionalBits = c.real.asInstanceOf[FixedPoint].binaryPoint
+                  parameterMap ++= List(
+                    ("OutputFractionalBits", fractionalBits.get.toString)
+                  )
+                case _ => 
+              }
             case _ =>
           }
 
@@ -79,6 +97,7 @@ object PFBConfigBuilder {
 // default floating point and fixed point configurations
 class DefaultStandaloneRealPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => DspReal()))
 class DefaultStandaloneFixedPointPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => FixedPoint(32.W, 16.BP)))
+class DefaultStandaloneComplexPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => DspComplex(FixedPoint(32.W, 16.BP), FixedPoint(32.W, 16.BP))))
 
 // provides a sample custom configuration
 class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
@@ -89,8 +108,8 @@ class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
     numTaps=23, 
     outputWindowSize=32, 
     lanes=16), 
-  genIn = () => FixedPoint(32.W, 16.BP),
-  genOut = Some(() => FixedPoint(40.W, 16.BP))
+  genIn = () => DspComplex(FixedPoint(18.W, 16.BP), FixedPoint(18.W, 16.BP)),
+  genOut = Some(() => DspComplex(FixedPoint(20.W, 16.BP), FixedPoint(20.W, 16.BP)))
 ))
 
 case class PFBKey(id: String) extends Field[PFBConfig]
@@ -99,7 +118,8 @@ case class PFBKey(id: String) extends Field[PFBConfig]
 trait HasPFBParameters[T <: Data] extends HasGenParameters[T, T] {
   implicit val p: Parameters
   val pfbConfig = p(PFBKey(p(DspBlockId)))
-  def genTap: Option[T] = None
+  //def genTap: Option[T] = None
+  def genTap: Option[T] = Some(FixedPoint(16.W, 10.BP).asInstanceOf[T])
 }
 
 /**
