@@ -46,6 +46,7 @@ class PFB[T<:Data:Ring:ConvertableTo](genIn: => T,
     config.window.drop(_).grouped(config.lanes).map(_.head).toSeq
   )
 
+  // TODO: make this meet the spec from NGC, or external parameter
   val cycleTime = config.outputWindowSize / config.lanes
   val counter = CounterWithReset(true.B, cycleTime, io.data_in.sync)._1
 
