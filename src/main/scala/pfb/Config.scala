@@ -8,7 +8,7 @@ import chisel3.experimental._
 import craft._
 import dsptools._
 import dsptools.numbers.{Field=>_,_}
-import dsptools.numbers.implicits._
+import dsptools.numbers.implicits.{ConvertableToDspComplex=>_,_}
 import dspblocks._
 import dspjunctions._
 import dspblocks._
@@ -16,6 +16,21 @@ import _root_.junctions._
 import uncore.tilelink._
 import uncore.coherence._
 import scala.collection.mutable.Map
+
+object ConvertableToDspComplex extends
+    dsptools.numbers.ConvertableToDspComplex[FixedPoint] {
+  override def fromType[B](n: B)(implicit c: ConvertableFrom[B]): DspComplex[FixedPoint] = {
+    fromDouble(c.toDouble(n))
+  }
+  override def fromDouble(n: Double): DspComplex[FixedPoint] = {
+    DspComplex.wire(FixedPoint.fromDouble(n, 32.W, 16.BP), FixedPoint.fromDouble(0.0, 1.W, 0.BP))
+  }
+}
+
+object myimplicit {
+ implicit val convertableTo = ConvertableToDspComplex
+}
+import myimplicit._
 
 object PFBConfigBuilder {
   def apply[T <: Data : Ring : ConvertableTo](
@@ -48,6 +63,15 @@ object PFBConfigBuilder {
               parameterMap ++= List(
                 ("InputFractionalBits", fractionalBits.get.toString)
               )
+            case c: DspComplex[T] =>
+              c.underlyingType() match {
+                case "fixed" =>
+                  val fractionalBits = c.real.asInstanceOf[FixedPoint].binaryPoint
+                  parameterMap ++= List(
+                    ("InputFractionalBits", fractionalBits.get.toString)
+                  )
+                case _ => 
+              }
             case _ =>
           }
           genOut.getOrElse(genIn)() match {
@@ -56,6 +80,15 @@ object PFBConfigBuilder {
               parameterMap ++= List(
                 ("OutputFractionalBits", fractionalBits.get.toString)
               )
+            case c: DspComplex[T] =>
+              c.underlyingType() match {
+                case "fixed" =>
+                  val fractionalBits = c.real.asInstanceOf[FixedPoint].binaryPoint
+                  parameterMap ++= List(
+                    ("OutputFractionalBits", fractionalBits.get.toString)
+                  )
+                case _ => 
+              }
             case _ =>
           }
 
@@ -79,6 +112,7 @@ object PFBConfigBuilder {
 // default floating point and fixed point configurations
 class DefaultStandaloneRealPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => DspReal()))
 class DefaultStandaloneFixedPointPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => FixedPoint(32.W, 16.BP)))
+class DefaultStandaloneComplexPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => DspComplex(FixedPoint(32.W, 16.BP), FixedPoint(32.W, 16.BP))))
 
 // provides a sample custom configuration
 class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
@@ -89,8 +123,8 @@ class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
     numTaps=23, 
     outputWindowSize=32, 
     lanes=16), 
-  genIn = () => FixedPoint(32.W, 16.BP),
-  genOut = Some(() => FixedPoint(40.W, 16.BP))
+  genIn = () => DspComplex(FixedPoint(18.W, 16.BP), FixedPoint(18.W, 16.BP)),
+  genOut = Some(() => DspComplex(FixedPoint(20.W, 16.BP), FixedPoint(20.W, 16.BP)))
 ))
 
 case class PFBKey(id: String) extends Field[PFBConfig]
