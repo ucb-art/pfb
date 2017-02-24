@@ -23,7 +23,6 @@ object ConvertableToDspComplex extends
     fromDouble(c.toDouble(n))
   }
   override def fromDouble(n: Double): DspComplex[FixedPoint] = {
-    println("Called the override fromDouble")
     DspComplex.wire(FixedPoint.fromDouble(n, 32.W, 16.BP), FixedPoint.fromDouble(0.0, 1.W, 0.BP))
   }
 }
