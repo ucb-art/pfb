@@ -8,7 +8,7 @@ import chisel3.experimental._
 import craft._
 import dsptools._
 import dsptools.numbers.{Field=>_,_}
-import dsptools.numbers.implicits._
+import dsptools.numbers.implicits.{ConvertableToDspComplex=>_,_}
 import dspblocks._
 import dspjunctions._
 import dspblocks._
@@ -16,6 +16,22 @@ import _root_.junctions._
 import uncore.tilelink._
 import uncore.coherence._
 import scala.collection.mutable.Map
+
+object ConvertableToDspComplex extends
+    dsptools.numbers.ConvertableToDspComplex[FixedPoint] {
+  override def fromType[B](n: B)(implicit c: ConvertableFrom[B]): DspComplex[FixedPoint] = {
+    fromDouble(c.toDouble(n))
+  }
+  override def fromDouble(n: Double): DspComplex[FixedPoint] = {
+    println("Called the override fromDouble")
+    DspComplex.wire(FixedPoint.fromDouble(n, 32.W, 16.BP), FixedPoint.fromDouble(0.0, 1.W, 0.BP))
+  }
+}
+
+object myimplicit {
+ implicit val convertableTo = ConvertableToDspComplex
+}
+import myimplicit._
 
 object PFBConfigBuilder {
   def apply[T <: Data : Ring : ConvertableTo](

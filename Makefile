@@ -16,7 +16,7 @@ build_dir ?= generated-src
 PROJECT ?= craft
 MODEL ?= DspTop
 CFG_PROJECT ?= pfb
-CONFIG ?= DefaultStandaloneFixedPointPFBConfig
+CONFIG ?= CustomStandalonePFBConfig
 
 MEM_GEN ?= $(base_dir)/src/main/python/vlsi_mem_gen
 
