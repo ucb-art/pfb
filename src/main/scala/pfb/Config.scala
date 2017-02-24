@@ -118,8 +118,7 @@ case class PFBKey(id: String) extends Field[PFBConfig]
 trait HasPFBParameters[T <: Data] extends HasGenParameters[T, T] {
   implicit val p: Parameters
   val pfbConfig = p(PFBKey(p(DspBlockId)))
-  //def genTap: Option[T] = None
-  def genTap: Option[T] = Some(FixedPoint(16.W, 10.BP).asInstanceOf[T])
+  def genTap: Option[T] = None
 }
 
 /**
