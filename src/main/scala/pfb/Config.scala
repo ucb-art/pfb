@@ -8,7 +8,7 @@ import chisel3.experimental._
 import craft._
 import dsptools._
 import dsptools.numbers.{Field=>_,_}
-import dsptools.numbers.implicits.{ConvertableToDspComplex=>_,_}
+import dsptools.numbers.implicits._
 import dspblocks._
 import dspjunctions._
 import dspblocks._
@@ -17,53 +17,40 @@ import uncore.tilelink._
 import uncore.coherence._
 import scala.collection.mutable.Map
 
-object ConvertableToDspComplex extends
-    dsptools.numbers.ConvertableToDspComplex[FixedPoint] {
-  override def fromType[B](n: B)(implicit c: ConvertableFrom[B]): DspComplex[FixedPoint] = {
-    fromDouble(c.toDouble(n))
-  }
-  override def fromDouble(n: Double): DspComplex[FixedPoint] = {
-    DspComplex.wire(FixedPoint.fromDouble(n, 32.W, 16.BP), FixedPoint.fromDouble(0.0, 1.W, 0.BP))
-  }
-}
-
-object myimplicit {
- implicit val convertableTo = ConvertableToDspComplex
-}
-import myimplicit._
 
 object PFBConfigBuilder {
-  def apply[T <: Data : Ring : ConvertableTo](
-    id: String, pfbConfig: PFBConfig, genIn: () => T, genOut: Option[() => T] = None): Config = new Config(
+  def apply[T <: Data : Ring, V](
+    id: String, pfbConfig: PFBConfig, genIn: () => T, convert: Double => T, genOut: Option[() => T] = None): Config = new Config(
       (pname, site, here) => pname match {
-        case PFBKey(_id) if _id == id => pfbConfig
+        case PFBConvert(_id) if _id == id => convert
+        case PFBKey(_id)     if _id == id => pfbConfig
         case IPXactParameters(_id) if _id == id => {
           val parameterMap = Map[String, String]()
-      
+
           // Conjure up some IPXACT synthsized parameters.
           val numTaps = pfbConfig.numTaps
+          val outputWindowSize = pfbConfig.outputWindowSize
           val gk = site(GenKey(id))
           val inputLanes = gk.lanesIn
           val outputLanes = gk.lanesOut
-          val inputTotalBits = gk.genIn.getWidth * inputLanes
-          val outputTotalBits = gk.genOut.getWidth * outputLanes
           parameterMap ++= List(
-            ("nTaps", numTaps.toString), 
-            ("InputLanes", inputLanes.toString),
-            ("InputTotalBits", inputTotalBits.toString), 
-            ("OutputLanes", outputLanes.toString), 
-            ("OutputTotalBits", outputTotalBits.toString),
-            ("OutputPartialBitReversed", "1")
+            ("nBands", outputWindowSize.toString),
+            ("nTotalTaps", (outputWindowSize*numTaps).toString),
+            ("InputLanes", inputLanes.toString)
           )
-      
+
           // add fractional bits if it's fixed point
           genIn() match {
             case fp: FixedPoint =>
               val fractionalBits = fp.binaryPoint
               parameterMap ++= List(
-                ("InputFractionalBits", fractionalBits.get.toString)
+                ("InputFractionalBits", fractionalBits.get.toString),
+                ("InputTotalBits", fp.getWidth.toString)
               )
             case c: DspComplex[T] =>
+              parameterMap ++= List(
+                ("InputTotalBits", c.real.getWidth.toString) // assume real and imag have equal total widths
+              )
               c.underlyingType() match {
                 case "fixed" =>
                   val fractionalBits = c.real.asInstanceOf[FixedPoint].binaryPoint
@@ -72,15 +59,30 @@ object PFBConfigBuilder {
                   )
                 case _ => 
               }
+            case d: DspReal =>
+              parameterMap ++= List(
+                ("InputTotalBits", d.getWidth.toString)
+              )
+            case s: SInt => 
+              parameterMap ++= List(
+                ("InputTotalBits", s.getWidth.toString)
+              )
             case _ =>
+              throw new DspException("Unknown input type for PFB")
           }
+
+          // add fractional bits if it's fixed point
           genOut.getOrElse(genIn)() match {
             case fp: FixedPoint =>
               val fractionalBits = fp.binaryPoint
               parameterMap ++= List(
-                ("OutputFractionalBits", fractionalBits.get.toString)
+                ("OutputFractionalBits", fractionalBits.get.toString),
+                ("OutputTotalBits", fp.getWidth.toString)
               )
             case c: DspComplex[T] =>
+              parameterMap ++= List(
+                ("OutputTotalBits", c.real.getWidth.toString) // assume real and imag have equal total widths
+              )
               c.underlyingType() match {
                 case "fixed" =>
                   val fractionalBits = c.real.asInstanceOf[FixedPoint].binaryPoint
@@ -89,44 +91,54 @@ object PFBConfigBuilder {
                   )
                 case _ => 
               }
+            case d: DspReal =>
+              parameterMap ++= List(
+                ("OutputTotalBits", d.getWidth.toString)
+              )
+            case s: SInt => 
+              parameterMap ++= List(
+                ("OutputTotalBits", s.getWidth.toString)
+              )
             case _ =>
+              throw new DspException("Unknown output type for PFB")
           }
 
           // Coefficients
-          parameterMap ++= pfbConfig.window.zipWithIndex.map{case (coeff, index) => (s"FilterCoefficients$index", coeff.toString)}
+          parameterMap ++= pfbConfig.window.zipWithIndex.map{case (coeff, index) => (s"FilterCoefficients_$index", coeff.toString)}
           parameterMap ++= List(("FilterScale", "1"))
-      
+
           // tech stuff, TODO
           parameterMap ++= List(("ClockRate", "100"), ("Technology", "TSMC16nm"))
-      
+
           parameterMap
         }
         case _ => throw new CDEMatchError
       }) ++
   ConfigBuilder.genParams(id, pfbConfig.lanes, genIn, genOutFunc = genOut)
-  def standalone[T <: Data : Ring : ConvertableTo](id: String, pfbConfig: PFBConfig, genIn: () => T, genOut: Option[() => T] = None): Config =
-    apply(id, pfbConfig, genIn, genOut) ++
+  def standalone[T <: Data : Ring](id: String, pfbConfig: PFBConfig, genIn: () => T, convert: Double => T, genOut: Option[() => T] = None): Config =
+    apply(id, pfbConfig, genIn, convert, genOut) ++
     ConfigBuilder.buildDSP(id, {implicit p: Parameters => new PFBBlock[T]})
 }
 
 // default floating point and fixed point configurations
-class DefaultStandaloneRealPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => DspReal()))
-class DefaultStandaloneFixedPointPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => FixedPoint(32.W, 16.BP)))
-class DefaultStandaloneComplexPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => DspComplex(FixedPoint(32.W, 16.BP), FixedPoint(32.W, 16.BP))))
+class DefaultStandaloneRealPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => DspReal(), d => DspReal(d)))
+class DefaultStandaloneFixedPointPFBConfig extends Config(PFBConfigBuilder.standalone("pfb", PFBConfig(), () => FixedPoint(32.W, 16.BP), d => FixedPoint.fromDouble(d, 32.W, 16.BP)))
 
 // provides a sample custom configuration
 class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
-  "pfb", 
+  "pfb",
   PFBConfig(
     // must be numTaps * outputWindowSize in length
     windowFunc= (w: WindowConfig) => Seq.tabulate(w.numTaps*w.outputWindowSize)(i => scala.math.sin(i)),
-    numTaps=23, 
-    outputWindowSize=32, 
-    lanes=16), 
-  genIn = () => DspComplex(FixedPoint(18.W, 16.BP), FixedPoint(18.W, 16.BP)),
-  genOut = Some(() => DspComplex(FixedPoint(20.W, 16.BP), FixedPoint(20.W, 16.BP)))
+    numTaps=23,
+    outputWindowSize=32,
+    lanes=16),
+  genIn = () => FixedPoint(32.W, 16.BP),
+  genOut = Some(() => FixedPoint(40.W, 16.BP)),
+  convert = d => FixedPoint.fromDouble(d, 32.W, 16.BP)
 ))
 
+case class PFBConvert(id: String) extends Field[Double => Data]
 case class PFBKey(id: String) extends Field[PFBConfig]
 
 // by default, the taps have no data type, which defaults to the input data type
@@ -134,6 +146,7 @@ trait HasPFBParameters[T <: Data] extends HasGenParameters[T, T] {
   implicit val p: Parameters
   val pfbConfig = p(PFBKey(p(DspBlockId)))
   def genTap: Option[T] = None
+  def convert(x: Double): T = p(PFBConvert(p(DspBlockId)))(x).asInstanceOf[T]
 }
 
 /**
@@ -155,6 +168,7 @@ case class PFBConfig(
                       numTaps: Int = 4,
                       outputWindowSize: Int = 16,
                       lanes: Int = 8,
+                      processingDelay: Int = 8,
                     // the below are currently ignored
                       pipelineDepth: Int = 4,
                       useSinglePortMem: Boolean = false,
@@ -170,6 +184,7 @@ case class PFBConfig(
   require(outputWindowSize % lanes == 0, "Number of parallel inputs must divide the output window size")
   require(windowSize > 0, "PFB window must have > 0 elements")
   require(windowSize == numTaps * outputWindowSize, "windowFunc must return a Seq() of the right size")
+  require(processingDelay >= 0, "Must have positive processing delay")
 }
 
 /**

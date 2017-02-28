@@ -9,7 +9,7 @@ import chisel3._
 import dspjunctions.ValidWithSync
 import dsptools.numbers._
 import dsptools.numbers.implicits._
-import dsptools.counters._
+import dspblocks._
 
 /**
   * IO Bundle for PFB
@@ -23,6 +23,9 @@ class PFBIO[T <: Data](genIn: => T,
                        lanes: Int) extends Bundle {
   val data_in  = Input (ValidWithSync(Vec(lanes, genIn)))
   val data_out = Output(ValidWithSync(Vec(lanes, genOut.getOrElse(genIn))))
+
+  val data_set_end_status = Output(Bool())
+  val data_set_end_clear = Input(Bool())
 }
 
 /**
@@ -34,9 +37,10 @@ class PFBIO[T <: Data](genIn: => T,
   * @param config PFB configuration object, includes the window function.
   * @tparam T
   */
-class PFB[T<:Data:Ring:ConvertableTo](genIn: => T,
+class PFB[T<:Data:Ring](genIn: => T,
                         genOut: => Option[T] = None,
                         genTap: => Option[T] = None,
+                        val convert: Double => T,
                         val config: PFBConfig = PFBConfig()
                         ) extends Module {
   val io = IO(new PFBIO(genIn, genOut, config.lanes))
@@ -46,12 +50,14 @@ class PFB[T<:Data:Ring:ConvertableTo](genIn: => T,
     config.window.drop(_).grouped(config.lanes).map(_.head).toSeq
   )
 
-  // TODO: make this meet the spec from NGC, or external parameter
+  // resyncrhonize when valid goes high
+  val valid_delay = Reg(next=io.data_in.valid)
   val cycleTime = config.outputWindowSize / config.lanes
-  val counter = CounterWithReset(true.B, cycleTime, io.data_in.sync)._1
+  val counter = CounterWithReset(true.B, cycleTime, io.data_in.sync, ~valid_delay & io.data_in.valid)._1
 
-  io.data_out.sync := counter === 0.U
-  io.data_out.valid := ShiftRegisterWithReset(io.data_in.valid, cycleTime*config.numTaps, 0.U)
+  val delay = config.processingDelay
+  io.data_out.sync := ShiftRegisterWithReset(io.data_in.valid && counter === 0.U, delay, 0.U, true.B)
+  io.data_out.valid := ShiftRegisterWithReset(io.data_in.valid, delay, 0.U, true.B)
 
   // feed in zeros when invalid
   val in = Wire(Vec(config.lanes, genIn))
@@ -61,7 +67,17 @@ class PFB[T<:Data:Ring:ConvertableTo](genIn: => T,
     in := Vec.fill(config.lanes)(Ring[T].zero)
   }
 
-  val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime)))
+  // data set end flag
+  val valid_out_delay = Reg(next=io.data_out.valid)
+  val dses = Reg(init=false.B)
+  when (io.data_set_end_clear) {
+    dses := false.B
+  } .elsewhen (valid_out_delay & ~io.data_out.valid) {
+    dses := true.B
+  }
+  io.data_set_end_status := dses
+
+  val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime, convert)))
   filters.zip(in).foreach( { case (filt, port) => filt.io.data_in := port } )
   filters.zip(io.data_out.bits).foreach( { case (filt, port) => port := filt.io.data_out } )
   filters.foreach (f => {
@@ -87,12 +103,13 @@ class PFB[T<:Data:Ring:ConvertableTo](genIn: => T,
   * @tparam T
   * @tparam V
   */
-class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
+class PFBLane[T<:Data:Ring](
   genIn: => T,
   genOut: => Option[T] = None,
   genTap: => Option[T] = None,
-  val coeffs: Seq[V],
-  val delay: Int
+  val coeffs: Seq[Double],
+  val delay: Int,
+  val convert: Double => T
 ) extends Module {
   val io = IO(new Bundle {
     val data_in  = Input(genIn)
@@ -110,7 +127,7 @@ class PFBLane[T<:Data:Ring:ConvertableTo, V:ConvertableFrom](
   val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
   val coeffsWire     = coeffsReversed.map(tapGroup => {
     val coeffWire = Wire(Vec(tapGroup.length, genTap.getOrElse(genIn)))
-    coeffWire.zip(tapGroup).foreach({case (t,d) => t := ConvertableTo[T].fromType(d)})
+    coeffWire.zip(tapGroup).foreach({case (t,d) => t := convert(d)})
     coeffWire
   })
 
