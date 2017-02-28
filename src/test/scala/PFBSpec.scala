@@ -28,7 +28,8 @@ object LocalTest extends Tag("edu.berkeley.tags.LocalTest")
   * @param verbose
   * @tparam T
   */
-class PFBTester[T<:Data](val c: PFB[T], verbose: Boolean = true) extends DspTester(c) {
+class PFBTester[T<:Data](val c: PFB[T], verbose: Boolean = true) 
+    extends DspTester(c) with HasDspPokeAs[PFB[T]] {
   poke(c.io.data_in.valid, 1)
   poke(c.io.data_in.sync,  0)
 
@@ -39,7 +40,7 @@ class PFBTester[T<:Data](val c: PFB[T], verbose: Boolean = true) extends DspTest
 }
 
 class PFBStepTester[T <: Data](c: PFB[T], stepSize: Int, expectedOutput: Seq[Double], threshold: Double = 1.0e-5)
-  extends DspTester(c) {
+  extends DspTester(c) with HasDspPokeAs[PFB[T]] {
   poke(c.io.data_in.valid, 1)
   poke(c.io.data_in.sync,  0)
 
@@ -62,12 +63,12 @@ class PFBStepTester[T <: Data](c: PFB[T], stepSize: Int, expectedOutput: Seq[Dou
   })
 }
 
-class PFBLaneTester[T <: Data](c: PFBLane[T, Double],
+class PFBLaneTester[T <: Data](c: PFBLane[T],
                                val start: Int = -50,
                                val stop: Int  = 50,
                                val step: Int  = 1,
                                val threshold: Double = 0.1
-                              ) extends DspTester(c) {
+                              ) extends DspTester(c) with HasDspPokeAs[PFBLane[T]] {
   def computedResult(n: Int): Double = {
     val delay = c.delay
     val nTaps = c.coeffs.length / c.delay
@@ -173,6 +174,7 @@ class PFBSpec extends FlatSpec with Matchers {
   it should "build with SInt" in {
     //implicit val p: Parameters = Parameters.root(new DspConfig().toInstance)
     chisel3.iotesters.Driver(() => new PFB(SInt(10.W), Some(SInt(16.W)),
+      convert = d => d.toInt.S,
       config = PFBConfig(
         outputWindowSize = 4, numTaps = 4, lanes = 2
       ))) {
@@ -182,6 +184,7 @@ class PFBSpec extends FlatSpec with Matchers {
 
   it should "build with FixedPoint" in {
     chisel3.iotesters.Driver(() => new PFB(FixedPoint(10.W, 5.BP), Some(FixedPoint(16.W, 7.BP)),
+      convert = d => FixedPoint.fromDouble(d, 10.W, 5.BP),
       config = PFBConfig(
         outputWindowSize = 4, numTaps = 4, lanes = 2
       ))) {
@@ -198,6 +201,7 @@ class PFBSpec extends FlatSpec with Matchers {
         for (k <- lanes) {
           if (k <= j) {
             chisel3.iotesters.Driver(() => new PFB(FixedPoint(4.W, 2.BP), Some(FixedPoint(2.W, 7.BP)),
+              convert = d => FixedPoint.fromDouble(d, 4.W, 2.BP),
               config = PFBConfig(
                 outputWindowSize = j, numTaps = i, lanes = k
               ))) {
@@ -220,7 +224,7 @@ class PFBSpec extends FlatSpec with Matchers {
       val expected = Seq(1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0) //Seq(3.0, 4.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0)
       val stepSize = config.windowSize / (config.numTaps * config.lanes)
 
-      chisel3.iotesters.Driver(() => new PFB(SInt(10.W), config = config)) {
+      chisel3.iotesters.Driver(() => new PFB(SInt(10.W), config = config, convert = d => d.toInt.S)) {
         c => new PFBStepTester(c, stepSize, expected)
       } should be(true)
     }
@@ -246,14 +250,15 @@ class PFBSpec extends FlatSpec with Matchers {
       outputWindowSize = 256,
       lanes=16
     )
-    leakageTester( () => new PFB(FixedPoint(32.W, 16.BP), config=config), config, numBins = 5, samples_per_bin = 5 )
+    leakageTester( () => new PFB(FixedPoint(32.W, 16.BP), config=config, convert = d => FixedPoint.fromDouble(d, 32.W, 16.BP)), config, numBins = 5, samples_per_bin = 5 )
   }
 
   behavior of "PFBLane"
   it should "build and run correctly" in {
-    chisel3.iotesters.Driver(() => new PFBLane[SInt,Double](
+    chisel3.iotesters.Driver(() => new PFBLane[SInt](
       SInt(8.W), Some(SInt(10.W)), Some(SInt(10.W)),
-        Seq(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0), 4)
+      coeffs=Seq(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0),
+      delay=4, convert = d => d.toInt.S)
     ) {
       c => new PFBLaneTester(c)
     } should be (true)
