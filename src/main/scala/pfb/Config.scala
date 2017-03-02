@@ -20,10 +20,10 @@ import scala.collection.mutable.Map
 
 object PFBConfigBuilder {
   def apply[T <: Data : Ring, V](
-    id: String, pfbConfig: PFBConfig, genIn: () => T, convert: Double => T, genOut: Option[() => T] = None): Config = new Config(
+    id: String, pfbConfig: PFBConfig, genIn: () => T, convert: Double => T, genOut: Option[() => T] = None, genTap: Option[() => T] = None): Config = new Config(
       (pname, site, here) => pname match {
         case PFBConvert(_id) if _id == id => convert
-        case PFBKey(_id)     if _id == id => pfbConfig
+        case PFBKey(_id)     if _id == id => pfbConfig.copy(genTap = genTap)
         case IPXactParameters(_id) if _id == id => {
           val parameterMap = Map[String, String]()
 
@@ -102,6 +102,37 @@ object PFBConfigBuilder {
             case _ =>
               throw new DspException("Unknown output type for PFB")
           }
+          // add fractional bits if it's fixed point
+          genTap.getOrElse(genIn)() match {
+            case fp: FixedPoint =>
+              val fractionalBits = fp.binaryPoint
+              parameterMap ++= List(
+                ("FilterCoefficientFractionalBits", fractionalBits.get.toString),
+                ("FilterCoefficientTotalBits", fp.getWidth.toString)
+              )
+            case c: DspComplex[T] =>
+              parameterMap ++= List(
+                ("FilterCoefficientTotalBits", c.real.getWidth.toString) // assume real and imag have equal total widths
+              )
+              c.underlyingType() match {
+                case "fixed" =>
+                  val fractionalBits = c.real.asInstanceOf[FixedPoint].binaryPoint
+                  parameterMap ++= List(
+                    ("FilterCoefficientFractionalBits", fractionalBits.get.toString)
+                  )
+                case _ => 
+              }
+            case d: DspReal =>
+              parameterMap ++= List(
+                ("FilterCoefficientTotalBits", d.getWidth.toString)
+              )
+            case s: SInt => 
+              parameterMap ++= List(
+                ("FilterCoefficientTotalBits", s.getWidth.toString)
+              )
+            case _ =>
+              throw new DspException("Unknown coefficient type for PFB")
+          }
 
           // Coefficients
           parameterMap ++= pfbConfig.window.zipWithIndex.map{case (coeff, index) => (s"FilterCoefficients_$index", coeff.toString)}
@@ -115,8 +146,8 @@ object PFBConfigBuilder {
         case _ => throw new CDEMatchError
       }) ++
   ConfigBuilder.genParams(id, pfbConfig.lanes, genIn, genOutFunc = genOut)
-  def standalone[T <: Data : Ring](id: String, pfbConfig: PFBConfig, genIn: () => T, convert: Double => T, genOut: Option[() => T] = None): Config =
-    apply(id, pfbConfig, genIn, convert, genOut) ++
+  def standalone[T <: Data : Ring](id: String, pfbConfig: PFBConfig, genIn: () => T, convert: Double => T, genOut: Option[() => T] = None, _genTap: Option[() => T] = None): Config =
+    apply(id, pfbConfig, genIn, convert, genOut, _genTap) ++
     ConfigBuilder.buildDSP(id, {implicit p: Parameters => new PFBBlock[T]})
 }
 
@@ -145,7 +176,7 @@ case class PFBKey(id: String) extends Field[PFBConfig]
 trait HasPFBParameters[T <: Data] extends HasGenParameters[T, T] {
   implicit val p: Parameters
   val pfbConfig = p(PFBKey(p(DspBlockId)))
-  def genTap: Option[T] = None
+  def genTap: Option[T] = pfbConfig.genTap.asInstanceOf[Option[T]]
   def convert(x: Double): T = p(PFBConvert(p(DspBlockId)))(x).asInstanceOf[T]
 }
 
@@ -173,7 +204,8 @@ case class PFBConfig(
                       pipelineDepth: Int = 4,
                       useSinglePortMem: Boolean = false,
                       symmetricCoeffs: Boolean  = false,
-                      useDeltaCompression: Boolean = false
+                      useDeltaCompression: Boolean = false,
+                      genTap: Option[() => Data] = None
                     ) {
   val window = windowFunc( WindowConfig(numTaps, outputWindowSize))
   val windowSize = window.length
