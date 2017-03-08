@@ -343,3 +343,5 @@ test_run_dir/*
 lib
 .ivy2
 generated-src
+unused.clocks
+unused.confg
