@@ -136,7 +136,7 @@ object PFBConfigBuilder {
 
           // Coefficients
           parameterMap ++= pfbConfig.window.zipWithIndex.map{case (coeff, index) => (s"FilterCoefficients_$index", coeff.toString)}
-          parameterMap ++= List(("ProcessingDelay", config.processingDelay.toString))
+          parameterMap ++= List(("ProcessingDelay", pfbConfig.processingDelay.toString))
 
           // tech stuff, TODO
           parameterMap ++= List(("ClockRate", "100"), ("Technology", "TSMC16nm"))
