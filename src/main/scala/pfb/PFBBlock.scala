@@ -31,5 +31,5 @@ class PFBBlockModule[T <: Data : Ring](outer: DspBlock)(implicit p: Parameters)
   status("Data_Set_End_Status") := module.io.data_set_end_status
   module.io.data_set_end_clear := control("Data_Set_End_Clear")
 
-  IPXactComponents._ipxactComponents += DspIPXact.makeDspBlockComponent(baseAddr, uuid)
+  IPXactComponents._ipxactComponents += DspIPXact.makeDspBlockComponent(baseAddr, uuid, module.name)
 }

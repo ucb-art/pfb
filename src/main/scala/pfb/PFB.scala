@@ -10,6 +10,7 @@ import dspjunctions.ValidWithSync
 import dsptools.numbers._
 import dsptools.numbers.implicits._
 import dspblocks._
+import craft._
 
 /**
   * IO Bundle for PFB
@@ -134,7 +135,7 @@ class PFBLane[T<:Data:Ring](
   val products = coeffsWire.map(tap => tap(count) * io.data_in)
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
-    prod + ShiftRegisterMem(delay, prev, en = en, init = Some(Ring[T].zero))
+    prod + ShiftRegisterMem(prev, delay, en = en)
   }
 
   io.data_out := result
