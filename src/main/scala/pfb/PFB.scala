@@ -136,7 +136,7 @@ class PFBLane[T<:Data:Ring](
   val products = coeffsWire.map(tap => DspContext.withTrimType(NoTrim) { tap(count) * io.data_in })
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
-    prod + ShiftRegisterMem(prev, delay, en = en)
+    prod + ShiftRegisterMem(prev, delay, en = en, name = this.name + "_sram")
   }
 
   io.data_out := result
