@@ -7,6 +7,7 @@ package pfb
 
 import chisel3._
 import dspjunctions.ValidWithSync
+import dsptools._
 import dsptools.numbers._
 import dsptools.numbers.implicits._
 import dspblocks._
@@ -132,7 +133,7 @@ class PFBLane[T<:Data:Ring](
     coeffWire
   })
 
-  val products = coeffsWire.map(tap => tap(count) * io.data_in)
+  val products = coeffsWire.map(tap => DspContext.withTrimType(NoTrim) { tap(count) * io.data_in })
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
     prod + ShiftRegisterMem(prev, delay, en = en)
