@@ -20,7 +20,7 @@ import scala.collection.mutable.Map
 
 object PFBConfigBuilder {
   def apply[T <: Data : Ring, V](
-    id: String, pfbConfig: PFBConfig, genIn: () => T, convert: Double => T, genOut: Option[() => T] = None, genTap: Option[() => T] = None): Config = new Config(
+    id: String, pfbConfig: PFBConfig, genIn: () => T, convert: Double => T, genOut: Option[() => T] = None, genTap: Option[T] = None): Config = new Config(
       (pname, site, here) => pname match {
         case PFBConvert(_id) if _id == id => convert
         case PFBKey(_id)     if _id == id => pfbConfig.copy(genTap = genTap)
@@ -47,7 +47,7 @@ object PFBConfigBuilder {
                 ("InputFractionalBits", fractionalBits.get.toString),
                 ("InputTotalBits", fp.getWidth.toString)
               )
-            case c: DspComplex[T] =>
+            case c: DspComplex[_] =>
               parameterMap ++= List(
                 ("InputTotalBits", c.real.getWidth.toString) // assume real and imag have equal total widths
               )
@@ -79,7 +79,7 @@ object PFBConfigBuilder {
                 ("OutputFractionalBits", fractionalBits.get.toString),
                 ("OutputTotalBits", fp.getWidth.toString)
               )
-            case c: DspComplex[T] =>
+            case c: DspComplex[_] =>
               parameterMap ++= List(
                 ("OutputTotalBits", c.real.getWidth.toString) // assume real and imag have equal total widths
               )
@@ -103,14 +103,14 @@ object PFBConfigBuilder {
               throw new DspException("Unknown output type for PFB")
           }
           // add fractional bits if it's fixed point
-          genTap.getOrElse(genIn)() match {
+          genTap.getOrElse(genIn()) match {
             case fp: FixedPoint =>
               val fractionalBits = fp.binaryPoint
               parameterMap ++= List(
                 ("FilterCoefficientFractionalBits", fractionalBits.get.toString),
                 ("FilterCoefficientTotalBits", fp.getWidth.toString)
               )
-            case c: DspComplex[T] =>
+            case c: DspComplex[_] =>
               parameterMap ++= List(
                 ("FilterCoefficientTotalBits", c.real.getWidth.toString) // assume real and imag have equal total widths
               )
@@ -146,8 +146,8 @@ object PFBConfigBuilder {
         case _ => throw new CDEMatchError
       }) ++
   ConfigBuilder.genParams(id, pfbConfig.lanes, genIn, genOutFunc = genOut)
-  def standalone[T <: Data : Ring](id: String, pfbConfig: PFBConfig, genIn: () => T, convert: Double => T, genOut: Option[() => T] = None, _genTap: Option[() => T] = None): Config =
-    apply(id, pfbConfig, genIn, convert, genOut, _genTap) ++
+  def standalone[T <: Data : Ring](id: String, pfbConfig: PFBConfig, genIn: () => T, convert: Double => T, genOut: Option[() => T] = None, genTap: Option[T] = None): Config =
+    apply(id, pfbConfig, genIn, convert, genOut, genTap) ++
     ConfigBuilder.buildDSP(id, {implicit p: Parameters => new PFBBlock[T]})
 }
 
@@ -165,8 +165,9 @@ class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
     outputWindowSize=32,
     lanes=16),
   genIn = () => FixedPoint(32.W, 16.BP),
-  genOut = Some(() => FixedPoint(40.W, 16.BP)),
-  convert = d => FixedPoint.fromDouble(d, 32.W, 16.BP)
+  genOut = Some(() => FixedPoint(40.W, 18.BP)),
+  genTap = Some(FixedPoint(36.W, 12.BP)),
+  convert = d => FixedPoint.fromDouble(d, 36.W, 12.BP)
 ))
 
 case class PFBConvert(id: String) extends Field[Double => Data]
@@ -205,7 +206,7 @@ case class PFBConfig(
                       useSinglePortMem: Boolean = false,
                       symmetricCoeffs: Boolean  = false,
                       useDeltaCompression: Boolean = false,
-                      genTap: Option[() => Data] = None
+                      genTap: Option[Data] = None
                     ) {
   val window = windowFunc( WindowConfig(numTaps, outputWindowSize))
   val windowSize = window.length
