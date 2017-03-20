@@ -161,13 +161,14 @@ class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
   PFBConfig(
     // must be numTaps * outputWindowSize in length
     windowFunc= (w: WindowConfig) => Seq.tabulate(w.numTaps*w.outputWindowSize)(i => scala.math.sin(i)),
-    numTaps=23,
-    outputWindowSize=32,
-    lanes=16),
-  genIn = () => FixedPoint(32.W, 16.BP),
-  genOut = Some(() => FixedPoint(40.W, 18.BP)),
-  genTap = Some(FixedPoint(36.W, 12.BP)),
-  convert = d => FixedPoint.fromDouble(d, 36.W, 12.BP)
+    numTaps=12,
+    outputWindowSize=128,
+    lanes=4,
+    processingDelay = 192),
+  genIn = () => DspComplex(FixedPoint(11.W, 10.BP), FixedPoint(11.W, 10.BP)),
+  genOut = Some(() => DspComplex(FixedPoint(11.W, 17.BP), FixedPoint(11.W, 17.BP))),
+  genTap = Some(DspComplex(FixedPoint(11.W, 17.BP), FixedPoint(11.W, 17.BP))),
+  convert = d => DspComplex(FixedPoint.fromDouble(d, 11.W, 17.BP), FixedPoint.fromDouble(d, 11.W, 17.BP))
 ))
 
 case class PFBConvert(id: String) extends Field[Double => Data]
