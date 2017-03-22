@@ -160,7 +160,7 @@ class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
   "pfb",
   PFBConfig(
     // must be numTaps * outputWindowSize in length
-    windowFunc= (w: WindowConfig) => Seq.tabulate(w.numTaps*w.outputWindowSize)(i => scala.math.sin(i)),
+    windowFunc= userCoeff.apply,
     numTaps=12,
     outputWindowSize=128,
     lanes=4,
