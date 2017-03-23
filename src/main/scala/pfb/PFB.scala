@@ -6,6 +6,7 @@
 package pfb
 
 import chisel3._
+import chisel3.util._
 import dspjunctions.ValidWithSync
 import dsptools._
 import dsptools.numbers._
@@ -79,9 +80,9 @@ class PFB[T<:Data:Ring](genIn: => T,
   }
   io.data_set_end_status := dses
 
-  val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime, convert)))
+  val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime, convert, config)))
   filters.zip(in).foreach( { case (filt, port) => filt.io.data_in := port } )
-  filters.zip(io.data_out.bits).foreach( { case (filt, port) => port := filt.io.data_out } )
+  filters.zip(io.data_out.bits).foreach( { case (filt, port) => port := ShiftRegister(filt.io.data_out, config.outputPipelineDepth) } )
   filters.foreach (f => {
     f.io.valid_in := io.data_in.valid
     f.io.sync_in := io.data_in.sync
@@ -111,7 +112,9 @@ class PFBLane[T<:Data:Ring](
   genTap: => Option[T] = None,
   val coeffs: Seq[Double],
   val delay: Int,
-  val convert: Double => T
+  val convert: Double => T,
+  val config: PFBConfig = PFBConfig()
+
 ) extends Module {
   val io = IO(new Bundle {
     val data_in  = Input(genIn)
@@ -136,7 +139,7 @@ class PFBLane[T<:Data:Ring](
   val products = coeffsWire.map(tap => DspContext.withTrimType(NoTrim) { tap(count) * io.data_in })
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
-    prod + ShiftRegisterMem(prev, delay, en = en, name = this.name + "_sram")
+    ShiftRegister(prod, config.multiplyPipelineDepth) + ShiftRegisterMem(prev, delay, en = en, name = this.name + "_sram")
   }
 
   io.data_out := result
