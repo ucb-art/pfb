@@ -125,7 +125,8 @@ class PFBLane[T<:Data:Ring](
 
   require(coeffs.length % delay == 0)
 
-  val en = io.valid_in
+  // [stevo]: everything is always running, with zeroes fed in when input is invalid
+  val en = true.B
   val count = CounterWithReset(en, delay, io.sync_in)._1
 
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
