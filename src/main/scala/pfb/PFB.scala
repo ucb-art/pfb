@@ -81,12 +81,12 @@ class PFB[T<:Data:Ring](genIn: => T,
   }
   io.data_set_end_status := dses
 
+  // create config.lanes filters and connect them up
   val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime, convert, config)))
   filters.zip(in).foreach( { case (filt, port) => filt.io.data_in := port } )
   filters.zip(io.data_out.bits).foreach( { case (filt, port) => port := ShiftRegister(filt.io.data_out, config.outputPipelineDepth) } )
   filters.foreach (f => {
-    f.io.valid_in := io.data_in.valid
-    f.io.sync_in := io.data_in.sync
+    f.io.count := counter
   })
 }
 
@@ -119,16 +119,11 @@ class PFBLane[T<:Data:Ring](
 ) extends Module {
   val io = IO(new Bundle {
     val data_in  = Input(genIn)
-    val valid_in = Input(Bool())
-    val sync_in  = Input(Bool())
     val data_out = Output(genOut.getOrElse(genIn))
+    val count = Input(UInt(log2Up(config.outputWindowSize / config.lanes).W))
   })
 
   require(coeffs.length % delay == 0)
-
-  // [stevo]: everything is always running, with zeroes fed in when input is invalid
-  val en = true.B
-  val count = CounterWithReset(en, delay, io.sync_in)._1
 
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
   val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
@@ -138,10 +133,10 @@ class PFBLane[T<:Data:Ring](
     coeffWire
   })
 
-  val products = coeffsWire.map(tap => DspContext.withTrimType(NoTrim) { tap(count) * io.data_in })
+  val products = coeffsWire.map(tap => DspContext.withTrimType(NoTrim) { tap(io.count) * io.data_in })
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
-    ShiftRegister(prod, config.multiplyPipelineDepth) + ShiftRegisterMem(prev, delay, en = en, name = this.name + "_sram")
+    ShiftRegister(prod, config.multiplyPipelineDepth) + ShiftRegisterMem(prev, delay, name = this.name + "_sram")
   }
 
   io.data_out := result
