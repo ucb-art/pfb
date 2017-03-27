@@ -8,11 +8,11 @@ import breeze.linalg._
 import breeze.numerics.abs
 import breeze.signal.fourierTr
 import chisel3._
+import chisel3.iotesters._
 import chisel3.experimental._
-import chisel3.iotesters.{PeekPokeTester, TesterOptionsManager}
 import co.theasi.plotly._
 import cde.Parameters
-import dsptools.DspTester
+import dsptools._
 import dspblocks._
 import dsptools.numbers.DspReal
 import dsptools.numbers.implicits._
@@ -126,7 +126,7 @@ object leakageTester {
 
   def setupTester[T <: Data](c: () => PFB[T]): PFBTester[T] = {
     var tester: PFBTester[T] = null
-    chisel3.iotesters.Driver.execute(Array("-fimed", "2000"), c) (c => {
+    dsptools.Driver.execute(c, Array("-fimed", "2000", "--backend-name", "verilator")) (c => {
       val t = new PFBTester(c, verbose=false)
       tester = t
       t
@@ -173,21 +173,21 @@ class PFBSpec extends FlatSpec with Matchers {
   behavior of "PFB"
   it should "build with SInt" in {
     //implicit val p: Parameters = Parameters.root(new DspConfig().toInstance)
-    chisel3.iotesters.Driver(() => new PFB(SInt(10.W), Some(SInt(16.W)),
+    dsptools.Driver.execute(() => new PFB(SInt(10.W), Some(SInt(16.W)),
       convert = d => d.toInt.S,
       config = PFBConfig(
         outputWindowSize = 4, numTaps = 4, lanes = 2
-      ))) {
+      )), Array("--backend-name", "verilator")) {
       c => new PFBTester(c)
     } should be(true)
   }
 
   it should "build with FixedPoint" in {
-    chisel3.iotesters.Driver(() => new PFB(FixedPoint(10.W, 5.BP), Some(FixedPoint(16.W, 7.BP)),
+    dsptools.Driver.execute(() => new PFB(FixedPoint(10.W, 5.BP), Some(FixedPoint(16.W, 7.BP)),
       convert = d => FixedPoint.fromDouble(d, 10.W, 5.BP),
       config = PFBConfig(
         outputWindowSize = 4, numTaps = 4, lanes = 2
-      ))) {
+      )), Array("--backend-name", "verilator")) {
       c => new PFBTester(c)
     } should be(true)
   }
@@ -200,11 +200,12 @@ class PFBSpec extends FlatSpec with Matchers {
       for (j <- outputWindowSize) {
         for (k <- lanes) {
           if (k <= j) {
-            chisel3.iotesters.Driver(() => new PFB(FixedPoint(4.W, 2.BP), Some(FixedPoint(2.W, 7.BP)),
+            println(s"size = $j, taps = $i, lanes = $k")
+            dsptools.Driver.execute(() => new PFB(FixedPoint(4.W, 2.BP), Some(FixedPoint(2.W, 7.BP)),
               convert = d => FixedPoint.fromDouble(d, 4.W, 2.BP),
               config = PFBConfig(
                 outputWindowSize = j, numTaps = i, lanes = k
-              ))) {
+              )), Array("--backend-name", "verilator", "--target-dir", s"test_run_dir_${i}_${j}_${k}") ) {
               c => new PFBTester(c)
             } should be(true)
           }
@@ -224,7 +225,7 @@ class PFBSpec extends FlatSpec with Matchers {
       val expected = Seq(1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0) //Seq(3.0, 4.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0)
       val stepSize = config.windowSize / (config.numTaps * config.lanes)
 
-      chisel3.iotesters.Driver(() => new PFB(SInt(10.W), config = config, convert = d => d.toInt.S)) {
+      dsptools.Driver.execute(() => new PFB(SInt(10.W), config = config, convert = d => d.toInt.S), Array("--backend-name", "verilator")) {
         c => new PFBStepTester(c, stepSize, expected)
       } should be(true)
     }
@@ -237,7 +238,7 @@ class PFBSpec extends FlatSpec with Matchers {
       )
       val expected = Seq(1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0)
       val stepSize = config.windowSize / (config.numTaps * config.lanes)
-      chisel3.iotesters.Driver(() => new PFB(SInt.width(10), config = config)) {
+      dsptools.Driver(() => new PFB(SInt.width(10), config = config)) {
         c => new PFBStepTester(c, stepSize, expected)
       } should be(true)
     }*/
@@ -255,18 +256,18 @@ class PFBSpec extends FlatSpec with Matchers {
 
   behavior of "PFBLane"
   it should "build and run correctly" in {
-    chisel3.iotesters.Driver(() => new PFBLane[SInt](
+    dsptools.Driver.execute(() => new PFBLane[SInt](
       SInt(8.W), Some(SInt(10.W)), Some(SInt(10.W)),
       coeffs=Seq(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0),
-      delay=4, convert = d => d.toInt.S)
-    ) {
+      delay=4, convert = d => d.toInt.S),
+      Array("--backend-name", "verilator")) {
       c => new PFBLaneTester(c)
     } should be (true)
   }
 
   behavior of "SInt"
   ignore should "allow me to assign to smaller widths" in {
-    chisel3.iotesters.Driver.execute( Array("-tiv"), () => new SIntPassthrough()) {
+    dsptools.Driver.execute(() => new SIntPassthrough(), Array("-tiv")) {
       c => new SIntPassthroughTester(c)
     } should be (true)
   }

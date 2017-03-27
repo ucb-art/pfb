@@ -337,7 +337,7 @@ project/plugins/project/
 hs_err_pid*
 
 # chisel-tester
-test_run_dir/*
+test_run_dir*
 
 # rocket-chip
 lib

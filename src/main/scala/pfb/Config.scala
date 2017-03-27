@@ -164,7 +164,7 @@ class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
     numTaps=12,
     outputWindowSize=128,
     lanes=4,
-    processingDelay = 194,
+    processingDelay = 192,
     outputPipelineDepth = 1,
     multiplyPipelineDepth = 1
     ),

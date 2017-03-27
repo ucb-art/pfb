@@ -58,9 +58,10 @@ class PFB[T<:Data:Ring](genIn: => T,
   val cycleTime = config.outputWindowSize / config.lanes
   val counter = CounterWithReset(true.B, cycleTime, io.data_in.sync, ~valid_delay & io.data_in.valid)._1
 
-  val delay = config.processingDelay
-  io.data_out.sync := ShiftRegisterWithReset(io.data_in.valid && counter === 0.U, delay, 0.U, true.B)
-  io.data_out.valid := ShiftRegisterWithReset(io.data_in.valid, delay, 0.U, true.B)
+  // user-defined latency, account for pipeline delays automatically
+  val latency = config.processingDelay + config.multiplyPipelineDepth + config.outputPipelineDepth
+  io.data_out.sync := ShiftRegisterWithReset(counter === (cycleTime-1).U, latency, 0.U) // don't let valid gate sync
+  io.data_out.valid := ShiftRegisterWithReset(io.data_in.valid, latency, 0.U)
 
   // feed in zeros when invalid
   val in = Wire(Vec(config.lanes, genIn))
