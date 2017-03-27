@@ -126,7 +126,7 @@ object leakageTester {
 
   def setupTester[T <: Data](c: () => PFB[T]): PFBTester[T] = {
     var tester: PFBTester[T] = null
-    dsptools.Driver.execute(c, Array("-fimed", "2000", "--backend-name", "verilator")) (c => {
+    dsptools.Driver.execute(c, Array("-fimed", "2000", "--backend-name", "verilator", "--is-verbose", "false")) (c => {
       val t = new PFBTester(c, verbose=false)
       tester = t
       t
@@ -177,7 +177,7 @@ class PFBSpec extends FlatSpec with Matchers {
       convert = d => d.toInt.S,
       config = PFBConfig(
         outputWindowSize = 4, numTaps = 4, lanes = 2
-      )), Array("--backend-name", "verilator")) {
+      )), Array("--backend-name", "verilator", "--is-verbose", "false")) {
       c => new PFBTester(c)
     } should be(true)
   }
@@ -187,7 +187,7 @@ class PFBSpec extends FlatSpec with Matchers {
       convert = d => FixedPoint.fromDouble(d, 10.W, 5.BP),
       config = PFBConfig(
         outputWindowSize = 4, numTaps = 4, lanes = 2
-      )), Array("--backend-name", "verilator")) {
+      )), Array("--backend-name", "verilator", "--is-verbose", "false")) {
       c => new PFBTester(c)
     } should be(true)
   }
@@ -205,7 +205,7 @@ class PFBSpec extends FlatSpec with Matchers {
               convert = d => FixedPoint.fromDouble(d, 4.W, 2.BP),
               config = PFBConfig(
                 outputWindowSize = j, numTaps = i, lanes = k
-              )), Array("--backend-name", "verilator", "--target-dir", s"test_run_dir_${i}_${j}_${k}") ) {
+              )), Array("--backend-name", "verilator", "--is-verbose", "false", "--target-dir", s"test_run_dir_${i}_${j}_${k}") ) {
               c => new PFBTester(c)
             } should be(true)
           }
@@ -225,7 +225,7 @@ class PFBSpec extends FlatSpec with Matchers {
       val expected = Seq(1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0) //Seq(3.0, 4.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0)
       val stepSize = config.windowSize / (config.numTaps * config.lanes)
 
-      dsptools.Driver.execute(() => new PFB(SInt(10.W), config = config, convert = d => d.toInt.S), Array("--backend-name", "verilator")) {
+      dsptools.Driver.execute(() => new PFB(SInt(10.W), config = config, convert = d => d.toInt.S), Array("--backend-name", "verilator", "--is-verbose", "false")) {
         c => new PFBStepTester(c, stepSize, expected)
       } should be(true)
     }
@@ -260,7 +260,7 @@ class PFBSpec extends FlatSpec with Matchers {
       SInt(8.W), Some(SInt(10.W)), Some(SInt(10.W)),
       coeffs=Seq(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0),
       delay=4, convert = d => d.toInt.S),
-      Array("--backend-name", "verilator")) {
+      Array("--backend-name", "verilator", "--is-verbose", "false")) {
       c => new PFBLaneTester(c)
     } should be (true)
   }
