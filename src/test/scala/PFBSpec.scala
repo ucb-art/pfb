@@ -193,7 +193,7 @@ class PFBSpec extends FlatSpec with Matchers {
   }
 
   it should "build any parameterization" in {
-    val numTaps = Seq(1, 7, 16, 43)
+    val numTaps = Seq(1, 7, 43)
     val outputWindowSize = Seq(4, 256, 1024)
     val lanes = Seq(2, 8)
     for (i <- numTaps) {
