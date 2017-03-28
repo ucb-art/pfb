@@ -169,9 +169,9 @@ class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
     multiplyPipelineDepth = 1
     ),
   genIn = () => DspComplex(FixedPoint(11.W, 10.BP), FixedPoint(11.W, 10.BP)),
-  genOut = Some(() => DspComplex(FixedPoint(11.W, 17.BP), FixedPoint(11.W, 17.BP))),
-  genTap = Some(DspComplex(FixedPoint(11.W, 17.BP), FixedPoint(11.W, 17.BP))),
-  convert = d => DspComplex(FixedPoint.fromDouble(d, 11.W, 17.BP), FixedPoint.fromDouble(d, 11.W, 17.BP))
+  genOut = Some(() => DspComplex(FixedPoint(12.W, 17.BP), FixedPoint(12.W, 17.BP))),
+  genTap = Some(DspComplex(FixedPoint(12.W, 17.BP), FixedPoint(12.W, 17.BP))),
+  convert = d => DspComplex(FixedPoint.fromDouble(d, 12.W, 17.BP), FixedPoint.fromDouble(d, 12.W, 17.BP))
 ))
 
 case class PFBConvert(id: String) extends Field[Double => Data]
