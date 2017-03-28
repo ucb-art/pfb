@@ -125,8 +125,8 @@ class PFBLane[T<:Data:Ring](
 
   require(coeffs.length % delay == 0)
 
-  println("This lane has coefficients:")
-  println(coeffs.toArray.deep.mkString("\n"))
+  //println("This lane has coefficients:")
+  //println(coeffs.toArray.deep.mkString("\n"))
 
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
   val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
