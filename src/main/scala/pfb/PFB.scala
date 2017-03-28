@@ -125,6 +125,9 @@ class PFBLane[T<:Data:Ring](
 
   require(coeffs.length % delay == 0)
 
+  println("This lane has coefficients:")
+  println(coeffs.toArray.deep.mkString("\n"))
+
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
   val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
   val coeffsWire     = coeffsReversed.map(tapGroup => {
@@ -136,7 +139,8 @@ class PFBLane[T<:Data:Ring](
   val products = coeffsWire.map(tap => DspContext.withTrimType(NoTrim) { tap(io.count) * io.data_in })
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
-    ShiftRegister(prod, config.multiplyPipelineDepth) + ShiftRegisterMem(prev, delay, name = this.name + "_sram")
+    //ShiftRegister(prod, config.multiplyPipelineDepth) + ShiftRegisterMem(prev, delay, name = this.name + "_sram")
+    ShiftRegister(prod, config.multiplyPipelineDepth) + ShiftRegister(prev, delay)
   }
 
   io.data_out := result
