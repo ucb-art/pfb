@@ -130,18 +130,21 @@ class PFBLane[T<:Data:Ring](
   //println(temp.toArray.deep.mkString("\n"))
 
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
-  val coeffsReversed = coeffsGrouped
+  // TODO
+  // [stevo]: should be the line below, but this is not how NGC ordered their coefficient
+  // val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
+  val coeffsReversed = coeffsGrouped.reverse
   val coeffsWire     = coeffsReversed.map(tapGroup => {
     val coeffWire = Wire(Vec(tapGroup.length, genTap.getOrElse(genIn)))
     coeffWire.zip(tapGroup).foreach({case (t,d) => t := convert(d)})
     coeffWire
   })
 
-  val products = coeffsWire.map(tap => DspContext.withTrimType(NoTrim) { tap(io.count) * io.data_in })
+  val products = coeffsWire.map(tap => ShiftRegister(DspContext.withTrimType(NoTrim) { tap(io.count) * io.data_in }, config.multiplyPipelineDepth))
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
     //ShiftRegister(prod, config.multiplyPipelineDepth) + ShiftRegisterMem(prev, delay, name = this.name + "_sram")
-    ShiftRegister(prod, config.multiplyPipelineDepth) + ShiftRegister(prev, delay)
+     ShiftRegister(prev, delay) + prod
   }
 
   io.data_out := result
