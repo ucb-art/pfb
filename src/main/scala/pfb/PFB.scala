@@ -130,7 +130,7 @@ class PFBLane[T<:Data:Ring](
   //println(temp.toArray.deep.mkString("\n"))
 
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
-  val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
+  val coeffsReversed = coeffsGrouped
   val coeffsWire     = coeffsReversed.map(tapGroup => {
     val coeffWire = Wire(Vec(tapGroup.length, genTap.getOrElse(genIn)))
     coeffWire.zip(tapGroup).foreach({case (t,d) => t := convert(d)})
