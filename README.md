@@ -22,11 +22,11 @@ Clone the repository and update the depenedencies:
 git clone git@github.com:ucb-art/pfb.git
 git submodule update --init
 cd dsp-framework
-./update.bash
+./update.bash no_hwacha
 cd ..
 ```
 
-See the [https://github.com/ucb-art/dsp-framework/blob/master/README.md](dsp-framework README) for more details on this infrastructure.
+See the [dsp-framework README](https://github.com/ucb-art/dsp-framework/blob/master/README.md) for more details on this infrastructure.
 Build the dependencies by typing `make libs`.
 
 ## Building
@@ -60,7 +60,7 @@ Current choices are a Sinc + Hamming window or a Blackman Harris window.
 
 ## Interfaces
 
-The PFB uses the [https://github.com/ucb-art/rocket-dsp-utils/blob/master/doc/stream.md](DSP streaming interface) (a subset of AXI4-Stream) on both the data input and data output.
+The PFB uses the [DSP streaming interface](https://github.com/ucb-art/rocket-dsp-utils/blob/master/doc/stream.md) (a subset of AXI4-Stream) on both the data input and data output.
 If the coefficients are hard-coded, no SCR file exists.
 
 ## Signaling
