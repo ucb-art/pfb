@@ -7,7 +7,7 @@ TESTCHIPIP_DIR=$(framework_dir)/testchipip
 
 default: mems
 
-SBT ?= java -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Xmx2G -Xss128M -jar $(ROCKETCHIP_DIR)/sbt-launch.jar -Dsbt.ivy.home="${ivy_dir}"
+SBT ?= java -XX:+CMSClassUnloadingEnabled -Xmx2G -Xss128M -jar $(ROCKETCHIP_DIR)/sbt-launch.jar -Dsbt.ivy.home="${ivy_dir}"
 
 include $(framework_dir)/Makefrag
 
