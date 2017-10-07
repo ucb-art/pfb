@@ -64,7 +64,7 @@ class PFBModule[T <: Data : Ring](outer: PFB[T]) extends LazyModuleImp(outer) {
   //val ctrl = csrs("ctrl")
   //csrs("stat") := io_in.valid
 
-  io_out <> io_in
+  //io_out <> io_in
 
   // split window up into config.lanes different sub-windows
   val groupedWindow = (0 until config.lanes).map(
@@ -141,11 +141,7 @@ class PFBLane[T<:Data:Ring](
   //println(temp.toArray.deep.mkString("\n"))
 
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
-  // TODO
-  // [stevo]: should be the line below, but this is not how NGC ordered their coefficient
-  val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
-  //val coeffsReversed = coeffsGrouped.reverse
-  val coeffsWire     = coeffsReversed.map(tapGroup => {
+  val coeffsWire     = coeffsGrouped.map(tapGroup => {
     val coeffWire = Wire(Vec(tapGroup.length, genTap.getOrElse(genIn)))
     coeffWire.zip(tapGroup).foreach({case (t,d) => t := convert(d)})
     coeffWire
@@ -177,19 +173,22 @@ case class PFBParams[T <: Data]
   windowFunc: WindowConfig => Seq[Double],
   numTaps: Int,
   outputWindowSize: Int,
+  scale: Double = 1.0,
+  offset: Double = 0.0,
   lanes: Int = 8,
   outputPipelineDepth: Int = 1,
   multiplyPipelineDepth: Int = 1,
   genTap: Option[T] = None,
-  processingDelay: Int = 0,
   convert: Double => T
 
 ) {
   requireIsChiselType(genIn,  s"genIn ($genIn) must be chisel type")
   genOut.foreach(g => requireIsChiselType(g, s"genOut ($g) must be chisel type"))
 
+  val processingDelay = (numTaps-1)*(outputWindowSize/lanes)
+
   // various checks for validity
-  val window = windowFunc(new WindowConfig(numTaps, outputWindowSize))
+  val window = windowFunc(new WindowConfig(numTaps, outputWindowSize, scale, offset))
   val windowSize = window.length
   require(numTaps > 0, "Must have more than zero taps")
   require(outputWindowSize > 0, "Output window must have size > 0")
@@ -202,8 +201,12 @@ case class PFBParams[T <: Data]
   * Object used by [[PFB]] to generate window from [[PFBConfig]] parameters
   * @param numTaps
   * @param outputWindowSize
+  * @param scale
+  * @param offset
   */
 case class WindowConfig(
                          numTaps: Int,
-                         outputWindowSize: Int
+                         outputWindowSize: Int,
+                         scale: Double,
+                         offset: Double
 )

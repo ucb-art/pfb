@@ -6,8 +6,8 @@ import chisel3.internal.firrtl.Width
 import chisel3.iotesters._
 import chisel3.util._
 import dspblocks._
-import dsptools.numbers._
-import dsptools.numbers.implicits._
+import dsptools.numbers.{Ring, DspReal}
+//import dsptools.numbers.implicits._
 import freechips.rocketchip.config._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.util._
@@ -19,12 +19,13 @@ import freechips.rocketchip.regmapper._
 import org.scalatest.{FlatSpec, Matchers}
 import scala.collection.{Seq, mutable}
 
-
+import breeze.linalg._
+import breeze.signal.fourierTr
 import breeze.math.Complex
 import chisel3.internal.firrtl.KnownBinaryPoint
 import dsptools.DspTesterUtilities._
 import dsptools.{DspTester, DspException}
-import scala.math.{abs, pow}
+import scala.math.{abs, pow, max, log10}
 
 
 
@@ -103,7 +104,7 @@ class PFBSpec extends FlatSpec with Matchers {
   paramTest(genIn = FixedPoint(32.W, 16.BP), convert = (x: Double) => FixedPoint.fromDouble(x, 32.W, 16.BP))
   // downsize coefficients to fit in 16 bits (32 BP)
   paramTest(genIn = FixedPoint(16.W, 32.BP), convert = (x: Double) => FixedPoint.fromDouble(x/math.pow(2, 32), 16.W, 32.BP))
-  paramTest(winFunc = sincHamming.apply, winFuncName = "Sinc + Hamming")
+  paramTest(winFunc = sincHanning.apply, winFuncName = "Sinc + Hanning")
   paramTest(lanes = 32)
   paramTest(lanes = 10, outputWindowSize = 200)
   paramTest(numTaps = 2)
@@ -120,18 +121,20 @@ class PFBSpec extends FlatSpec with Matchers {
 
   def coeffTest(): Unit = {
 
-    it should s"return the data with all coefficients as 1" in {
+    it should s"return the coefficients with all data as 1" in {
 
       // setup params
       val params = PFBParams(
-        genIn = UInt(32.W),
+        genIn = FixedPoint(20.W, 16.BP),
         address = AddressSet(0x0, 0xffffffffL),
         beatBytes = 8,
         numTaps = 4,
         outputWindowSize = 256,
-        windowFunc = onesWindow.apply,
-        lanes = 16,
-        convert = (x: Double) => x.toInt.U
+        windowFunc = sincHanning.apply,
+        lanes = 8,
+        convert = (x: Double) => FixedPoint.fromDouble(x, 20.W, 16.BP),
+        outputPipelineDepth = 0,
+        multiplyPipelineDepth = 0
       )
 
       // setup blind nodes 
@@ -144,12 +147,29 @@ class PFBSpec extends FlatSpec with Matchers {
         mem       = () => AXI4BlindInputNode(Seq(AXI4MasterPortParameters(Seq(AXI4MasterParameters("pfb")))))
       )
 
-      // setup test data
-      val values = Seq.fill(10)(Seq.fill(params.lanes)(1.0))
-      println(s"input = $values")
-      val out = runTest(params, blindNodes, CustomFunctions.packInputStream(values, params.genIn))
-      val unpackedOut = CustomFunctions.unpackOutputStream(params.genOut.getOrElse(params.genIn), params.lanes, out)
-      println(s"output = $unpackedOut")
+      // check each tap
+      var success = true
+      for (tap <- 0 until params.numTaps) {
+
+        // setup test data
+        val values = Array.fill(params.processingDelay+params.outputWindowSize/params.lanes)(Array.fill(params.lanes)(0.0))
+        for (i <- tap*params.outputWindowSize until (tap+1)*params.outputWindowSize) {
+          values(i/params.lanes)(i%params.lanes) = 1.0
+        }
+        //println(s"input = ${values.map(_.toSeq).toSeq}")
+        val out = runTest(params, blindNodes, CustomFunctions.packInputStream(values.map(_.toSeq).toSeq, params.genIn))
+        val unpackedOut = CustomFunctions.unpackOutputStream(params.genOut.getOrElse(params.genIn), params.lanes, out)
+        //println(s"output = $unpackedOut")
+        //println(s"window = ${params.window}")
+        params.window.drop(tap*params.outputWindowSize).zip(unpackedOut).zipWithIndex.foreach{ case ((expected, actual), j) => {
+          // check if actual is within quantization of data = 2^-BP
+          if (actual > expected+pow(2,-16) || actual < expected-pow(2,-16)) {
+            println(s"Error, mismatch on coefficient $j, expected $expected, got $actual")
+            success = false
+          }
+        }}
+      }
+      assert(success)
     }
   }
 
@@ -157,14 +177,56 @@ class PFBSpec extends FlatSpec with Matchers {
 
 
   //////////////////////////////////////////
-  /////// SINGLE TONE TESTS ////////////////
+  /////////// LEAKAGE TESTS ////////////////
   //////////////////////////////////////////
 
   // calculate the amount of leakage in neighboring bins and see if the PFB helps
 
-  def toneTest[T <: Data : Ring](params: PFBParams[T], freq: Int, amp: Int): Unit = {
+  def toneTest(): Unit = {
+
+    def getTone(numSamples: Int, f: Double): Seq[Double] = {
+      (0 until numSamples).map(i => math.sin(2 * math.Pi * f * i))
+    }
+
+    def getEnergyAtBin(x_t: Seq[Double], bin: Int) : Double = {
+      val fftSize = x_t.length
+      val tform = fourierTr(DenseVector(x_t.toArray)).toArray.toSeq
+      pow((tform(bin).abs / x_t.length), 2)
+    }
+
+    def simWindow[T <: Data : Ring](signal: Seq[Double], params: PFBParams[T]): Seq[Double] = {
+      assert(signal.length == params.windowSize)
+      val signalByWindow = signal.zip(params.window).map({case(x,y)=>x*y})
+      (0 until params.outputWindowSize).map(i => {
+        (0 until params.numTaps).foldLeft(0.0) { case(sum, j) => {
+          sum + signalByWindow(i + j * params.outputWindowSize)
+        }}
+      })
+    }
+
+    def getSidelobeLevel(spectrum: Seq[Double]): Double = {
+      val localMaxima = spectrum.toList.sliding(3).collect{ case a::b::c::Nil if a < b && b > c => b }.toList
+      val m1 = localMaxima.reduceLeft(_ max _)
+      val m2 = localMaxima.diff(List(m1)).reduceLeft(_ max _)
+      10*log10(m1)-10*log10(m2)
+    }
 
     it should s"reduce leakage" in {
+
+      // setup params
+      val params = PFBParams(
+        genIn = FixedPoint(32.W, 16.BP),
+        address = AddressSet(0x0, 0xffffffffL),
+        beatBytes = 8,
+        numTaps = 8,
+        outputWindowSize = 256,
+        windowFunc = blackmanHarris.apply,
+        lanes = 16,
+        convert = (x: Double) => FixedPoint.fromDouble(x, 32.W, 16.BP),
+        outputPipelineDepth = 0,
+        multiplyPipelineDepth = 0
+      )
+
       // setup blind nodes 
       val inWidthBytes = (params.genIn.getWidth*params.lanes + 7)/ 8
       val outWidthBytes = params.genOut.map(x => (x.getWidth*params.lanes + 7)/8).getOrElse(inWidthBytes)
@@ -174,9 +236,55 @@ class PFBSpec extends FlatSpec with Matchers {
         streamOut = () => AXI4StreamBlindOutputNode(Seq(AXI4StreamSlavePortParameters())),
         mem       = () => AXI4BlindInputNode(Seq(AXI4MasterPortParameters(Seq(AXI4MasterParameters("pfb")))))
       )
+
+
+      val numBins = 5
+      val samples_per_bin = 5
+      val windowSize = params.windowSize
+      val fftSize    = params.outputWindowSize
+      val testBin    =  fftSize / 6
+      val delta_fs = (-numBins.toDouble to numBins.toDouble by (1.0 / samples_per_bin)).toSeq
+
+      // no window 
+      val rawResults = delta_fs map {delta_f => {
+        getEnergyAtBin(getTone(fftSize, (testBin + delta_f) / fftSize), testBin)
+      }}
+      
+      // floating-point simulation
+      val simResults = delta_fs map {delta_f => {
+        val tone = getTone(windowSize, (testBin + delta_f) / fftSize)
+        val simPfb = simWindow(tone, params)
+        getEnergyAtBin(simPfb, testBin)
+      }}
+
+      // chisel results
+      val chiselResults = delta_fs map { delta_f => {
+        val tone = getTone(params.lanes*params.processingDelay+params.outputWindowSize, (testBin + delta_f) / fftSize).grouped(params.lanes).toList
+        val out = runTest(params, blindNodes, CustomFunctions.packInputStream(tone, params.genIn))
+        val unpackedOut = CustomFunctions.unpackOutputStream(params.genOut.getOrElse(params.genIn), params.lanes, out)
+        // should finish with exactly the right number of words, but just in case...
+        val lastWindow = unpackedOut.drop(unpackedOut.length - fftSize)
+        getEnergyAtBin(lastWindow, testBin)
+      }}
+
+      println(s"delta  = $delta_fs")
+      println(s"Raw    = $rawResults")
+      println(s"Sim    = $simResults")
+      println(s"Chisel = $chiselResults")
+
+      // find leakage reduction
+      val rawSL    = getSidelobeLevel(rawResults)
+      val simSL    = getSidelobeLevel(simResults)
+      val chiselSL = getSidelobeLevel(chiselResults)
+      println(s"Original Sidelobe Level:  $rawSL dB")
+      println(s"FP window Sidelobe Level: $simSL dB")
+      println(s"Chisel Sidelobe Level:    $chiselSL dB")
+      
     } 
 
   }
+
+  toneTest()
   
   //////////////////////////////////////////
   /////////// OVERFLOW TESTS ///////////////
