@@ -5,9 +5,10 @@ import chisel3.experimental.FixedPoint
 import chisel3.core.requireIsChiselType
 import chisel3.util._
 import dspblocks._
+import dsptools._
 import dsptools.numbers._
 //import dsptools.numbers.implicits._
-import freechips.rocketchip.amba.axi4.{AXI4BlindInputNode, AXI4MasterParameters, AXI4MasterPortParameters}
+import freechips.rocketchip.amba.axi4._
 import freechips.rocketchip.amba.axi4stream._
 import freechips.rocketchip.config.Parameters
 import freechips.rocketchip.coreplex.BaseCoreplexConfig
@@ -16,7 +17,7 @@ import freechips.rocketchip.diplomacy._
 import scala.collection.Seq
 
 class PFB[T <: Data : Ring](val pfbParams: PFBParams[T])
-                                (implicit p: Parameters) extends LazyModule
+                                (implicit p: Parameters) extends DspBlock[AXI4MasterPortParameters, AXI4SlavePortParameters, AXI4EdgeParameters, AXI4EdgeParameters, AXI4Bundle]
   with AXI4DspBlock with AXI4HasCSR {
 
   // Add CSRs
@@ -27,10 +28,10 @@ class PFB[T <: Data : Ring](val pfbParams: PFBParams[T])
   // adapter node means different IO parameters 
   val streamNode = AXI4StreamIdentityNode() //streamNodeOpt.getOrElse(streamInOpt.get)
 
-  def beatBytes : Int        = pfbParams.beatBytes
-  def csrAddress: AddressSet = pfbParams.address
-  def csrSize   : Int        = 8 * csrMap.size
-  def csrBase   : Int        = pfbParams.base
+  val csrSize            : Int        = 8 * csrMap.size
+  override def beatBytes : Int        = 8
+  override def csrAddress: AddressSet = AddressSet(0x0, 0xff)
+  override def csrBase   : Int        = 0
 
   makeCSRs()
 
@@ -38,33 +39,23 @@ class PFB[T <: Data : Ring](val pfbParams: PFBParams[T])
 }
 
 class PFBModule[T <: Data : Ring](outer: PFB[T]) extends LazyModuleImp(outer) {
-  val streamNode  = outer.streamNode
-  val memNode     = outer.mem.get
-  val config      = outer.pfbParams
+
+  val (inx, _)  = outer.streamNode.in.unzip
+  val (outx, _) = outer.streamNode.out.unzip
+  val mem       = outer.mem.map(_.in.map(_._1))
+  val config    = outer.pfbParams
 
   // get fields from outer class
   val genInVec     : Vec[T]   = Vec(config.lanes, config.genIn)
   val genOutVec    : Vec[T]   = Vec(config.lanes, config.genOut.getOrElse(config.genIn))
 
-  val io = IO(new Bundle {
-    val in  = streamNode.bundleIn
-    val out = streamNode.bundleOut
-    val mem = memNode.bundleIn
-  })
-
   val csrs = outer.csrs.module.io.csrs
 
   // cast input to T
-  val io_in               = io.in(0)
-  val io_in_data: Vec[T]  = io_in.bits.data.asTypeOf(genInVec)
-  val io_out              = io.out(0)
-  val io_out_data: Vec[T] = io_out.bits.data.asTypeOf(genOutVec)
-
-  // access CSRs like this
-  //val ctrl = csrs("ctrl")
-  //csrs("stat") := io_in.valid
-
-  //io_out <> io_in
+  val in               = inx(0)
+  val in_data: Vec[T]  = in.bits.data.asTypeOf(genInVec)
+  val out              = outx(0)
+  val out_data: Vec[T] = out.bits.data.asTypeOf(genOutVec)
 
   // split window up into config.lanes different sub-windows
   val groupedWindow = (0 until config.lanes).map(
@@ -72,32 +63,32 @@ class PFBModule[T <: Data : Ring](outer: PFB[T]) extends LazyModuleImp(outer) {
   )
 
   // resyncrhonize when valid goes high
-  val valid_delay = Reg(next=io_in.valid)
+  val valid_delay = Reg(next=in.valid)
   val cycleTime = config.outputWindowSize / config.lanes
-  val counter = CounterWithReset(true.B, cycleTime, io_in.bits.last, ~valid_delay & io_in.valid)._1
+  val counter = CounterWithReset(true.B, cycleTime, in.bits.last, ~valid_delay & in.valid)._1
 
   // user-defined latency, account for pipeline delays automatically
   val latency = config.processingDelay + config.multiplyPipelineDepth + config.outputPipelineDepth
-  io_out.bits.last := ShiftRegisterWithReset(counter === (cycleTime-1).U, latency, 0.U) // don't let valid gate sync
-  io_out.valid := ShiftRegisterWithReset(io_in.valid, latency, 0.U)
+  out.bits.last := ShiftRegisterWithReset(counter === (cycleTime-1).U, latency, 0.U) // don't let valid gate sync
+  out.valid := ShiftRegisterWithReset(in.valid, latency, 0.U)
 
   // feed in zeros when invalid
-  val in = Wire(genInVec)
-  when (io_in.valid) {
-    in := io_in_data
+  val in2 = Wire(genInVec)
+  when (in.valid) {
+    in2 := in_data
   } .otherwise {
-    in := Vec.fill(config.lanes)(Ring[T].zero)
+    in2 := Vec.fill(config.lanes)(Ring[T].zero)
   }
 
   // create config.lanes filters and connect them up
   val filters = groupedWindow.map( taps => Module(new PFBLane(config.genIn, config.genOut, config.genTap, taps, cycleTime, config.convert, config)))
-  filters.zip(in).foreach( { case (filt, port) => filt.io.data_in := port } )
-  filters.zip(io_out_data).foreach( { case (filt, port) => port := ShiftRegister(filt.io.data_out, config.outputPipelineDepth) } )
+  filters.zip(in2).foreach( { case (filt, port) => filt.io.data_in := port } )
+  filters.zip(out_data).foreach( { case (filt, port) => port := ShiftRegister(filt.io.data_out, config.outputPipelineDepth) } )
   filters.foreach (f => {
     f.io.count := counter
   })
 
-  io_out.bits.data := io_out_data.asUInt
+  out.bits.data := out_data.asUInt
 }
 
 
@@ -141,17 +132,17 @@ class PFBLane[T<:Data:Ring](
   //println(temp.toArray.deep.mkString("\n"))
 
   val coeffsGrouped  = coeffs.grouped(delay).toSeq
+  //val coeffsReversed = coeffsGrouped.map(_.reverse).reverse
   val coeffsWire     = coeffsGrouped.map(tapGroup => {
     val coeffWire = Wire(Vec(tapGroup.length, genTap.getOrElse(genIn)))
     coeffWire.zip(tapGroup).foreach({case (t,d) => t := convert(d)})
     coeffWire
   })
 
-  val products = coeffsWire.map(tap => ShiftRegister( tap(io.count) * io.data_in, config.multiplyPipelineDepth))
+  val products = coeffsWire.map(tap => ShiftRegister(DspContext.withTrimType(NoTrim) {tap(io.count) * io.data_in}, config.multiplyPipelineDepth))
 
   val result = products.reduceLeft { (prev:T, prod:T) =>
-    //ShiftRegister(prod, config.multiplyPipelineDepth) + ShiftRegisterMem(prev, delay, name = this.name + "_sram")
-     ShiftRegister(prev, delay) + prod
+     DspContext.withTrimType(NoTrim) {ShiftRegister(prev, delay) + prod}
   }
 
   io.data_out := result
@@ -163,11 +154,8 @@ case class PFBParams[T <: Data]
 (
   // generic
   genIn: T,
-  address: AddressSet,
   genOut: Option[T] = None,
   name: String = "pfb",
-  base: Int = 0,
-  beatBytes: Int = 4,
 
   // custom
   windowFunc: WindowConfig => Seq[Double],

@@ -34,15 +34,26 @@ class PFBSpec extends FlatSpec with Matchers {
   implicit val p: Parameters = Parameters.root((new BaseCoreplexConfig).toInstance)
 
   def runTest[T <: Data : Ring](params: PFBParams[T], 
-                                blindNodes: DspBlock.AXI4BlindNodes,
+                                inWidth: Int,
                                 in: Seq[BigInt]): Seq[BigInt] = {
     val out = new mutable.ArrayBuffer[BigInt]()
+    val blindNodes = DspBlockBlindNodes.apply(
+      AXI4StreamBundleParameters(
+        n = inWidth,
+        i = 1,
+        d = 1,
+        u = 1,
+        hasData = true,
+        hasStrb = false,
+        hasKeep = false
+      ),
+      () => AXI4MasterNode(Seq(AXI4MasterPortParameters(Seq(AXI4MasterParameters("pfb")))))
+    )
 
-    iotesters.Driver.execute(
-      Array(/*"-tiv",*/ "-tbn", "firrtl", "-twffn", "out.vcd", "-fiwv"),
-      () => LazyModule(new PFBBlind(params, blindNodes)).module
-    ) { c =>
-      new PFBDataTester(c, in, out)
+    val dut = () => LazyModule(DspBlock.blindWrapper(() => new PFB(params), blindNodes)).module
+
+    chisel3.iotesters.Driver.execute(Array("-tbn", "firrtl", "-twffn", "out.vcd", "-fiwv"), dut) {
+      c => new PFBDataTester(c, in, out)
     }
 
     out
@@ -72,8 +83,6 @@ class PFBSpec extends FlatSpec with Matchers {
       // setup PFB
       val params = PFBParams(
         genIn = genIn,
-        address = AddressSet(0x0, 0xffffffffL),
-        beatBytes = 8,
         numTaps = numTaps,
         outputWindowSize = outputWindowSize,
         windowFunc = winFunc,
@@ -81,19 +90,11 @@ class PFBSpec extends FlatSpec with Matchers {
         convert = convert 
       )
 
-      // setup blind nodes 
       val inWidthBytes = (params.genIn.getWidth*params.lanes + 7)/ 8
-      val outWidthBytes = params.genOut.map(x => (x.getWidth*params.lanes + 7)/8).getOrElse(inWidthBytes)
-      println(s"In bytes = $inWidthBytes and out bytes = $outWidthBytes")
-      val blindNodes = DspBlockBlindNodes(
-        streamIn  = () => AXI4StreamBlindInputNode(Seq(AXI4StreamMasterPortParameters(Seq(AXI4StreamMasterParameters("pfb", n = inWidthBytes))))),
-        streamOut = () => AXI4StreamBlindOutputNode(Seq(AXI4StreamSlavePortParameters())),
-        mem       = () => AXI4BlindInputNode(Seq(AXI4MasterPortParameters(Seq(AXI4MasterParameters("pfb")))))
-      )
 
       // setup fake test data and run test
       val values = CustomFunctions.packInputStream(Seq.fill(10)(Seq.fill(params.lanes)(0.0)), params.genIn)
-      val out = runTest(params, blindNodes, values)
+      val out = runTest(params, inWidthBytes, values)
     }
   }
 
@@ -126,12 +127,10 @@ class PFBSpec extends FlatSpec with Matchers {
       // setup params
       val params = PFBParams(
         genIn = FixedPoint(20.W, 16.BP),
-        address = AddressSet(0x0, 0xffffffffL),
-        beatBytes = 8,
-        numTaps = 4,
+        numTaps = 6,
         outputWindowSize = 256,
         windowFunc = sincHanning.apply,
-        lanes = 8,
+        lanes = 16,
         convert = (x: Double) => FixedPoint.fromDouble(x, 20.W, 16.BP),
         outputPipelineDepth = 0,
         multiplyPipelineDepth = 0
@@ -139,13 +138,6 @@ class PFBSpec extends FlatSpec with Matchers {
 
       // setup blind nodes 
       val inWidthBytes = (params.genIn.getWidth*params.lanes + 7)/ 8
-      val outWidthBytes = params.genOut.map(x => (x.getWidth*params.lanes + 7)/8).getOrElse(inWidthBytes)
-      println(s"In bytes = $inWidthBytes and out bytes = $outWidthBytes")
-      val blindNodes = DspBlockBlindNodes(
-        streamIn  = () => AXI4StreamBlindInputNode(Seq(AXI4StreamMasterPortParameters(Seq(AXI4StreamMasterParameters("pfb", n = inWidthBytes))))),
-        streamOut = () => AXI4StreamBlindOutputNode(Seq(AXI4StreamSlavePortParameters())),
-        mem       = () => AXI4BlindInputNode(Seq(AXI4MasterPortParameters(Seq(AXI4MasterParameters("pfb")))))
-      )
 
       // check each tap
       var success = true
@@ -157,18 +149,40 @@ class PFBSpec extends FlatSpec with Matchers {
           values(i/params.lanes)(i%params.lanes) = 1.0
         }
         //println(s"input = ${values.map(_.toSeq).toSeq}")
-        val out = runTest(params, blindNodes, CustomFunctions.packInputStream(values.map(_.toSeq).toSeq, params.genIn))
+        val out = runTest(params, inWidthBytes, CustomFunctions.packInputStream(values.map(_.toSeq).toSeq, params.genIn))
         val unpackedOut = CustomFunctions.unpackOutputStream(params.genOut.getOrElse(params.genIn), params.lanes, out)
         //println(s"output = $unpackedOut")
         //println(s"window = ${params.window}")
+        assert(unpackedOut.length == params.outputWindowSize)
         params.window.drop(tap*params.outputWindowSize).zip(unpackedOut).zipWithIndex.foreach{ case ((expected, actual), j) => {
           // check if actual is within quantization of data = 2^-BP
+          //println(s"Checking if $actual == $expected")
           if (actual > expected+pow(2,-16) || actual < expected-pow(2,-16)) {
             println(s"Error, mismatch on coefficient $j, expected $expected, got $actual")
             success = false
           }
         }}
       }
+
+      // check summation
+      val values = Array.fill(params.processingDelay+params.outputWindowSize/params.lanes)(Array.fill(params.lanes)(1.0))
+      //println(s"input = ${values.map(_.toSeq).toSeq}")
+      val out = runTest(params, inWidthBytes, CustomFunctions.packInputStream(values.map(_.toSeq).toSeq, params.genIn))
+      val unpackedOut = CustomFunctions.unpackOutputStream(params.genOut.getOrElse(params.genIn), params.lanes, out)
+      //println(s"output = $unpackedOut")
+      //println(s"window = ${params.window}")
+      assert(unpackedOut.length == params.outputWindowSize)
+      val expected_array = params.window.grouped(params.outputWindowSize).foldLeft(List.fill(params.outputWindowSize)(0.0)){case(x:Seq[Double], y:Seq[Double]) => x.zip(y).map{ case(a: Double, b: Double) => a+b}}
+      //println(s"window sum = ${expected_array}")
+      expected_array.zip(unpackedOut).zipWithIndex.foreach{ case ((expected, actual), j) => {
+        // check if actual is within quantization of data = 2^-BP
+        //println(s"Checking if $actual == $expected")
+        if (actual > expected+pow(2,-16)*params.numTaps || actual < expected-pow(2,-16)*params.numTaps) {
+          println(s"Error, mismatch on coefficient $j, expected $expected, got $actual")
+          success = false
+        }
+      }}
+
       assert(success)
     }
   }
@@ -215,31 +229,21 @@ class PFBSpec extends FlatSpec with Matchers {
 
       // setup params
       val params = PFBParams(
-        genIn = FixedPoint(32.W, 16.BP),
-        address = AddressSet(0x0, 0xffffffffL),
-        beatBytes = 8,
-        numTaps = 8,
+        genIn = FixedPoint(32.W, 28.BP),
+        numTaps = 4,
         outputWindowSize = 256,
         windowFunc = blackmanHarris.apply,
         lanes = 16,
-        convert = (x: Double) => FixedPoint.fromDouble(x, 32.W, 16.BP),
+        convert = (x: Double) => FixedPoint.fromDouble(x, 32.W, 28.BP),
         outputPipelineDepth = 0,
         multiplyPipelineDepth = 0
       )
 
       // setup blind nodes 
       val inWidthBytes = (params.genIn.getWidth*params.lanes + 7)/ 8
-      val outWidthBytes = params.genOut.map(x => (x.getWidth*params.lanes + 7)/8).getOrElse(inWidthBytes)
-      println(s"In bytes = $inWidthBytes and out bytes = $outWidthBytes")
-      val blindNodes = DspBlockBlindNodes(
-        streamIn  = () => AXI4StreamBlindInputNode(Seq(AXI4StreamMasterPortParameters(Seq(AXI4StreamMasterParameters("pfb", n = inWidthBytes))))),
-        streamOut = () => AXI4StreamBlindOutputNode(Seq(AXI4StreamSlavePortParameters())),
-        mem       = () => AXI4BlindInputNode(Seq(AXI4MasterPortParameters(Seq(AXI4MasterParameters("pfb")))))
-      )
-
 
       val numBins = 5
-      val samples_per_bin = 5
+      val samples_per_bin = 10
       val windowSize = params.windowSize
       val fftSize    = params.outputWindowSize
       val testBin    =  fftSize / 6
@@ -254,17 +258,20 @@ class PFBSpec extends FlatSpec with Matchers {
       val simResults = delta_fs map {delta_f => {
         val tone = getTone(windowSize, (testBin + delta_f) / fftSize)
         val simPfb = simWindow(tone, params)
+        //println(s"simPFB = $simPfb")
         getEnergyAtBin(simPfb, testBin)
       }}
 
       // chisel results
       val chiselResults = delta_fs map { delta_f => {
         val tone = getTone(params.lanes*params.processingDelay+params.outputWindowSize, (testBin + delta_f) / fftSize).grouped(params.lanes).toList
-        val out = runTest(params, blindNodes, CustomFunctions.packInputStream(tone, params.genIn))
+        //println(s"tone = $tone")
+        //println(s"in = ${CustomFunctions.packInputStream(tone, params.genIn)}")
+        val out = runTest(params, inWidthBytes, CustomFunctions.packInputStream(tone, params.genIn))
         val unpackedOut = CustomFunctions.unpackOutputStream(params.genOut.getOrElse(params.genIn), params.lanes, out)
-        // should finish with exactly the right number of words, but just in case...
-        val lastWindow = unpackedOut.drop(unpackedOut.length - fftSize)
-        getEnergyAtBin(lastWindow, testBin)
+        assert(unpackedOut.length == params.outputWindowSize)
+        //println(s"chiselPFB = $unpackedOut")
+        getEnergyAtBin(unpackedOut, testBin)
       }}
 
       println(s"delta  = $delta_fs")
@@ -298,6 +305,17 @@ class PFBSpec extends FlatSpec with Matchers {
 
 object CustomFunctions {
   import dsptools.{DspTester, DspException}
+
+  def toBigIntUnsignedStevo(x: Double, totalWidth: Int, fractionalWidth: Int): BigInt = {
+    val bi = FixedPoint.toBigInt(x, fractionalWidth)
+    val neg = bi < 0
+    val neededWidth = if (neg) bi.bitLength + 1 else bi.bitLength
+    require(neededWidth <= totalWidth, "Double -> BigInt width larger than total width allocated!")
+    if (neg) (((BigInt(1) << totalWidth) - 1) ^ -bi) + BigInt(1)
+    else bi
+  }
+
+
   // handle normal input types
   def packInputStream[T<:Data](in: Seq[Seq[Double]], gen: T): Seq[BigInt] = {
     gen match {
@@ -310,7 +328,7 @@ object CustomFunctions {
         f.asInstanceOf[FixedPoint].binaryPoint match {
           case KnownBinaryPoint(binaryPoint) =>
             in.map(x => x.reverse.foldLeft(BigInt(0)) { case (bi, dbl) =>
-              val new_bi = toBigIntUnsigned(dbl, f.getWidth, binaryPoint)
+              val new_bi = toBigIntUnsignedStevo(dbl, f.getWidth, binaryPoint)
               (bi << gen.getWidth) + new_bi
             })
           case _ =>
@@ -368,8 +386,7 @@ object CustomFunctions {
         f.asInstanceOf[FixedPoint].binaryPoint match {
           case KnownBinaryPoint(binaryPoint) =>
             streamOut.map(x => (0 until lanesOut).map{ idx => {
-              // TODO: doesn't work if width is >= 32
-              val y = (x >> (gen.getWidth * idx)) % pow(2, gen.getWidth).toInt
+              val y = (x >> (gen.getWidth * idx)) % (BigInt(1) << gen.getWidth)
               toDoubleFromUnsigned(y, gen.getWidth, binaryPoint)
             }}).flatten.toSeq
           case _ =>

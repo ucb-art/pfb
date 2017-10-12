@@ -48,3 +48,9 @@ travis: $(all_stamps)
 
 pages: $(all_stamps)
 	$(SBT) ghpagesPushSite
+
+clean-libs:
+	rm -rf $(lib_dir) $(ivy_dir)/local
+
+clean:
+	rm -rf $(build_dir)
