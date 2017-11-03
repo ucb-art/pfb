@@ -5,8 +5,8 @@ export LD_LIBRARY_PATH=~rigge/gcc/lib64:~rigge/gcc/lib:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=$RISCV/lib64:$RISCV/lib:$LD_LIBRARY_PATH
 
 # synopsys vcs, also for dve
-export PATH=/tools/synopsys/vcs/J-2014.12-SP1/bin:$PATH
-export VCS_HOME=/tools/synopsys/vcs/J-2014.12-SP1/
+export PATH=/tools/synopsys/vcs/M-2017.03/bin:$PATH
+export VCS_HOME=/tools/synopsys/vcs/M-2017.03/
 export VCS_64=1
 
 # memory compiler
@@ -34,5 +34,9 @@ export PATH=/users/rigge/$MY_JDK/bin:$PATH
 export LD_LIBRARY_PATH=/users/rigge/$MY_JDK/lib:$LD_LIBRARY_PATH
 export MANPATH=/users/rigge/$MY_JDK/man:$MANPATH
 
+# verilator
+export PATH=$PATH:/tools/projects/stevo/craft/craft2-chip/verisim/verilator/install/bin
+
 # get the right gcc 
 scl enable devtoolset-2 bash
+

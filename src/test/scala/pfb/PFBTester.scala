@@ -14,10 +14,12 @@ class PFBDataTester[T <: Data : Ring](c: AXI4BlindWrapperModule[PFB[T]], in_data
   out_data: mutable.ArrayBuffer[BigInt]) extends PeekPokeTester(c) with AXI4MasterModel[AXI4BlindWrapperModule[PFB[T]]] {
 
   val memAXI = c.mem(0)
-  axiReset()
-
   val in  = c.in(0)
   val out = c.out(0)
+
+  poke(in.valid, 0)
+  axiReset()
+  reset(4)
 
   poke(in.valid, 1)
   poke(in.bits.last, 0)
