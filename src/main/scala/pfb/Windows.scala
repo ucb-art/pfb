@@ -31,13 +31,14 @@ object sincHanning {
 }
 
 object sincHamming {
-  def apply(size: Int, nfft: Int): Seq[Double] = Seq.tabulate(size) (i=>{
-    val hamming = 0.54 - 0.46 * breeze.numerics.cos(2 * scala.math.Pi * i.toDouble / (size-1))
-    val periods = 1.0 // should be a double
-    val sinc = breeze.numerics.sincpi((i.toDouble*periods-0.5*periods*size.toDouble)/nfft.toDouble)
-    (hamming * sinc)
+  def apply(size: Int): Seq[Double] = Seq.tabulate(size) (i=>{
+    val term1 = 0.54 - 0.46 * breeze.numerics.cos(2 * scala.math.Pi * i.toDouble / size.toDouble)
+    val sinc_periods = 1.0
+    val scale = sinc_periods * 2.0 * scala.math.Pi * 2.0
+    val term2 = breeze.numerics.sinc( (i.toDouble / size.toDouble - 0.5) * scale)
+    term1 * term2
   })
-  def apply(w: WindowConfig): Seq[Double] = sincHamming(w.outputWindowSize * w.numTaps, w.outputWindowSize)
+  def apply(w: WindowConfig): Seq[Double] = sincHamming(w.outputWindowSize * w.numTaps)
 }
 
 // all 1s
