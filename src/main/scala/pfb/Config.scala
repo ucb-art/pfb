@@ -213,7 +213,31 @@ case class PFBConfig(
                       useDeltaCompression: Boolean = false,
                       genTap: Option[Data] = None
                     ) {
-  val window = windowFunc( WindowConfig(numTaps, outputWindowSize))
+
+  def scaleWindow(window: Seq[Double], genTap: Data): Seq[Double] = {
+
+    var min = 0.0
+    var max = 0.0
+    var res = 0.0
+
+    genTap match {
+      case fp: FixedPoint =>
+        val fractionalBits = fp.binaryPoint.get
+        val totalBits = fp.getWidth
+        res = fractionalBits
+        max = math.pow(2, totalBits-1)-1
+        min = -max-res
+      case _ =>
+        throw new DspException("Unknown coefficient type for PFB")
+    }
+
+    val window_min = window.reduceLeft(math.min)
+    val window_max = window.reduceLeft(math.max)
+    return window.map { x => math.round((x/window_max * max)) * math.pow(2, -res) }
+
+  }
+
+  val window = scaleWindow(windowFunc( WindowConfig(numTaps, outputWindowSize) ), genTap.get)
   val windowSize = window.length
 
   // various checks for validity
