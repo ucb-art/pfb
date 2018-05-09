@@ -48,14 +48,16 @@ class PFB[T<:Data:Ring](genIn: => T,
                         ) extends Module {
   val io = IO(new PFBIO(genIn, genOut, config.lanes))
 
+  val lanes = if (config.quadrature) config.lanes/2 else config.lanes
+
   // split window up into config.lanes different sub-windows
-  val groupedWindow = (0 until config.lanes).map(
-    config.window.drop(_).grouped(config.lanes).map(_.head).toSeq
+  val groupedWindow = (0 until lanes).map(
+    config.window.drop(_).grouped(lanes).map(_.head).toSeq
   )
 
   // resyncrhonize when valid goes high
   val valid_delay = Reg(next=io.data_in.valid)
-  val cycleTime = config.outputWindowSize / config.lanes
+  val cycleTime = config.outputWindowSize / lanes
   val counter = CounterWithReset(true.B, cycleTime, io.data_in.sync, ~valid_delay & io.data_in.valid)._1
 
   // user-defined latency, account for pipeline delays automatically
@@ -64,6 +66,7 @@ class PFB[T<:Data:Ring](genIn: => T,
   io.data_out.valid := ShiftRegisterWithReset(io.data_in.valid, latency, 0.U)
 
   // feed in zeros when invalid
+  // this is total lanes, regardless of quadrature
   val in = Wire(Vec(config.lanes, genIn))
   when (io.data_in.valid) {
     in := io.data_in.bits
@@ -82,12 +85,24 @@ class PFB[T<:Data:Ring](genIn: => T,
   io.data_set_end_status := dses
 
   // create config.lanes filters and connect them up
-  val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime, convert, config)))
-  filters.zip(in).foreach( { case (filt, port) => filt.io.data_in := port } )
-  filters.zip(io.data_out.bits).foreach( { case (filt, port) => port := ShiftRegister(filt.io.data_out, config.outputPipelineDepth) } )
-  filters.foreach (f => {
-    f.io.count := counter
-  })
+  if (config.quadrature) {
+    val filters_i = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime, convert, config)))
+    val filters_q = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime, convert, config)))
+
+    filters_i.zip(in.take(lanes)).foreach( { case (filt, port) => filt.io.data_in := port } ) // note: scala takes smaller of list lengths
+    filters_q.zip(in.drop(lanes)).foreach( { case (filt, port) => filt.io.data_in := port } )
+
+    filters_i.zip(io.data_out.bits.take(lanes)).foreach( { case (filt, port) => port := ShiftRegister(filt.io.data_out, config.outputPipelineDepth) } )
+    filters_q.zip(io.data_out.bits.drop(lanes)).foreach( { case (filt, port) => port := ShiftRegister(filt.io.data_out, config.outputPipelineDepth) } )
+
+    filters_i.foreach (f => { f.io.count := counter })
+    filters_q.foreach (f => { f.io.count := counter })
+  } else {
+    val filters = groupedWindow.map( taps => Module(new PFBLane(genIn, genOut, genTap, taps, cycleTime, convert, config)))
+    filters.zip(in).foreach( { case (filt, port) => filt.io.data_in := port } )
+    filters.zip(io.data_out.bits).foreach( { case (filt, port) => port := ShiftRegister(filt.io.data_out, config.outputPipelineDepth) } )
+    filters.foreach (f => { f.io.count := counter })
+  }
 }
 
 /**

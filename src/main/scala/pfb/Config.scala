@@ -207,6 +207,7 @@ case class PFBConfig(
                       processingDelay: Int = 10,
                       outputPipelineDepth: Int = 1,
                       multiplyPipelineDepth: Int = 1,
+                      quadrature: Boolean = true,
                     // the below are currently ignored
                       useSinglePortMem: Boolean = false,
                       symmetricCoeffs: Boolean  = false,
@@ -240,10 +241,12 @@ case class PFBConfig(
   val window = scaleWindow(windowFunc( WindowConfig(numTaps, outputWindowSize) ), genTap.get)
   val windowSize = window.length
 
+  val lanes_new = if (quadrature) lanes/2 else lanes
+
   // various checks for validity
   require(numTaps > 0, "Must have more than zero taps")
   require(outputWindowSize > 0, "Output window must have size > 0")
-  require(outputWindowSize % lanes == 0, "Number of parallel inputs must divide the output window size")
+  require(outputWindowSize % lanes_new == 0, "Number of parallel inputs must divide the output window size")
   require(windowSize > 0, "PFB window must have > 0 elements")
   require(windowSize == numTaps * outputWindowSize, "windowFunc must return a Seq() of the right size")
   require(processingDelay >= 0, "Must have positive processing delay")

@@ -25,13 +25,24 @@ object blackmanHarris {
   */
 object sincHamming {
   def apply(size: Int): Seq[Double] = Seq.tabulate(size) (i=>{
-    val term1 = 0.54 - 0.46 * breeze.numerics.cos(2 * scala.math.Pi * i.toDouble / size.toDouble)
+    val term1 = 0.54 - 0.46 * breeze.numerics.cos(2 * scala.math.Pi * i.toDouble / (size.toDouble - 1))
     val sinc_periods = 1.0
     val scale = sinc_periods * 2.0 * scala.math.Pi * 2.0
     val term2 = breeze.numerics.sinc( (i.toDouble / size.toDouble - 0.5) * scale)
     term1 * term2
   })
   def apply(w: WindowConfig): Seq[Double] = sincHamming(w.outputWindowSize * w.numTaps)
+}
+
+object sincHanning {
+  def apply(size: Int): Seq[Double] = Seq.tabulate(size) (i=>{
+    val term1 = 0.50 - 0.50 * breeze.numerics.cos(2 * scala.math.Pi * i.toDouble / (size.toDouble - 1))
+    val sinc_periods = 1.0
+    val scale = sinc_periods * 2.0 * scala.math.Pi * 2.0
+    val term2 = breeze.numerics.sinc( (i.toDouble / size.toDouble - 0.5) * scale)
+    term1 * term2
+  })
+  def apply(w: WindowConfig): Seq[Double] = sincHanning(w.outputWindowSize * w.numTaps)
 }
 
 
