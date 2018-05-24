@@ -30,6 +30,8 @@ object LocalTest extends Tag("edu.berkeley.tags.LocalTest")
   */
 class PFBTester[T<:Data](val c: PFB[T], verbose: Boolean = true) 
     extends DspTester(c) with HasDspPokeAs[PFB[T]] {
+  poke(c.io.data_in.valid, 0)
+  reset(5)
   poke(c.io.data_in.valid, 1)
   poke(c.io.data_in.sync,  0)
 
@@ -111,7 +113,7 @@ object leakageTester {
   }
 
   def getTone(numSamples: Int, f: Double): Seq[Double] = {
-    (0 until numSamples).map(i => math.sin(2 * math.Pi * f * i))
+    (0 until numSamples).map(i => math.sin(2 * math.Pi * f * i)*0.5)
   }
 
   def simWindow(signal: Seq[Double], config: PFBConfig): Seq[Double] = {
@@ -156,6 +158,7 @@ object leakageTester {
       val tester = setupTester(c)
       val tone = getTone(windowSize, (testBin + delta_f) / fftSize)
       val testResult = testSignal(tester, tone)
+      assert(testResult.length == windowSize, "Error in output length")
       val lastWindow = testResult.drop(testResult.length - fftSize)
       teardownTester(tester)
       getEnergyAtBin(lastWindow, testBin)
@@ -176,7 +179,7 @@ class PFBSpec extends FlatSpec with Matchers {
     dsptools.Driver.execute(() => new PFB(SInt(10.W), Some(SInt(16.W)),
       convert = d => d.toInt.S,
       config = PFBConfig(
-        outputWindowSize = 4, numTaps = 4, lanes = 2
+        outputWindowSize = 4, numTaps = 4, lanes = 2, genTap = Some(SInt(16.W))
       )), Array("--backend-name", "verilator")) {
       c => new PFBTester(c)
     } should be(true)
@@ -186,7 +189,7 @@ class PFBSpec extends FlatSpec with Matchers {
     dsptools.Driver.execute(() => new PFB(FixedPoint(10.W, 5.BP), Some(FixedPoint(16.W, 7.BP)),
       convert = d => FixedPoint.fromDouble(d, 10.W, 5.BP),
       config = PFBConfig(
-        outputWindowSize = 4, numTaps = 4, lanes = 2
+        outputWindowSize = 4, numTaps = 4, lanes = 2, genTap = Some(FixedPoint(16.W, 7.BP))
       )), Array("--backend-name", "verilator")) {
       c => new PFBTester(c)
     } should be(true)
@@ -204,7 +207,7 @@ class PFBSpec extends FlatSpec with Matchers {
             dsptools.Driver.execute(() => new PFB(FixedPoint(4.W, 2.BP), Some(FixedPoint(2.W, 7.BP)),
               convert = d => FixedPoint.fromDouble(d, 4.W, 2.BP),
               config = PFBConfig(
-                outputWindowSize = j, numTaps = i, lanes = k
+                outputWindowSize = j, numTaps = i, lanes = k, genTap = Some(FixedPoint(8.W, 4.BP))
               )), Array("--backend-name", "verilator", "--target-dir", s"test_run_dir_${i}_${j}_${k}") ) {
               c => new PFBTester(c)
             } should be(true)
@@ -214,44 +217,47 @@ class PFBSpec extends FlatSpec with Matchers {
     }
   }
 
-  ignore should "have the correct step response" in {
+  it should "have the correct step response" in {
     {
       val config = PFBConfig(
-        windowFunc = WindowConfig => Seq(1.0, 2.0, 3.0, 4.0),
+        windowFunc = WindowConfig => Seq(3.0, 4.0, 1.0, 2.0),
         numTaps = 2,
         outputWindowSize = 2,
-        lanes = 2
+        lanes = 2,
+        outputPipelineDepth = 0,
+        multiplyPipelineDepth = 0,
+        quadrature = false,
+        genTap = Some(SInt(10.W)),
+        scale = false
       )
       val expected = Seq(1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0) //Seq(3.0, 4.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0)
       val stepSize = config.windowSize / (config.numTaps * config.lanes)
 
-      dsptools.Driver.execute(() => new PFB(SInt(10.W), config = config, convert = d => d.toInt.S), Array("--backend-name", "verilator")) {
+      dsptools.Driver.execute(() => new PFB(SInt(10.W), config = config, convert = d => d.toInt.S(10.W)), Array("--backend-name", "verilator")) {
         c => new PFBStepTester(c, stepSize, expected)
       } should be(true)
     }
-    /*{
-      val config = PFBConfig(
-        windowFunc = WindowConfig => Seq(1.0, 2.0, 3.0, 4.0),
-        numTaps = 2,
-        outputWindowSize = 2,
-        lanes = 1
-      )
-      val expected = Seq(1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0)
-      val stepSize = config.windowSize / (config.numTaps * config.lanes)
-      dsptools.Driver(() => new PFB(SInt.width(10), config = config)) {
-        c => new PFBStepTester(c, stepSize, expected)
-      } should be(true)
-    }*/
   }
 
   it should "reduce leakage" taggedAs(LocalTest) in {
     val config = PFBConfig(
-      windowFunc = blackmanHarris.apply,
-      numTaps = 8,
-      outputWindowSize = 256,
-      lanes=16
+      windowFunc = sincHanning.apply,
+      numTaps = 4,
+      outputWindowSize = 8192,
+      lanes=32,
+      quadrature=false,
+      multiplyPipelineDepth=0,
+      outputPipelineDepth=0,
+      genTap = Some(FixedPoint(10.W, 7.BP)),
+      scale = true,
+      processingDelay = 0
     )
-    leakageTester( () => new PFB(FixedPoint(32.W, 16.BP), config=config, convert = d => FixedPoint.fromDouble(d, 32.W, 16.BP)), config, numBins = 5, samples_per_bin = 5 )
+    leakageTester( () => new PFB(
+      FixedPoint(9.W, 8.BP), 
+      Some(FixedPoint(12.W, 8.BP)), 
+      config=config, 
+      convert = d => FixedPoint.fromDouble(d, 10.W, 7.BP)), 
+      config, numBins = 3, samples_per_bin = 9 )
   }
 
   behavior of "PFBLane"
@@ -259,14 +265,14 @@ class PFBSpec extends FlatSpec with Matchers {
     dsptools.Driver.execute(() => new PFBLane[SInt](
       SInt(8.W), Some(SInt(10.W)), Some(SInt(10.W)),
       coeffs=Seq(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0),
-      delay=4, convert = d => d.toInt.S),
+      delay=4, convert = d => d.toInt.S, PFBConfig(genTap = Some(SInt(10.W)))),
       Array("--backend-name", "verilator")) {
       c => new PFBLaneTester(c)
     } should be (true)
   }
 
   behavior of "SInt"
-  ignore should "allow me to assign to smaller widths" in {
+  it should "allow me to assign to smaller widths" in {
     dsptools.Driver.execute(() => new SIntPassthrough(), Array("-tiv")) {
       c => new SIntPassthroughTester(c)
     } should be (true)

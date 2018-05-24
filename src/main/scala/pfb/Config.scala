@@ -159,19 +159,20 @@ class DefaultStandaloneFixedPointPFBConfig extends Config(PFBConfigBuilder.stand
 class CustomStandalonePFBConfig extends Config(PFBConfigBuilder.standalone(
   "pfb",
   PFBConfig(
-    // must be numTaps * outputWindowSize in length
-    windowFunc= userCoeff.apply,
-    numTaps=12,
-    outputWindowSize=128,
-    lanes=4,
-    processingDelay = 192,
+    windowFunc= sincHanning.apply,
+    numTaps=4,
+    outputWindowSize=8192,
+    lanes=64,
+    processingDelay = 8192/(64/2)*(4-1),
     outputPipelineDepth = 1,
-    multiplyPipelineDepth = 1
+    multiplyPipelineDepth = 1,
+    quadrature = true,
+    genTap = Some(FixedPoint(10.W, 7.BP))
     ),
-  genIn = () => DspComplex(FixedPoint(11.W, 10.BP), FixedPoint(11.W, 10.BP)),
-  genOut = Some(() => DspComplex(FixedPoint(12.W, 17.BP), FixedPoint(12.W, 17.BP))),
-  genTap = Some(DspComplex(FixedPoint(12.W, 17.BP), FixedPoint(12.W, 17.BP))),
-  convert = d => DspComplex(FixedPoint.fromDouble(d, 12.W, 17.BP), FixedPoint.fromDouble(d, 12.W, 17.BP))
+  genIn = () => FixedPoint(9.W, 8.BP),
+  genOut = Some(() => FixedPoint(12.W, 8.BP)),
+  genTap = Some(FixedPoint(10.W, 7.BP)),
+  convert = d => FixedPoint.fromDouble(d, 10.W, 7.BP)
 ))
 
 case class PFBConvert(id: String) extends Field[Double => Data]
@@ -205,14 +206,15 @@ case class PFBConfig(
                       outputWindowSize: Int = 16,
                       lanes: Int = 8,
                       processingDelay: Int = 10,
-                      outputPipelineDepth: Int = 1,
-                      multiplyPipelineDepth: Int = 1,
+                      outputPipelineDepth: Int = 0,
+                      multiplyPipelineDepth: Int = 0,
                       quadrature: Boolean = true,
                     // the below are currently ignored
                       useSinglePortMem: Boolean = false,
                       symmetricCoeffs: Boolean  = false,
                       useDeltaCompression: Boolean = false,
-                      genTap: Option[Data] = None
+                      genTap: Option[Data] = None,
+                      scale: Boolean = true
                     ) {
 
   def scaleWindow(window: Seq[Double], genTap: Data): Seq[Double] = {
@@ -228,6 +230,11 @@ case class PFBConfig(
         res = fractionalBits
         max = math.pow(2, totalBits-1)-1
         min = -max-res
+      case s: SInt =>
+        val totalBits = s.getWidth
+        min = -math.pow(2, totalBits-1)
+        max = math.pow(2, totalBits-1)-1
+        res = 1
       case _ =>
         throw new DspException("Unknown coefficient type for PFB")
     }
@@ -238,7 +245,10 @@ case class PFBConfig(
 
   }
 
-  val window = scaleWindow(windowFunc( WindowConfig(numTaps, outputWindowSize) ), genTap.get)
+
+  val window = 
+    if (scale) { scaleWindow(windowFunc( WindowConfig(numTaps, outputWindowSize) ), genTap.get) }
+    else { windowFunc( WindowConfig(numTaps, outputWindowSize) ) }
   val windowSize = window.length
 
   val lanes_new = if (quadrature) lanes/2 else lanes

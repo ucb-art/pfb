@@ -22,5 +22,9 @@ export PATH=$PATH:$MC2_INSTALL_DIR/bin
 # cadence incisive
 export PATH=/tools/cadence/INCISIV/INCISIVE152/tools/bin:$PATH
 
+# verilator
+export PATH=$PATH:/tools/projects/stevo/craft/chisel3/verilator/install/bin
+export VERILATOR_ROOT=/tools/projects/stevo/craft/chisel3/verilator/install/share/verilator
+
 # get the right gcc 
 scl enable devtoolset-2 bash
